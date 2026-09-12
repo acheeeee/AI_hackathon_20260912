@@ -1,0 +1,66 @@
+/* 訴願 AI 輔助系統設計語彙 —— 取自 docs/design/*.dc.html 與 app/web/style.css。
+   顏色、圓角、陰影全部沿用既有值，不新發明。 */
+:root {
+  --blue: #0b3d91;
+  --blue-light: #1a56c4;
+  --yellow: #ffd400;
+  --ink: #1a2b4a;
+  --muted: #6b7794;
+  --line: #e2e8f2;
+  --line-strong: #b9c6e0;
+  --bg: #f4f7fc;
+  --card: #ffffff;
+  --ok: #1a7f4b;
+  --ok-bg: #eafaf1;
+  --warn: #c0392b;
+  --warn-bg: #fdecea;
+  --warn-ink: #8a2318;
+  --amber-bg: #fff8e1;
+  --amber-ink: #7a5c00;
+  --tint: #eef4ff;
+  --shadow: 0 2px 12px rgba(11, 61, 145, 0.08);
+  --radius-lg: 12px;
+  --radius-md: 10px;
+  --radius-sm: 8px;
+
+  --font-sans: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --font-serif: 'Noto Serif TC', 'Songti TC', serif;
+  --font-mono: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+html,
+body {
+  min-height: 100vh;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--blue-light);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--blue);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}

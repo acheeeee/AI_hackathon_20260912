@@ -43,7 +43,8 @@ cd app
 pip install -r requirements.txt
 
 # 設定 API key（取得：https://aistudio.google.com/apikey）
-cp .env.example .env      # 編輯 .env 填入 GEMINI_API_KEY
+# 在 app/ 下建立 .env，內容：GEMINI_API_KEY=你的key
+# （未設定時自動降級為 BM25 檢索＋模板草稿，功能不中斷）
 
 # 建立知識庫與索引（首次執行，會快取）
 python -m src.build_kb        # PDF -> JSON
@@ -61,14 +62,14 @@ python -m src.demo_retrieval
 
 ## Vue 前端（取代 app/web 的新介面）
 
-`app/frontend/` 是正在取代 `app/web`（純手寫 HTML/JS）的 Vue 3 + TypeScript + Element Plus 前端，透過 `api.py` 的 REST API 呼叫同一套 pipeline。`app/web` 暫時保留、未被移除。
+專案根目錄的 `frontend/` 是正在取代 `app/web`（純手寫 HTML/JS）的 Vue 3 + TypeScript + Element Plus 前端，透過 `api.py` 的 REST API 呼叫同一套 pipeline。`app/web` 暫時保留、未被移除。
 
 ```bash
-# 後端（同一套 api.py，需先完成上面的 pip install -r requirements.txt）
+# 後端（在 app/ 下執行，需先完成上面的 pip install -r requirements.txt）
 python3 -m uvicorn api:app --reload --port 8000
 
-# 前端（另一個終端機）
-cd frontend
+# 前端（另一個終端機，frontend/ 在專案根目錄）
+cd ../frontend
 npm install
 npm run dev          # http://localhost:5173，已設定 proxy 轉發 /api 到 :8000
 ```

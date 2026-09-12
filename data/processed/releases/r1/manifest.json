@@ -1,0 +1,17 @@
+{
+  "release_id": "r1",
+  "schema_version": "1.0",
+  "extraction_version": "ext-1.0",
+  "segmentation_version": "seg-1.0",
+  "chunking_version": "chunk-1.0",
+  "alias_table_version": "alias-1.0",
+  "input_pdf_count": 141,
+  "unique_document_count": 141,
+  "duplicate_count": 0,
+  "page_count": 731,
+  "section_count": 2623,
+  "chunk_count": 3106,
+  "citation_count": 675,
+  "review_queue_count": 7,
+  "publish_status": "validated"
+}

@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-Application code lives in `app/`. The shared Python pipeline is under `app/src/`; `app/api.py` exposes FastAPI endpoints, while `app/app.py` provides the Streamlit demo. The active UI is the Vue 3/TypeScript app in `app/frontend/src/`. Treat `app/web/` as legacy and do not add features there. Raw official PDFs live in root `data/`; parsed, versioned knowledge-base JSON lives in `app/data/kb/`, while rebuildable indexes in `app/data/index/` stay untracked. Domain and legal-design notes are under `docs/`, with `docs/Reference/開發文件.md` as the authority for legal rules.
+Backend code lives in `app/`. The shared Python pipeline is under `app/src/`; `app/api.py` exposes FastAPI endpoints, while `app/app.py` provides the Streamlit demo. The active UI is the Vue 3/TypeScript app at the repository root in `frontend/src/`. Treat `app/web/` as legacy and do not add features there. Raw official PDFs live in root `data/`; parsed, versioned knowledge-base JSON lives in `app/data/kb/`, while rebuildable indexes in `app/data/index/` stay untracked. Domain and legal-design notes are under `docs/`, with `docs/Reference/開發文件.md` as the authority for legal rules.
 
 ## Build, Test, and Development Commands
 
@@ -22,7 +22,7 @@ streamlit run app.py                  # alternative demo UI
 For the active frontend:
 
 ```bash
-cd app/frontend
+cd frontend
 npm ci
 npm run dev        # Vite on :5173; proxies /api to :8000
 npm run build      # type-checks and creates the production bundle
@@ -44,4 +44,4 @@ History uses short English summaries; make them specific and imperative, for exa
 
 ## Security & Configuration
 
-Copy `app/.env.example`; never commit `.env`, API keys, `.venv/`, `node_modules/`, or `app/data/index/`. Do not log uploaded appeal contents or credentials.
+Create `app/.env` with `GEMINI_API_KEY=<your key>` (obtain one at https://aistudio.google.com/apikey); without it the system degrades to BM25 retrieval plus template drafts. Never commit `.env`, API keys, `.venv/`, `node_modules/`, or `app/data/index/`. A single root `.gitignore` covers both the Python and frontend trees. Do not log uploaded appeal contents or credentials.
