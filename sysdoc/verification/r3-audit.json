@@ -1,0 +1,118 @@
+{
+  "audit_date": "2026-09-12",
+  "release_id": "r3",
+  "predecessor": "r2",
+  "assessment": "MECHANICAL_CONTRACT_VALIDATED_LEGAL_REVIEW_NOT_RUN",
+  "source_bytes_changed": false,
+  "root_cause_correction": {
+    "r2_recorded_assessment": "四部法規 PDF 被判定為逐頁瀏覽小工具格式，需重新取得其他匯出版本",
+    "r3_verified_root_cause": "PDF 視覺版面已有完整條號與正文；PyMuPDF block 原順序先列左欄條號、再列右欄正文，需依 bbox 重建視覺閱讀順序",
+    "action": "保留原 PDF 位元組，將法規抽取改為 visual reading order，extraction_version 升為 ext-2.0"
+  },
+  "official_snapshot_check": [
+    {
+      "statute_name": "訴願法",
+      "official_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030020",
+      "official_amendment_date": "2012-06-27",
+      "local_header_matches": true
+    },
+    {
+      "statute_name": "行政程序法",
+      "official_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=A0030055",
+      "official_amendment_date": "2021-01-20",
+      "local_header_matches": true
+    },
+    {
+      "statute_name": "洗錢防制法",
+      "official_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0380131",
+      "official_amendment_date": "2024-07-31",
+      "local_header_matches": true
+    },
+    {
+      "statute_name": "行政院及各級行政機關訴願審議委員會審議規則",
+      "official_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=A0030022",
+      "official_amendment_date": "2014-07-01",
+      "local_header_matches": true
+    }
+  ],
+  "temporal_boundary": "官方頁面只用於本次來源快照交叉檢查；runtime 仍回傳 snapshot_only，不宣稱對任意案件日期有效",
+  "versions": {
+    "schema_version": "1.0",
+    "extraction_version": "ext-2.0",
+    "segmentation_version": "seg-1.0",
+    "chunking_version": "chunk-2.0",
+    "alias_table_version": "alias-1.0",
+    "case_family_version": "casefam-1.0",
+    "config_hash": "cfg_9563c03b6f328916"
+  },
+  "counts": {
+    "input_pdf_count": 141,
+    "excluded_non_corpus_count": 12,
+    "page_count": 731,
+    "section_count": 2627,
+    "statute_article_section_count": 2214,
+    "unparseable_article_key_count": 0,
+    "unsegmented_article_report_count": 0,
+    "chunk_count": 3103,
+    "index_eligible_chunk_count": 3002,
+    "non_index_eligible_chunk_count": 101,
+    "citation_count": 675,
+    "citation_resolved_count": 588,
+    "citation_unresolved_count": 87,
+    "case_family_count": 101,
+    "review_queue_count": 7
+  },
+  "comparison_to_r2": {
+    "statute_article_sections": "1871 -> 2214",
+    "unsegmented_article_reports": "4 documents -> 0",
+    "chunks": "2834 -> 3103",
+    "index_eligible_chunks": "2733 -> 3002",
+    "resolved_citations": "227 -> 588",
+    "review_queue": "11 -> 7"
+  },
+  "artifact_sha256": {
+    "documents.jsonl": "d64736cc97fc0d256efae2b3ae3d3968848d20503254effc40d609b7a53ac691",
+    "pages.jsonl": "8654e849da049a5b12aacd36df1cce2483efda42f4bcf606de667ef9f18a024d",
+    "sections.jsonl": "b5e4dc6de3385aaada61f6d9876ba8e9b508a35db4dee4d6f3d608d1b5751d55",
+    "chunks.jsonl": "262ae7f9404e5dc30d8842bbdc194ef33bd8d01c1e76a1ebc181197f57b406c7",
+    "annotations.jsonl": "73e8375de09f365c0eb5b5a245fa1464e0f15d99f311a8775a338fb525af345e",
+    "citations.jsonl": "720d339096f41977d3cb6284e6990c21aa18e82aa8817612c35243cf6cea76b2",
+    "duplicates.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review_queue.jsonl": "9fdb2da0d57cf3ba604f6c90d53d18eb2ca9cb279ee4b89a0e1e0fb11f4b81f3",
+    "excluded_non_corpus.jsonl": "6d95142da24108ab48172e8ced6b85ed967e02368610f70bacc8108354f1a3c4"
+  },
+  "verification": {
+    "release_validator": "15/15 PASS",
+    "layout_regression": "4/4 PASS",
+    "backend_tests": "71 passed",
+    "caseapi_coverage": "94%",
+    "evidence_repository_coverage": "87%",
+    "reproducibility": "final r3 and two independent temporary runs had identical config hash and all 9 JSONL artifact hashes",
+    "visual_pdf_review": "rendered page 1 of all four affected statutes; article-number and body columns were visibly present and aligned",
+    "new_dependencies_installed": false
+  },
+  "bm25_smoke": {
+    "query": "訴願應自行政處分達到次日起三十日內提起",
+    "top_hit": {
+      "chunk_id": "chk_7c50e1a727161ae1",
+      "statute_name": "訴願法",
+      "article_key": "14",
+      "score": 36.97126621007177,
+      "page": 3,
+      "first_line": 6,
+      "source_exists": true,
+      "quote_matches": true,
+      "temporal_status": "snapshot_only",
+      "content_hash": "10ef9c954beaa4a8d26e4293a474b2d7730ad0f61df9cddb84e0838bf1c5e0dd"
+    }
+  },
+  "still_not_done": [
+    "11 部法規逐條人工核對與法律簽收",
+    "101 件決定書案件類型與主文結果人工覆核",
+    "7 個低文字頁人工判定",
+    "法規 effective_from/effective_to/is_current 與 paragraph_path 補充",
+    "規格第 7.2 節 synthetic inputs/gold 與 BM25 Recall@5 評估",
+    "EvidenceRepository 接入 run、工具事件、evidence_records 與前端來源卡",
+    "線上 LLM、embedding、向量檢索、正式登入與多人授權"
+  ]
+}

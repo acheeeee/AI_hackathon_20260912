@@ -4,26 +4,30 @@
 
 Read `sysdoc/README.md` for the verified current system and `sysdoc/驗證報告.md` for evidence and limitations. `docs/README.md` maps the requirement documents. Design documents describe intended behavior, not implemented capabilities.
 
-The 2026-09-12 task is audit and cleanup only. Further feature development requires explicit user authorization. Do not silently implement the new RAG, LLM, API, SQLite, or collaboration design while tidying this repository.
+The initial 2026-09-12 task was audit and cleanup only. The user later explicitly authorized collaboration backend Stage A and the r3/BM25 evidence layer. Further feature development still requires explicit user authorization; do not silently add online LLM, vector, run/SSE, authentication, or frontend integration.
 
 ## Project Structure
 
 - `frontend/`: active Vue 3 / TypeScript UI. Its `/api/*` calls still depend on `backend/api.py`.
 - `backend/`: legacy compatibility backend; `backend/src/` contains its Python pipeline. Retain it until a replacement is integrated and tested. The Streamlit `app/app.py` and static `app/web/` UIs were removed while this directory was still named `app/`; it was renamed to `backend/` on 2026-09-12.
-- `backend/data/kb/`: versioned legacy JSON. `backend/data/index/`: rebuildable, ignored local indexes. Neither is the new r1 release.
-- `data/raw/`: original PDFs, with 141 corpus PDFs and 12 incoming-document PDFs. Preserve bytes and provenance.
+- `backend/data/kb/`: versioned legacy JSON. `backend/data/index/`: rebuildable, ignored local indexes. Neither is the new r1/r2/r3 release. `backend/caseapi/evidence/` reads r3 directly and does not use this legacy index.
+- `data/raw/`: original PDFs, with 141 corpus PDFs (under the four official category folders) and 12 incoming-document PDFs (`訴願書予行政處分函-1/`). Preserve bytes and provenance.
 - `data/processed/releases/r1/`: immutable audit subject, not accepted for new RAG ingestion. Do not trust its `validated` label as full contract acceptance; read the sysdoc findings.
-- `scripts/preprocess/`, `tests/preprocess/`: current preprocessing tools and custom regression runner.
+- `data/processed/releases/r2/`: historical intermediate release. It fixed r1's source-path, chunk-span-precision, `chunking_version`, case-family, and citation-resolution gaps. Its claim that four statutes required replacement PDFs was later disproved; the actual defect was PyMuPDF block reading order.
+- `data/processed/releases/r3/`: current mechanically validated evidence release. It keeps the same raw PDF bytes and uses `ext-2.0` bbox visual ordering for statutes; all 2,214 statute-article sections have parseable article keys and all 3,103 chunk quotes rebuild from their spans. It is still not legal-review sign-off: article/label review and synthetic evaluation inputs/gold remain incomplete. See `sysdoc/verification/r3-audit.json`. Do not overwrite r1, r2, or r3; use a new release id.
+- `data/evaluation/v1/`: `splits.json` only (dev/holdout case-family grouping); synthetic inputs/gold per spec §7.2 not generated.
+- `scripts/preprocess/`, `tests/preprocess/`: current preprocessing tools, the historical r2 regression runner, and the four-document visual-order regression test.
 - `docs/design/`: visual design artifacts. `docs/協作設計/`: next-stage collaboration and `/api/v1` design. `docs/Reference/開發文件.md`: legal-source/design reference.
 
 ## Environments and Verification
 
-Use Python 3.12 for the backend's pinned dependencies (`backend/requirements.txt`). The existing preprocessing environment `.venv_pre/` uses Python 3.9.6 with PyMuPDF 1.26.5; that exact local environment reproduced r1. Its dependency declaration is separate at `scripts/preprocess/requirements.txt`. Do not mix the backend's PyMuPDF 1.24.9 with r1 reproduction or assume other interpreter versions have been verified. Both environments must stay untracked.
+Use Python 3.12 for the backend's pinned dependencies (`backend/requirements.txt`). The existing preprocessing environment `.venv_pre/` uses Python 3.9.6 with PyMuPDF 1.26.5; that exact local environment reproduced r1, r2, and r3 (r3 was byte-identical across the final output and two independent temporary runs). Its dependency declaration is separate at `scripts/preprocess/requirements.txt`. Do not mix the backend's PyMuPDF 1.24.9 with release reproduction or assume other interpreter versions have been verified. Both environments must stay untracked.
 
 From the repo root, with existing environments:
 
 ```bash
-backend/.venv/bin/python -m tests.preprocess.test_regression
+backend/.venv/bin/python -m tests.preprocess.test_regression  # historical r2 checks
+.venv_pre/bin/python -m tests.preprocess.test_statute_layout  # current 4-law layout checks
 ```
 
 From `backend/`:
@@ -35,7 +39,7 @@ GEMINI_API_KEY='' GOOGLE_API_KEY='' .venv/bin/python -m uvicorn api:app --host 1
 GEMINI_API_KEY='' GOOGLE_API_KEY='' .venv/bin/python -c 'from src.build_index import build_all; build_all(use_vector=False)'
 ```
 
-Do not run the old `src.build_kb` or preprocess `all/process/validate --release r1` as a smoke test: these commands write data, and validation does not cover the full handoff contract. Current `data/raw/` layout also breaks the preprocessor's category inference. Verify in an isolated output location.
+Do not run the old `src.build_kb` as a smoke test: it writes data and may overwrite an empty KB from a stale root. `scripts.preprocess.run process` refuses to overwrite an existing release directory, so re-running against `r1`, `r2`, or `r3` fails fast rather than corrupting them; use a new `--release` id for any experiment. Category inference correctly reads `data/raw/<category>/...` and excludes the 12 incoming-document PDFs automatically — do not reintroduce the old `data/<category>/` assumption.
 
 From `frontend/`:
 
@@ -55,7 +59,7 @@ Python: four spaces, PEP 8, `snake_case` functions/modules, `PascalCase` models,
 
 Vue/TypeScript: two spaces, single quotes, no semicolons, 100-column target; `PascalCase.vue` components and `camelCase` variables/functions.
 
-Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. The preprocessing runner has 19 custom checks and no pytest dependency. Legal-logic changes require source-based regression cases; passing transport tests or showing a legal label is not evidence of legal correctness.
+Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. The backend suite currently has 71 passing tests with 94% aggregate `caseapi` coverage; `EvidenceRepository` has 87% coverage. The preprocessing release validator passes 15/15 for r3 and the four-document layout regression passes 4/4. Legal-logic changes require source-based regression cases; passing transport/data-contract tests or showing a legal label is not evidence of legal correctness.
 
 ## Git and Configuration
 

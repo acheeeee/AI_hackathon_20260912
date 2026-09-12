@@ -1,0 +1,139 @@
+{
+  "audit_date": "2026-09-12",
+  "release_id": "r2",
+  "predecessor": "r1",
+  "assessment": "MECHANICAL_CONTRACT_FIXES_DONE_LEGAL_LABEL_VERIFICATION_NOT_RUN",
+  "note": "r2 修復 r1 稽核發現的技術契約缺口（來源路徑、chunk span 精確度、chunking_version、法規 metadata、案件家族、庫內引用解析、可重現性）。101 件決定書關鍵標籤與 11 部法規全量條號的人工逐案覆核仍未完成；本次只以 6 份文件抽查作為工具正確性的佐證，不能取代規格 §8 要求的 20 份人工核對與全庫法律覆核。",
+  "reproducibility": {
+    "method": "以相同 --input data --release 重跑兩次，比對 manifest 中每個 JSONL 的 sha256",
+    "artifact_sha256_identical_across_two_runs": true
+  },
+  "counts": {
+    "corpus_input_pdf_count": 141,
+    "excluded_non_corpus_count": 12,
+    "documents": 141,
+    "pages": 731,
+    "sections": 2320,
+    "statute_article_sections": 1871,
+    "statute_unsectioned_fallback_sections": 36,
+    "chunks": 2834,
+    "index_eligible_chunks": 2733,
+    "non_index_eligible_chunks": 101,
+    "annotations": 101,
+    "citations": 675,
+    "citations_resolved": 227,
+    "case_family_count": 101,
+    "review_queue": 11
+  },
+  "document_types": {
+    "precedent": 19,
+    "decision": 101,
+    "statute": 11,
+    "interpretation": 10
+  },
+  "fixes_vs_r1": [
+    {
+      "gap_in_r1": "141/141 documents.source_file 指向搬家前路徑",
+      "fix": "run.py 的 _category_of 改為辨識 data/raw/<分類>/... 布局；不再對每個路徑各自失效，來源路徑本來就是目前可解析的 repo 相對路徑",
+      "status": "fixed"
+    },
+    {
+      "gap_in_r1": "--input data/raw 讀到 153 個 PDF，分類全落 unknown，section/chunk 皆 0",
+      "fix": "同上分類修正；另外把非官方四類語料（訴願書予行政處分函-1，12 份）明確排除並記錄於 excluded_non_corpus.jsonl，不再無差別當語料",
+      "status": "fixed"
+    },
+    {
+      "gap_in_r1": "623/3106 個 chunk 的 quote 無法由自己的 source_spans 重建（切段時整段沿用 section 的全部 spans，卻只取一部分文字）",
+      "fix": "chunk.py 全面改寫：切點一律以 quote_text 內的字元 offset 追蹤，並對應回原行清單算出精確 sub-line spans；另修正兩個連帶發現的邊界錯誤（PyMuPDF 極少數 line 內嵌 \\n、句界切點落在換行分隔符上）。chunking_version 升級為 chunk-2.0",
+      "status": "fixed",
+      "evidence": "r2 全量 2834 個 chunk，quote/span 重建 mismatch=0（非抽查）"
+    },
+    {
+      "gap_in_r1": "3106 個 chunk 都缺 chunking_version 欄位",
+      "fix": "make_chunks 輸出直接附上 chunking_version",
+      "status": "fixed"
+    },
+    {
+      "gap_in_r1": "manifest 無設定／產物 hash",
+      "fix": "manifest 新增 config_hash（版本常數＋門檻的 canonical JSON hash）與 artifact_sha256（每個 JSONL 檔案的 sha256）",
+      "status": "fixed"
+    },
+    {
+      "gap_in_r1": "101 件決定書 case_family_id 全空，data/evaluation/ 不存在",
+      "fix": "從決定書正文抽取的案號正規化後產生 case_family_id；新增 splits 子指令，依 case_family_id、seed 42、案件類型分層產出 data/evaluation/v1/splits.json（81 dev / 20 holdout）",
+      "status": "partially_fixed",
+      "residual_gap": "splits.json 只完成家族分組與洩漏隔離基礎；依規格 §7.2 需要人工逐案確認說話者與可知性的 synthetic inputs/gold（dev/holdout 的 inputs.jsonl、gold.jsonl）本次未產生，明列於 splits.json 的 synthetic_inputs_status=not_generated"
+    },
+    {
+      "gap_in_r1": "675 個引用全部 unresolved，target_id 全空",
+      "fix": "全庫掃完後建立 (statute_name, article_key) -> section_id 索引，庫內可解析的引用填入 target_id；無法解析時依實際原因分別標記 unresolved_reason（statute_not_in_corpus：引用的法規根本不在 11 部之內；statute_unsectioned_in_this_release：法規在庫內但本 release 因下方跳頁小工具缺口無法逐條索引；article_key_unparsed；article_not_found_in_corpus_snapshot）",
+      "status": "partially_fixed",
+      "evidence": "227/675 (33.6%) 已解析；87 筆確實引用不在 11 部法規庫內的其他法規（如公寓大廈管理條例）；361 筆是引用下方『發現的新缺口』4 部法規中的條號，法規本身在庫內、但該 release 無法提供逐條 section 可對照"
+    },
+    {
+      "gap_in_r1": "2214 個法規 section 缺 law_id、paragraph_path、source_version_id 等欄位",
+      "fix": "統一補上 law_id（依法規名稱的穩定 hash）、source_version_id（=document_id）；從版頭『法規名稱：』『制定/修正日期：』標籤行抽取 promulgation_date/amendment_date（可解析才填，否則留 null）",
+      "status": "partially_fixed",
+      "residual_gap": "paragraph_path、effective_from、effective_to、is_current 仍為 null——項/款/目層級的獨立 section 切分未實作，生效狀態未經外部法規資料庫查證，均誠實留白而非臆測"
+    }
+  ],
+  "new_gap_found_during_r2_work": {
+    "id": "pagination_widget_titles",
+    "description": "訴願法、行政程序法、洗錢防制法、行政院及各級行政機關訴願審議委員會審議規則這 4 部法規 PDF 是全國法規資料庫的逐頁瀏覽格式匯出：每一頁開頭都重複一段跳頁小工具，樣式與真正條文標題完全相同（整行僅『第 N 條』），且內文完全沒有另外重複真正的標題行。r1 的檢查沒有偵測到這個問題，導致這 4 部法規在 r1 中有大量『標題行有、內容空白』或『內容被錯誤合併到別的條號』的條文（例如訴願法 101 條全部如此）。",
+    "root_cause": "PDF 匯出格式本身的限制，不是抽取程式的 bug 可以完全繞過——這 4 份 PDF 的內文從未包含可信賴的逐條標題行。",
+    "detection": "segment._filter_toc_widget_titles：偵測『第 N 條』樣式的候選標題行中，彼此緊鄰（中間完全沒有內文）的連續 2 個以上視為跳頁小工具，不當條文起點。若排除後剩下的『真標題』比例低於 50%，整份文件改用 segment._segment_statute_unreliable_titles 退場機制：改按章／節標題切段，保留全文與可回查性，但誠實標記 article_key 層級精確引用不可得。",
+    "affected_documents": [
+      "相關法規/訴願法.pdf 的副本.pdf（101 條全數無法逐條切分）",
+      "相關法規/行政程序法.pdf 的副本.pdf（175 條中僅極少數逃過跳頁小工具、其餘無法逐條切分）",
+      "相關法規/洗錢防制法.pdf 的副本.pdf（多數條文無法逐條切分）",
+      "相關法規/行政院及各級行政機關訴願審議委員會審議規則.pdf 的副本.pdf（多數條文無法逐條切分）"
+    ],
+    "impact": "這 4 部法規目前只能以章／節粒度檢索與引用，不能提供 article_key 層級的精確法條引用；內容完整保留、可搜尋，只是引用粒度較粗。r2 的 statute_article 章節數（1871）因此低於 r1 的（2611 條，含大量空/錯誤條文）。",
+    "recommended_fix": "向全國法規資料庫改用『顯示所有條文』的合併檢視模式重新匯出這 4 部法規 PDF（其餘 7 部法規的 PDF 本來就是這個格式，逐條標題行完整可靠），取代目前的逐頁瀏覽格式匯出檔，再重跑本工具即可還原逐條粒度；不需要修改程式。",
+    "not_done_this_round": "未重新取得或轉換這 4 份 PDF；本次只避免把不可信的假標題偽裝成正確的逐條結構。"
+  },
+  "manual_spot_check": {
+    "target_per_spec": 20,
+    "actually_checked": 6,
+    "note": "本次未完成規格 §8 要求的 20 份人工核對（決定書 8、法規 4、函釋 4、判解 4）；以下 6 份為本次時間內完成的定向抽查，針對已知風險點驗證程式輸出與原始 PDF 逐字相符，不能取代全量法律覆核。",
+    "documents": [
+      {
+        "file": "相關法規/廢棄物清理法.pdf 的副本.pdf",
+        "checked": "第2-1條 vs PDF 原文",
+        "result": "MATCH"
+      },
+      {
+        "file": "相關法規/民法.pdf 的副本.pdf",
+        "checked": "第214條 vs PDF 原文（附加條號密集區）",
+        "result": "MATCH"
+      },
+      {
+        "file": "相關法規/訴願法.pdf 的副本.pdf",
+        "checked": "跳頁小工具退場機制產出的章節切分是否保留全文",
+        "result": "PASS（15 個 statute_unsectioned 章節，內容非空、逐字可回查）"
+      },
+      {
+        "file": "行政函釋/內政部96年8月8日營署建管字第0960041955號函釋-公寓大廈管委會解任.pdf 的副本.pdf",
+        "checked": "第 2 頁零字頁是否正確進 review_queue（severity=high）",
+        "result": "MATCH"
+      },
+      {
+        "file": "歷史訴願決定書/114年/21.114年-違反建築法事件-77(8)&79I-部分不受理&部分駁回.pdf 的副本.pdf",
+        "checked": "複合主文（部分不受理＋部分駁回）的 outcome_parts 規則抽取 vs 主文原文",
+        "result": "PARTIAL_MATCH：正確抓到 dismissed 與 rejected_inadmissible；因『部分』一詞的關鍵詞比對，額外多標一個 partially_upheld，屬規則式粗分類的已知重疊，非錯誤結果，仍標 review_status=unreviewed"
+      },
+      {
+        "file": "司法院釋字及行政判解/釋字第546號解釋-訴願無實益.pdf 的副本.pdf",
+        "checked": "釋字文件切段（header/解釋文/解釋理由書）",
+        "result": "PASS"
+      }
+    ]
+  },
+  "still_not_done": [
+    "101 件決定書的案件類型／主文結果／款別未逐案人工覆核，僅為規則式抽取（annotations.*.fields.*.review_status=unreviewed）",
+    "11 部法規條號未逐條人工核對（4 部因跳頁小工具改用章節粒度，另 7 部的逐條切分未逐一人工比對 PDF）",
+    "評估包只完成 dev/holdout 家族分組（splits.json），未產生 §7.2 要求的 synthetic inputs／gold",
+    "未接入向量化或線上 LLM／embedding；本次全程離線，未設定或使用任何 API key",
+    "regression 案例清單（曾用於設計規則的案例）留空，因目前沒有下游規則引擎可指認"
+  ]
+}

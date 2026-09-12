@@ -1,6 +1,6 @@
 # 案件、AI 協作與修改提案 API 契約
 
-日期：2026-09-12｜v1.0 設計，端點尚未實作
+日期：2026-09-12｜v1.0 設計｜階段 A 子集已實作；run／SSE／聊天端點尚未實作，偏離見 05 §6
 
 ## 1. 共通規約
 
@@ -65,6 +65,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | POST | `C/documents` | multipart 上傳，role=`appeal/disposition/evidence`；202 回抽文工作 ID |
 | GET | `C/resources/{resource_id}?revision=...` | 取得草稿／事實等指定版本，省略 revision 取目前 heads |
 | PATCH | `C/facts` | typed field_changes、理由、來源／human_asserted 標記；保存＋202 重算 job 或 200 無需重算 |
+| POST | `C/drafts` | **階段 A 暫時入口**：建立第一版草稿供版本／合併驗收；正式流程應由抽文或 generation run 建立 |
 | PATCH | `C/drafts/{draft_id}` | 人工 block 編輯，版本與引用校驗；200 回新版本、stale 狀態 |
 | PATCH | `C/selections` | 依據 ID 清單＋KB 版本；保存新 selections revision |
 | POST | `C/annotations` | 建 TargetRef 註記；201，不直接改 case revision |
@@ -142,6 +143,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | 方法 | 路徑 | 行為 |
 |---|---|---|
 | GET | `C/proposals/{proposal_id}` | base、candidate、修改組與狀態 |
+| POST | `C/proposals` | **階段 A fixture 入口**：直接建立合成提案以驗證 merge/apply；接真 run 後限測試使用或移除 |
 | POST | `C/proposals/{proposal_id}/merge-previews` | expected current revision、選定組；回三方 diff、衝突與 preview hash |
 | POST | `C/proposals/{proposal_id}/merge-previews/{preview_id}/resolutions` | 使用者整合衝突後，建立新 immutable preview；不改舊 preview |
 | POST | `C/proposals/{proposal_id}/applications` | preview ID／hash、expected case revision；交易採用 |
