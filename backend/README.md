@@ -18,6 +18,7 @@
 - `caseapi/evidence/`：讀取不可變 r3 release，先驗 manifest／artifact hash，再對 `index_eligible=true` 的 chunk 建離線 BM25；可排除同案件家族、開啟精確來源並核對 quote。
 - `caseapi/tools/evidence_tools.py`：四個案件受限工具。每次呼叫由伺服器追加 activity；search 不落 evidence，`open_source` 在同一交易寫 program-verified evidence 與 `source.opened`。
 - `caseapi/ai/`：`ModelProvider` 邊界、固定無網路 provider、線上 AWS Bedrock AgentCore provider、四工具 allowlist gateway 與背景 run 協調器。
+- `caseapi/domain/appeal_extraction.py`：訴願書（固定格式表單）規則式抽欄位；`caseapi/services/intake_service.py` 用它把上傳的 PDF 變成案件與第一版 facts。
 - `caseapi/services/run_service.py`：凍結 run context、queued job、狀態轉移與每個 run 單調遞增的 append-only 事件。
 - `caseapi/api/routes_runs.py`：讀 run、JSON 事件分頁、Last-Event-ID SSE replay 與冪等取消。目前 SSE 回傳已保存事件後結束，不是長連線 wait stream。
 - `caseapi/api/routes_chat.py`：建對話、讀訊息、建訊息／run 並排入 fixed runner；相同冪等請求不重跑。
@@ -30,7 +31,7 @@
 .venv/bin/python -m uvicorn caseapi.main:app --host 127.0.0.1 --port 8001
 ```
 
-目前測試結果為 104 passed，`caseapi` 總覆蓋率 95%，其中 fixed runner 98%、`agentcore_provider` 100%、`EvidenceToolAdapter` 93%、`EvidenceRepository` 87%。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH`、`CASEAPI_EVIDENCE_RELEASE_DIR`、`CASEAPI_EVIDENCE_RELEASE_ID`、`CASEAPI_MODEL_PROVIDER`（`fixed`／`agentcore`）、`CASEAPI_AGENTCORE_RUNTIME_ARN`、`CASEAPI_AGENTCORE_REGION` 可改本機設定。測試依賴在 `requirements-dev.txt`。
+目前測試結果為 122 passed，`caseapi` 總覆蓋率 95%，其中 fixed runner 98%、`agentcore_provider` 100%、`EvidenceToolAdapter` 93%、`EvidenceRepository` 87%、`appeal_extraction` 94%（已對 6 份真實訴願書樣本校準）。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH`、`CASEAPI_EVIDENCE_RELEASE_DIR`、`CASEAPI_EVIDENCE_RELEASE_ID`、`CASEAPI_MODEL_PROVIDER`（`fixed`／`agentcore`）、`CASEAPI_AGENTCORE_RUNTIME_ARN`、`CASEAPI_AGENTCORE_REGION` 可改本機設定。測試依賴在 `requirements-dev.txt`。
 
 證據層的最小用法（從 `backend/` 執行）：
 

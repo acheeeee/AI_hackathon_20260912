@@ -17,7 +17,7 @@
 | 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。使用者已決定最終全面改接新後端，逐畫面推進，見 06 §5–6。 |
 | `backend/` 能刪嗎？ | 現階段不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API，也是新後端上傳建案／程序審查兩個缺口要搬用的規則式抽取邏輯來源。使用者已決定等新後端補齊對應能力、前端全部改接完成後才刪除。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
-| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化、Evidence adapter 與固定模型端到端已有實作；下一步是接 AWS Bedrock AgentCore 線上 provider，然後補上傳建案、案件列表、程序審查與草稿生成四個後端缺口讓前端能逐步改接。gold 評估排在整條 demo 流程能跑之後；向量仍須先有 BM25 評估不足的證據。 |
+| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化、Evidence adapter、固定模型端到端、線上 AWS Bedrock AgentCore provider、上傳建案與案件列表狀態都已有實作；下一步是程序審查（77 條）與草稿生成兩個後端缺口，讓前端能逐步改接。gold 評估排在整條 demo 流程能跑之後；向量仍須先有 BM25 評估不足的證據。 |
 | 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1、B2、B3（固定模型聊天端到端）與線上 AgentCore provider；未新增 embedding、長連線 SSE、登入或前端整合。 |
 
 ## 2. 目前程式架構
@@ -258,6 +258,7 @@ scripts/preprocess/README.md  前處理版本、重現限制與入口
 1. **資料與共同契約（部分完成）。** r3 已修復 raw 分類、精確 chunk spans、版本、案件家族與發布驗證；仍要補法律人工覆核、低文字頁處置及評估 inputs／gold。
 2. **最小案件狀態與 API（階段 A 完成）。** `case_id`、revision、EvidenceRef、TargetRef、Proposal、SQLite、衝突與採用鏈已有測試；真登入、規則引擎、送審與前端整合仍未完成。
 3. **可驗證檢索與 run 基底（B0/B1/B2 完成）。** r3 read／search／open、BM25、同案排除、run context、持久事件、JSON replay、取消與寫真實工具事件／`evidence_records` 的 adapter 都已完成。
-4. **固定假模型與線上模型（都已完成）。** 固定 provider 已驗證聊天、Last-Event-ID SSE replay、取消／重連與完整 run；線上 AWS Bedrock AgentCore provider 已部署並用真實請求跑過端到端流程，見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。下一步是補前端能上場的四個後端缺口（上傳建案、案件列表、程序審查、草稿生成），再建 gold 量 BM25。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
+4. **固定假模型與線上模型（都已完成）。** 固定 provider 已驗證聊天、Last-Event-ID SSE replay、取消／重連與完整 run；線上 AWS Bedrock AgentCore provider 已部署並用真實請求跑過端到端流程，見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。
+5. **上傳建案與案件列表狀態（都已完成）。** `POST /cases/intake` 對真實訴願書規則式抽欄位（對 6 份樣本逐一校準），行政處分函格式不固定，只存原件不抽欄位；案件列表的 `processing_status` 由既有 heads／audit 即時推導，不是新狀態機。下一步是補前端能上場的剩餘兩個後端缺口（程序審查、草稿生成），再建 gold 量 BM25。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
 
 每階段完成狀態應回寫 [協作設計的驗收表](../docs/協作設計/05-實作順序與驗收.md)，並以真實執行結果更新 sysdoc。未經端到端實跑的 A05、A06、A07 維持 NOT RUN；A03、A04、A08、S01、S02 已有實跑證據（見 05 §3）。

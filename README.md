@@ -2,7 +2,7 @@
 
 協助承辦人整理案件、檢索法規與歷史前例、編修決定書草稿。決定與法律覆核由人負責。
 
-**2026-09-13 現況：既有 Vue＋舊版 API 可跑離線示範；新版案件 API、r3/BM25 證據層、run／事件、Evidence 工具、固定假模型端到端流程，以及線上 AWS Bedrock AgentCore provider 都已完成並用真實請求驗證過。現有 Vue 尚未接上新後端。**
+**2026-09-13 現況：既有 Vue＋舊版 API 可跑離線示範；新版案件 API、r3/BM25 證據層、run／事件、Evidence 工具、固定假模型端到端流程、線上 AWS Bedrock AgentCore provider，以及上傳建案（訴願書規則式抽欄位＋案件列表狀態）都已完成並用真實請求或真實樣本驗證過。現有 Vue 尚未接上新後端。**
 
 - [系統文件 sysdoc](sysdoc/README.md)：目前架構、功能邊界、資料缺口、啟動方法及後續交接。
 - [本次驗證報告](sysdoc/驗證報告.md)：PASS／FAIL／NOT RUN 與實測證據。

@@ -31,6 +31,16 @@ def read_current_fields(
     return json.loads(row['content_json']).get('fields', {})
 
 
+def get_facts(conn: sqlite3.Connection, *, case_id: str, actor_id: str) -> dict[str, Any]:
+    case_row = repo.require_case(conn, case_id=case_id, actor_id=actor_id)
+    heads = repo.load_heads(case_row)
+    return {
+        'case_id': case_id,
+        'case_revision': case_row['case_revision'],
+        'fields': read_current_fields(conn, case_id=case_id, heads=heads),
+    }
+
+
 def patch_facts(
     conn: sqlite3.Connection,
     *,

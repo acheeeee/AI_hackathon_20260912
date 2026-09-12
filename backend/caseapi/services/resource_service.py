@@ -12,6 +12,7 @@ from caseapi.ids import new_id
 ORIGIN_HUMAN = 'human'
 ORIGIN_AI = 'ai'
 ORIGIN_MERGED = 'merged'
+ORIGIN_PROGRAM = 'program'  # 規則式抽取；沒有模型參與，也不是人工輸入
 
 
 def content_hash(content: dict[str, Any]) -> str:

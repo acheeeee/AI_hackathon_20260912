@@ -18,6 +18,7 @@ class CaseSummary(BaseModel):
     title: str | None
     official_case_no: str | None
     workflow_state: str
+    processing_status: str
     case_revision: int
     created_at: str
     updated_at: str

@@ -21,6 +21,7 @@ from caseapi.api.routes_chat import router as chat_router
 from caseapi.api.routes_drafts import router as drafts_router
 from caseapi.api.routes_evidence import router as evidence_router
 from caseapi.api.routes_facts import router as facts_router
+from caseapi.api.routes_intake import router as intake_router
 from caseapi.api.routes_proposals import router as proposals_router
 from caseapi.api.routes_resources import router as resources_router
 from caseapi.api.routes_runs import router as runs_router
@@ -87,6 +88,7 @@ def create_app(
 
     for router in (
         cases_router,
+        intake_router,
         facts_router,
         drafts_router,
         annotations_router,
