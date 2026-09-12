@@ -1,0 +1,4 @@
+# 只給測試用，不進執行時依賴（requirements.txt）。
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx==0.28.1
