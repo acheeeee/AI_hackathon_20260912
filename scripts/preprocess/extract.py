@@ -19,10 +19,37 @@ import fitz  # PyMuPDF
 from .common import EXTRACTION_VERSION
 
 LOW_TEXT_THRESHOLD = 20  # 非空白字元數門檻
+VISUAL_ROW_TOLERANCE = 3.0
 
 
-def extract_pages(pdf_path: str) -> list[dict]:
+def _visual_order(lines: list[dict]) -> list[dict]:
+    """依頁面座標重建人眼閱讀順序，同列先左後右。
+
+    全國法規資料庫的列印 PDF 會把條號欄、頁面標頭與正文存成不同文字
+    block；PyMuPDF 的 block 原序會先列完所有條號，再列正文。這不是網站
+    的跳頁元件，而是 PDF 文字層 block order 與視覺閱讀順序不同。
+    """
+    ordered = sorted(lines, key=lambda line: (line["bbox"][1], line["bbox"][0]))
+    rows: list[list[dict]] = []
+    row: list[dict] = []
+    anchor_y = 0.0
+    for line in ordered:
+        y0 = line["bbox"][1]
+        if row and abs(y0 - anchor_y) > VISUAL_ROW_TOLERANCE:
+            rows.append(sorted(row, key=lambda item: item["bbox"][0]))
+            row = []
+        if not row:
+            anchor_y = y0
+        row.append(line)
+    if row:
+        rows.append(sorted(row, key=lambda item: item["bbox"][0]))
+    return [line for grouped in rows for line in grouped]
+
+
+def extract_pages(pdf_path: str, reading_order: str = "source") -> list[dict]:
     """回傳每頁 dict：page, width, height, rotation, raw_text, lines[], extraction_method。"""
+    if reading_order not in {"source", "visual"}:
+        raise ValueError(f"unsupported reading_order: {reading_order}")
     doc = fitz.open(pdf_path)
     pages: list[dict] = []
     for i, page in enumerate(doc):
@@ -39,16 +66,29 @@ def extract_pages(pdf_path: str) -> list[dict]:
                 text = "".join(span["text"] for span in ln.get("spans", []))
                 if text == "":
                     continue
-                line_no += 1
                 bbox = [round(c, 2) for c in ln["bbox"]]
-                lines.append({
-                    "line": line_no,
-                    "text": text,
-                    "bbox": bbox,
-                    "char_start": 0,
-                    "char_end": len(text),  # Unicode code point 範圍
-                })
-                raw_parts.append(text)
+                # PyMuPDF 極少數情況下同一個 line 物件的文字含內嵌換行（觀察於
+                # 掃描判決 PDF 的軟斷行）；若不拆開，下游把「一行」當成「不含
+                # \n」的不變量會被打破（quote 切段與 span offset 對不上）。
+                # 依內嵌 \n 拆成多個獨立行，沿用同一 bbox（無法取得子行各自的
+                # 精確 bbox，屬已知近似，不影響字元可回查性）。
+                for sub in text.split("\n"):
+                    if sub == "":
+                        continue
+                    line_no += 1
+                    lines.append({
+                        "line": line_no,
+                        "text": sub,
+                        "bbox": bbox,
+                        "char_start": 0,
+                        "char_end": len(sub),  # Unicode code point 範圍
+                    })
+                    raw_parts.append(sub)
+        if reading_order == "visual":
+            lines = _visual_order(lines)
+            for line_no, line in enumerate(lines, start=1):
+                line["line"] = line_no
+            raw_parts = [line["text"] for line in lines]
         raw_text = "\n".join(raw_parts)
         nonspace = len("".join(raw_text.split()))
         pages.append({
@@ -58,7 +98,9 @@ def extract_pages(pdf_path: str) -> list[dict]:
             "rotation": page.rotation,
             "raw_text": raw_text,
             "lines": lines,
-            "extraction_method": "text_layer",
+            "extraction_method": (
+                "text_layer_visual_order" if reading_order == "visual" else "text_layer"
+            ),
             "nonspace_chars": nonspace,
             "low_text": nonspace < LOW_TEXT_THRESHOLD,
         })
