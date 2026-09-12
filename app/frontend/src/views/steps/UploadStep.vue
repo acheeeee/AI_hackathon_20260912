@@ -237,7 +237,8 @@ function start() {
 <style scoped>
 .grid {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  /* minmax(0, …) 讓欄寬不受內容 min-content 影響：上傳長檔名時版面不位移 */
+  grid-template-columns: minmax(0, 1fr) 360px;
   gap: 20px;
   align-items: start;
 }
@@ -246,6 +247,7 @@ function start() {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
 }
 
 .err {
@@ -254,7 +256,7 @@ function start() {
 
 .doc-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -262,6 +264,7 @@ function start() {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  min-width: 0;
 }
 
 .slot-head {
@@ -332,6 +335,9 @@ function start() {
   justify-content: center;
   gap: 8px;
   padding: 18px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .slot-drop.static {
@@ -380,6 +386,11 @@ function start() {
   align-items: center;
   gap: 14px;
   padding: 18px;
+  /* 與上傳框同寬同高，且長檔名不得撐開欄位 */
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .doc-icon {
