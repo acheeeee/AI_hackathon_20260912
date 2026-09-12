@@ -92,7 +92,7 @@ def test_fixed_draft_without_selected_statutes_returns_no_blocks() -> None:
 def test_agentcore_draft_sends_facts_statutes_and_appeal_text_as_context() -> None:
     # Arrange
     tools = _opened_tools()
-    client = FakeAgentCoreClient(answer='本件訴願為有理由，爰依法撤銷原處分。')
+    client = FakeAgentCoreClient(answer='現有資料可供比對法規要件，仍待承辦人確認。')
     provider = AgentCoreModelProvider(
         runtime_arn='arn:aws:...:runtime/demo', region='us-west-2', client=client
     )
@@ -109,7 +109,7 @@ def test_agentcore_draft_sends_facts_statutes_and_appeal_text_as_context() -> No
     reasoning = ''.join(
         block.text for block in result.draft_blocks if block.block_id.startswith('reason')
     )
-    assert '本件訴願為有理由' in reasoning
+    assert '現有資料可供比對法規要件' in reasoning
     assert result.evidence_ids == ('evid_1',)
 
 

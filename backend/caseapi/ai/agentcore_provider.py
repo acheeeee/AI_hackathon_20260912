@@ -51,7 +51,7 @@ def _default_client(region: str) -> AgentCoreClientLike:
 class AgentCoreModelProvider:
     """Delegates only answer phrasing to a deployed AgentCore Runtime agent."""
 
-    prompt_version = 'agentcore-chat-v1'
+    prompt_version = 'agentcore-chat-v2'
 
     def __init__(
         self,
@@ -81,8 +81,11 @@ class AgentCoreModelProvider:
         if not draft_composition.selected_statutes(request):
             return ModelResult(draft_composition.NO_STATUTE_ANSWER)
         opened, evidence_ids = draft_composition.open_selected_statutes(request, tools)
-        reasoning = self._invoke(
-            request.content, draft_composition.prompt_context(request, opened)
+        reasoning = draft_composition.guard_model_reasoning(
+            self._invoke(
+                draft_composition.AGENTCORE_DRAFT_PROMPT,
+                draft_composition.prompt_context(request, opened),
+            )
         )
         return ModelResult(
             draft_composition.summary_answer(opened),
