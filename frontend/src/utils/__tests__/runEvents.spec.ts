@@ -56,6 +56,20 @@ describe('formatRunEvents', () => {
     expect(lines).toEqual([{ key: '2', text: '📖 開啟原文並核對逐字：chk_law_14' }])
   })
 
+  it('reports a generated draft proposal with the real group count', () => {
+    const events = [
+      event({
+        sequence: 7,
+        event_type: 'proposal.ready',
+        payload: { proposal_id: 'prop_1', group_ids: ['draft_full_1'] },
+      }),
+    ]
+
+    const lines = formatRunEvents(events)
+
+    expect(lines).toEqual([{ key: '7', text: '🧩 產生草稿提案：1 個修改組（尚未採用）' }])
+  })
+
   it('ignores run.started/run.completed/answer.delta bookkeeping events', () => {
     const events = [
       event({ sequence: 1, event_type: 'run.started' }),
