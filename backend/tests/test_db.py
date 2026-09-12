@@ -1,10 +1,40 @@
 """A1 資料庫地基：連線設定、migration、稽核 hash chain。"""
 
+import threading
 from pathlib import Path
 
 from caseapi.audit import append_entry, read_entries
 from caseapi.db.connection import connect, transaction
 from caseapi.db.migrations import apply_migrations
+
+
+def test_connection_survives_being_closed_from_a_different_thread(tmp_path: Path) -> None:
+    """FastAPI's sync generator dependencies (like `get_db`) can dispatch a
+    request's setup and its teardown to different anyio threadpool workers
+    under a real ASGI server — TestClient does not reproduce this, so the
+    bug this guards against only showed up when the app was actually run
+    with uvicorn and hit over real HTTP. sqlite3's default
+    check_same_thread=True raises ProgrammingError in exactly this
+    situation even though the connection is never touched concurrently,
+    only sequentially from different thread ids.
+    """
+    # Arrange
+    conn = connect(tmp_path / 'cross_thread.db')
+    errors: list[BaseException] = []
+
+    def close_from_another_thread() -> None:
+        try:
+            conn.close()
+        except BaseException as exc:  # noqa: BLE001 - capture to assert in the test thread
+            errors.append(exc)
+
+    # Act
+    worker = threading.Thread(target=close_from_another_thread)
+    worker.start()
+    worker.join()
+
+    # Assert
+    assert errors == []
 
 
 def test_connection_enables_foreign_key_enforcement(tmp_path: Path) -> None:
