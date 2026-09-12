@@ -42,6 +42,20 @@ npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 
 乾淨 checkout 缺少環境／索引時，依 [sysdoc 執行說明](sysdoc/README.md#4-執行與環境) 準備；不要直接執行舊 `build_kb` 覆寫資料。
 
+## 前處理 release 環境
+
+`.venv_pre/` 是 r1／r2／r3 前處理 release 的**本機重現環境**，目前驗證的組合為 Python 3.9.6 與 PyMuPDF 1.26.5。要檢查既有 release、重建新的 release，或調整前處理程式時應保留它；它不參與一般前端／舊 API 的啟動。
+
+不要以 `backend/.venv/` 取代它：該環境使用 Python 3.12 與 PyMuPDF 1.24.9，已實測會產生不同的前處理結果。`.venv_pre/` 已由 Git 忽略，不能提交；依賴版本定義在 [scripts/preprocess/requirements.txt](scripts/preprocess/requirements.txt)。若不再需要重現或驗證 release 才可刪除，之後必須依該 requirements 重建並重新驗證，且只能輸出新的 release ID，不能覆寫 `r1`、`r2` 或 `r3`。
+
+從 repo 根目錄可用它執行既有驗證：
+
+```bash
+.venv_pre/bin/python -m tests.preprocess.test_regression
+.venv_pre/bin/python -m tests.preprocess.test_statute_layout
+.venv_pre/bin/python -m scripts.preprocess.run validate --release r3
+```
+
 ## 目前能信任到哪裡
 
 - 前端 build、type check、lint 通過；沒有前端單元測試檔。
