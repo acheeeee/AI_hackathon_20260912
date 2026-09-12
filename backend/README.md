@@ -31,7 +31,7 @@
 .venv/bin/python -m uvicorn caseapi.main:app --host 127.0.0.1 --port 8001
 ```
 
-目前測試結果為 127 passed，`caseapi` 總覆蓋率 95%，其中 fixed runner 98%、`agentcore_provider` 100%、`EvidenceToolAdapter` 93%、`EvidenceRepository` 87%、`appeal_extraction` 94%（已對 6 份真實訴願書樣本校準）。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH`、`CASEAPI_EVIDENCE_RELEASE_DIR`、`CASEAPI_EVIDENCE_RELEASE_ID`、`CASEAPI_MODEL_PROVIDER`（`fixed`／`agentcore`）、`CASEAPI_AGENTCORE_RUNTIME_ARN`、`CASEAPI_AGENTCORE_REGION` 可改本機設定。測試依賴在 `requirements-dev.txt`。**`TestClient` 綠燈不等於真的能跑**——`db/connection.py` 的 SQLite 連線曾經有個只有真的啟動 `uvicorn` 才會炸出來的跨執行緒 bug，見協作設計 06 §3 規則 12；新增前端會直接呼叫的端點，記得手動啟動一次 `uvicorn` 驗證，不能只看 `pytest`。
+目前測試結果為 130 passed，`caseapi` 總覆蓋率 95%，其中 fixed runner 98%、`agentcore_provider` 100%、`EvidenceToolAdapter` 93%、`EvidenceRepository` 87%、`appeal_extraction` 94%（已對 6 份真實訴願書樣本校準）。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH`、`CASEAPI_EVIDENCE_RELEASE_DIR`、`CASEAPI_EVIDENCE_RELEASE_ID`、`CASEAPI_MODEL_PROVIDER`（`fixed`／`agentcore`）、`CASEAPI_AGENTCORE_RUNTIME_ARN`、`CASEAPI_AGENTCORE_REGION` 可改本機設定。測試依賴在 `requirements-dev.txt`。**`TestClient` 綠燈不等於真的能跑**——`db/connection.py` 的 SQLite 連線曾經有個只有真的啟動 `uvicorn` 才會炸出來的跨執行緒 bug，見協作設計 06 §3 規則 12；新增前端會直接呼叫的端點，記得手動啟動一次 `uvicorn` 驗證，不能只看 `pytest`。
 
 證據層的最小用法（從 `backend/` 執行）：
 

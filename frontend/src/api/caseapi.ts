@@ -131,3 +131,138 @@ export async function listDocuments(caseId: string): Promise<CaseDocument[]> {
 export function documentContentUrl(caseId: string, documentId: string): string {
   return `${BASE}/cases/${encodeURIComponent(caseId)}/documents/${encodeURIComponent(documentId)}/content`
 }
+
+// ---------- 側邊欄 AI 對話 ----------
+// 後端契約見 backend/caseapi/schemas/chat.py、routes_chat.py、routes_runs.py。
+// intent 目前只有 verify（自由提問，走真的 BM25 檢索＋開原文）與
+// explain（解釋一個選取的目標，目前前端只支援 fact_field 目標）。
+
+export type ChatIntent = 'verify' | 'explain'
+export type RunState =
+  | 'queued'
+  | 'running'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'needs_input'
+
+export interface ChatMessage {
+  message_id: string
+  case_id: string
+  thread_id: string
+  role: 'user' | 'assistant'
+  content: string
+  intent: string | null
+  target: FactFieldTarget | Record<string, unknown> | null
+  run_id: string | null
+  created_at: string
+}
+
+export interface FactFieldTarget {
+  kind: 'fact_field'
+  resource_id: string
+  resource_revision: string
+  field_path: string
+}
+
+export async function createThread(caseId: string, title?: string): Promise<string> {
+  const data = await request<{ thread_id: string }>(
+    `/cases/${encodeURIComponent(caseId)}/chat-threads`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({ title: title ?? null }),
+    },
+  )
+  return data.thread_id
+}
+
+export async function listMessages(caseId: string, threadId: string): Promise<ChatMessage[]> {
+  const data = await request<{ items: ChatMessage[] }>(
+    `/cases/${encodeURIComponent(caseId)}/chat-threads/${encodeURIComponent(threadId)}/messages`,
+  )
+  return data.items
+}
+
+export interface SendMessageResult {
+  message_id: string
+  run_id: string
+  state: RunState
+  case_revision: number
+}
+
+export async function sendMessage(params: {
+  caseId: string
+  threadId: string
+  expectedCaseRevision: number
+  content: string
+  intent: ChatIntent
+  target?: FactFieldTarget
+}): Promise<SendMessageResult> {
+  return request<SendMessageResult>(
+    `/cases/${encodeURIComponent(params.caseId)}/chat-threads/${encodeURIComponent(params.threadId)}/messages`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({
+        expected_case_revision: params.expectedCaseRevision,
+        content: params.content,
+        intent: params.intent,
+        target: params.target ?? null,
+        annotation_refs: [],
+      }),
+    },
+  )
+}
+
+export interface RunDetail {
+  run_id: string
+  case_id: string
+  kind: string
+  state: RunState
+  error: { code: string; type: string } | null
+  created_at: string
+  updated_at: string
+}
+
+export async function getRun(caseId: string, runId: string): Promise<RunDetail> {
+  return request<RunDetail>(
+    `/cases/${encodeURIComponent(caseId)}/runs/${encodeURIComponent(runId)}`,
+  )
+}
+
+export interface RunEvent {
+  sequence: number
+  event_type: string
+  tool_call_id: string | null
+  timestamp: string
+  payload: Record<string, unknown>
+}
+
+export async function getRunEvents(caseId: string, runId: string): Promise<RunEvent[]> {
+  const data = await request<{ items: RunEvent[] }>(
+    `/cases/${encodeURIComponent(caseId)}/runs/${encodeURIComponent(runId)}/events`,
+  )
+  return data.items
+}
+
+export interface EvidenceDetail {
+  evidence_id: string
+  source_ref: {
+    document_id: string
+    kb_release_id: string | null
+    source_spans: Array<{ page: number; line: number; char_start: number; char_end: number }>
+  }
+  quote: string | null
+  source_exists: boolean
+  quote_matches: boolean
+  support_status: string
+  assessed_by: string
+  temporal_status: string
+}
+
+export async function getEvidence(caseId: string, evidenceId: string): Promise<EvidenceDetail> {
+  return request<EvidenceDetail>(
+    `/cases/${encodeURIComponent(caseId)}/evidence/${encodeURIComponent(evidenceId)}`,
+  )
+}

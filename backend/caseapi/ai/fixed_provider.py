@@ -1,6 +1,7 @@
 """Deterministic no-network provider used to prove orchestration contracts."""
 
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
+from caseapi.ai.selection_text import selection_text_from_context
 
 
 class FixedModelProvider:
@@ -47,8 +48,9 @@ class FixedModelProvider:
             'read_selection_context',
             {'target': request.target, 'adjacent_blocks': 1},
         )
-        target = context['writable_target']
-        selected = target.get('selected_text', '')
+        selected = selection_text_from_context(context)
+        if not selected:
+            return ModelResult('選取的內容目前沒有值，沒有東西可以解釋。')
         return ModelResult(
             f'選取內容：「{selected}」。'
             '固定模型只確認上下文讀取鏈，未作法律判斷。'

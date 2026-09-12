@@ -6,7 +6,7 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端、線上 AWS Bedrock AgentCore provider，以及上傳建案／案件列表／原檔展開都已完成；後端 127 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定與 AgentCore 兩個 provider 都經同一個 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run；已用真實 AWS 請求跑過一次完整端到端流程。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)，AgentCore 部署細節見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。前端首頁已改接新後端（`frontend/src/views/HomeView.vue`／`CaseDetailView.vue`），拿掉了舊的「選 demo」入口；舊的五步驟精靈搬到 `/legacy-demo`，仍走舊後端，逐畫面推進、尚未刪除。
+2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端、線上 AWS Bedrock AgentCore provider、上傳建案／案件列表／原檔展開，以及側邊欄 AI 對話都已完成；後端 130 項測試通過，`caseapi` 覆蓋率 95%；前端第一批單元測試 5 項通過。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定與 AgentCore 兩個 provider 都經同一個 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run；已用真實 AWS 請求跑過完整端到端流程，包含側邊欄的 verify 與 explain 兩種對話。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)，AgentCore 部署細節見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。前端首頁已改接新後端（`frontend/src/views/HomeView.vue`／`CaseDetailView.vue`／`ChatSidebar.vue`），拿掉了舊的「選 demo」入口；舊的五步驟精靈搬到 `/legacy-demo`，仍走舊後端，逐畫面推進、尚未刪除。
 
 ## 1. 判斷與工作邊界
 

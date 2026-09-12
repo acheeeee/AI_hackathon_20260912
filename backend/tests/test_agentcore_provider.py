@@ -126,6 +126,55 @@ def test_explain_sends_selected_text_as_context() -> None:
     assert sent_payload['context'] == '本案已逾期'
 
 
+def test_explain_reads_fact_field_value_when_target_is_a_fact_field() -> None:
+    # Arrange: read_selection_context's writable_target for a fact_field target has
+    # no selected_text key (only draft_block targets have one) — the actual value
+    # lives in context.field, which the provider must know to look for instead.
+    tools = FakeToolGateway(
+        {
+            'read_selection_context': {
+                'writable_target': {'kind': 'fact_field', 'field_path': 'appellant.name'},
+                'context': {'field': {'value': '絕○○○股份有限公司', 'origin': 'program'}},
+            }
+        }
+    )
+    client = FakeAgentCoreClient(answer='這是本案訴願人的名稱。')
+    provider = AgentCoreModelProvider(runtime_arn='arn:aws:...:runtime/demo', region='us-west-2', client=client)
+    target = {'kind': 'fact_field', 'resource_id': 'facts', 'field_path': 'appellant.name'}
+
+    # Act
+    result = provider.execute(
+        _request(intent='explain', target=target, content='這個欄位是什麼意思？'), tools
+    )
+
+    # Assert
+    assert result.answer == '這是本案訴願人的名稱。'
+    sent_payload = json.loads(client.invocations[0]['payload'])
+    assert '絕○○○股份有限公司' in sent_payload['context']
+
+
+def test_explain_on_an_unset_fact_field_does_not_call_agentcore() -> None:
+    # Arrange
+    tools = FakeToolGateway(
+        {
+            'read_selection_context': {
+                'writable_target': {'kind': 'fact_field', 'field_path': 'appellant.address'},
+                'context': {'field': None},
+            }
+        }
+    )
+    client = FakeAgentCoreClient(answer='should not be used')
+    provider = AgentCoreModelProvider(runtime_arn='arn:aws:...:runtime/demo', region='us-west-2', client=client)
+    target = {'kind': 'fact_field', 'resource_id': 'facts', 'field_path': 'appellant.address'}
+
+    # Act
+    result = provider.execute(_request(intent='explain', target=target), tools)
+
+    # Assert
+    assert client.invocations == []
+    assert '沒有值' in result.answer or '沒有東西' in result.answer
+
+
 def test_explain_without_target_does_not_call_agentcore() -> None:
     # Arrange
     tools = FakeToolGateway({})

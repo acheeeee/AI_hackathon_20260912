@@ -10,12 +10,14 @@ import {
   type CaseDetail,
   type FactFieldValue,
   type CaseDocument,
+  type FactFieldTarget,
 } from '@/api/caseapi'
 import {
   factFieldLabel,
   PROCESSING_STATUS_LABELS,
   PROCESSING_STATUS_TAG_TYPE,
 } from '@/utils/factLabels'
+import ChatSidebar from '@/components/ChatSidebar.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -27,6 +29,21 @@ const documents = ref<CaseDocument[]>([])
 const activeDocumentId = ref<string | null>(null)
 const loading = ref(true)
 const loadError = ref('')
+const sidebar = ref<InstanceType<typeof ChatSidebar> | null>(null)
+
+const factsRevisionId = computed(() => detail.value?.active_heads.facts?.revision_id ?? null)
+
+function askAboutField(path: string) {
+  const revisionId = factsRevisionId.value
+  if (!revisionId) return
+  const target: FactFieldTarget = {
+    kind: 'fact_field',
+    resource_id: 'facts',
+    resource_revision: revisionId,
+    field_path: path,
+  }
+  sidebar.value?.askAboutField(factFieldLabel(path), target)
+}
 
 const documentRoleLabel: Record<string, string> = {
   appeal: '訴願書',
@@ -98,6 +115,7 @@ function backToList() {
                   <el-tag size="small" class="origin-tag" effect="plain">
                     {{ field.origin === 'program' ? '規則式抽取' : field.origin }}
                   </el-tag>
+                  <button class="ask-ai" @click="askAboutField(path)">問 AI</button>
                 </td>
               </tr>
             </tbody>
@@ -127,6 +145,8 @@ function backToList() {
           <p v-else class="empty-hint">沒有上傳的原始文件。</p>
         </div>
       </div>
+
+      <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />
     </template>
   </div>
 </template>
@@ -216,6 +236,17 @@ function backToList() {
 
 .origin-tag {
   margin-left: 8px;
+}
+
+.ask-ai {
+  margin-left: 8px;
+  border: 1px solid #c7d3e8;
+  background: #f7f9fc;
+  color: #0b3d91;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 .empty-hint {

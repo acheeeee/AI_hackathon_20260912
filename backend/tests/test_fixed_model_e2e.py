@@ -343,6 +343,55 @@ def test_fixed_explain_reads_only_bounded_selection_context(settings) -> None:
         ]
 
 
+def test_fixed_explain_reads_a_fact_field_value(settings) -> None:
+    """A fact_field target's writable_target has no selected_text key (that
+    only exists on draft_block targets) — the actual value lives in
+    context.field instead, and the provider has to know to look there.
+    """
+    with _fixed_client(settings) as client:
+        case_id = create_case(client)
+        patch_response = mutate(
+            client,
+            'PATCH',
+            f'/api/v1/cases/{case_id}/facts',
+            {
+                'expected_case_revision': 1,
+                'reason': '規則式抽取自上傳訴願書',
+                'field_changes': [
+                    {
+                        'field_path': 'appellant.name',
+                        'value': '絕○○○股份有限公司',
+                        'human_asserted': False,
+                        'reason': '規則式抽取自上傳訴願書',
+                    }
+                ],
+            },
+        )
+        facts_revision = patch_response.json()['data']['resource_revision']
+        thread_id = _create_thread(client, case_id)
+
+        response = _send_message(
+            client,
+            case_id,
+            thread_id,
+            content='這個欄位是什麼意思？',
+            intent='explain',
+            expected_case_revision=2,
+            target={
+                'kind': 'fact_field',
+                'resource_id': 'facts',
+                'resource_revision': facts_revision,
+                'field_path': 'appellant.name',
+            },
+        )
+
+        run_id = response.json()['data']['run_id']
+        messages = client.get(
+            f'/api/v1/cases/{case_id}/chat-threads/{thread_id}/messages'
+        ).json()['data']['items']
+        assert '絕○○○股份有限公司' in messages[-1]['content']
+
+
 def test_sse_replays_only_events_after_last_event_id_without_rerun(settings) -> None:
     with _fixed_client(settings) as client:
         case_id = create_case(client)

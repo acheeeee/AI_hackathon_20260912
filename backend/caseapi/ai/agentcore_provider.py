@@ -24,6 +24,7 @@ from typing import Any
 from botocore.config import Config
 
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
+from caseapi.ai.selection_text import selection_text_from_context
 
 MAX_SEARCH_HITS = 3
 CONNECT_TIMEOUT_SECONDS = 5
@@ -93,7 +94,9 @@ class AgentCoreModelProvider:
         context_result = tools.call(
             'read_selection_context', {'target': request.target, 'adjacent_blocks': 1}
         )
-        selected = context_result['writable_target'].get('selected_text', '')
+        selected = selection_text_from_context(context_result)
+        if not selected:
+            return ModelResult('選取的內容目前沒有值，沒有東西可以解釋。')
         answer = self._invoke(request.content, selected)
         return ModelResult(answer)
 
