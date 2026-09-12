@@ -59,6 +59,22 @@ streamlit run app.py
 python -m src.demo_retrieval
 ```
 
+## Vue 前端（取代 app/web 的新介面）
+
+`app/frontend/` 是正在取代 `app/web`（純手寫 HTML/JS）的 Vue 3 + TypeScript + Element Plus 前端，透過 `api.py` 的 REST API 呼叫同一套 pipeline。`app/web` 暫時保留、未被移除。
+
+```bash
+# 後端（同一套 api.py，需先完成上面的 pip install -r requirements.txt）
+python3 -m uvicorn api:app --reload --port 8000
+
+# 前端（另一個終端機）
+cd frontend
+npm install
+npm run dev          # http://localhost:5173，已設定 proxy 轉發 /api 到 :8000
+```
+
+開發時前端（Vite, port 5173）與後端（port 8000）是兩個不同 origin，`api.py` 已加上 CORS middleware 允許 `localhost:5173`；正式部署若前後端分開網域，記得用 `CORS_ORIGINS` 環境變數（逗號分隔）覆寫允許來源。
+
 ## 使用的模型（實測可用）
 
 | 用途 | 模型 |

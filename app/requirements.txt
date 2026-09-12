@@ -5,7 +5,13 @@ rank-bm25==0.2.2         # BM25 關鍵字檢索
 jieba==0.42.1            # 中文斷詞（BM25 用）
 numpy==1.26.4            # 向量運算
 scikit-learn==1.5.2      # cosine similarity 等
-streamlit==1.39.0        # Demo 介面
+streamlit==1.39.0        # Demo 介面（app.py）
+
+# FastAPI 介面（api.py，供 app/frontend 的 Vue 前端呼叫）
+fastapi==0.141.1
+uvicorn==0.52.4
+python-multipart==0.0.32  # File/Form 上傳
+python-docx==1.2.0        # 決定書草稿匯出 Word（docx_export.py）
 
 # LLM 生成 + 向量 embedding：Google Gemini（一家搞定）
 #   LLM:        gemini-3.6-flash（實測可用；gemini-2.5-flash 已不對新用戶開放）

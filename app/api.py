@@ -22,6 +22,7 @@ from typing import Optional
 sys.path.insert(0, os.path.dirname(__file__))
 
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 import io
@@ -36,6 +37,18 @@ from src.providers import get_provider
 from src.models import IncomingAppeal
 
 app = FastAPI(title="新北市訴願管理 AI 輔助系統")
+
+# 前端（Vue, app/frontend）開發時跑在獨立 port（Vite 預設 5173），屬跨來源請求。
+# 正式環境若前後端分開部署，改用 CORS_ORIGINS 環境變數覆寫（逗號分隔）。
+_default_origins = "http://localhost:5173,http://127.0.0.1:5173"
+_cors_origins = os.environ.get("CORS_ORIGINS", _default_origins).split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 WEB_DIR = os.path.join(os.path.dirname(__file__), "web")
 
