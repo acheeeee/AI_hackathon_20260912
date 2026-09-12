@@ -14,15 +14,17 @@ import os
 import re
 from typing import Optional
 
-from .common import STATUTE_ALIASES, normalize_article_key
+from .common import STATUTE_ALIASES, normalize_article_key, parse_roc_date
 
-# 目錄 -> document_type
+# 目錄 -> document_type；只有這 4 類是 141 份基準語料，其餘（例如進件文件
+# 「訴願書予行政處分函-1」）一律視為非語料，見 run.py 的 CORPUS_CATEGORIES。
 CATEGORY_TYPE = {
     "歷史訴願決定書": "decision",
     "相關法規": "statute",
     "行政函釋": "interpretation",
     "司法院釋字及行政判解": "precedent",
 }
+CORPUS_CATEGORIES = set(CATEGORY_TYPE.keys())
 
 KNOWN_STATUTES = [
     "廢棄物清理法", "噪音管制法", "空氣污染防制法", "空氣汙染防制法", "建築法",
@@ -104,8 +106,12 @@ def find_line(lines: list[dict], pattern: str):
     return None
 
 
-def extract_decision_fields(lines: list[dict], document_id: str) -> dict:
-    """從正文抽案號/發文字號/日期/訴願人/原處分機關（附 source_span）。"""
+def extract_decision_fields(lines: list[dict], document_id: str,
+                            sections: list[dict] | None = None,
+                            full_text: str = "") -> dict:
+    """從正文抽案號/發文字號/日期/訴願人/原處分機關（附 source_span），
+    並附上規則式的案件類型與主文結果（outcome_parts）。這些欄位是規則抽取，
+    review_status 一律 unreviewed，不是覆核後的 gold（見規格 §5 步驟 F）。"""
     from .extract import full_line_span
     fields: dict = {}
 
@@ -140,45 +146,74 @@ def extract_decision_fields(lines: list[dict], document_id: str) -> dict:
     hit = find_line(lines, r"原處分機關[：\s]+([^\s，,、]+)")
     fields["original_authority"] = fact(hit[1].group(1), span_of(hit[2]), 0.6) if hit else fact(missing_reason="not_stated")
 
+    # 主文結果（規則式，從 decision_main_text section 取文字比對關鍵詞）
+    main_quote = ""
+    if sections:
+        main_quote = "\n".join(
+            s["quote_text"] for s in sections if s["section_type"] == "decision_main_text"
+        )
+    fields["outcome_parts"] = extract_outcome_parts(main_quote)
+
+    # 粗粒度案件類型（供分流／評估分桶參考）
+    fields["case_type"] = guess_case_type(full_text)
+
     return fields
 
 
 # ---- 日期欄位（date_raw/calendar/date_iso/date_precision）----
-_ROC_FULL = re.compile(r"民國\s*(\d+)\s*年\s*(\d+)\s*月\s*(\d+)\s*日")
-_ROC_YM = re.compile(r"民國\s*(\d+)\s*年\s*(\d+)\s*月")
-_ROC_Y = re.compile(r"民國\s*(\d+)\s*年")
+# ROC 日期解析邏輯統一在 common.parse_roc_date；此處只包裝為 fact 結構。
 
 
 def make_date_fact(raw: str, source_spans: list[dict]) -> dict:
-    calendar = "roc"
-    date_iso = None
-    precision = "unknown"
-    year = month = day = None
-    m = _ROC_FULL.search(raw)
-    if m:
-        year, month, day = int(m.group(1)), int(m.group(2)), int(m.group(3))
-        precision = "day"
-        date_iso = f"{year + 1911:04d}-{month:02d}-{day:02d}"
-    elif _ROC_YM.search(raw):
-        m = _ROC_YM.search(raw)
-        year, month = int(m.group(1)), int(m.group(2))
-        precision = "month"  # 只知年月不補日
-    elif _ROC_Y.search(raw):
-        year = int(_ROC_Y.search(raw).group(1))
-        precision = "year"  # 只知年度不補月日
+    parsed = parse_roc_date(raw)
     return {
-        "value": {
-            "date_raw": raw,
-            "calendar": calendar,
-            "date_iso": date_iso,
-            "date_precision": precision,
-            "roc_year": year,
-        },
+        "value": parsed,
         "source_spans": source_spans,
-        "confidence": 0.8 if precision == "day" else 0.5,
+        "confidence": 0.8 if parsed["date_precision"] == "day" else 0.5,
         "extraction_method": "rule",
         "review_status": "unreviewed",
     }
+
+
+# ---- 決定書主文結果與案件類型（規則式，尚未逐案人工覆核）----
+# 依《資料前處理與切分交接規格》§5 步驟 F：101 件關鍵標籤仍須從正文核對；
+# 這裡先建立可用的規則抽取，review_status 一律 unreviewed，不得當 gold。
+_OUTCOME_PATTERNS = [
+    ("dismissed", re.compile(r"訴願駁回")),
+    ("rejected_inadmissible", re.compile(r"訴願不受理")),
+    ("original_disposition_revoked", re.compile(r"原處分.{0,6}撤銷")),
+    ("original_disposition_modified", re.compile(r"原處分.{0,6}變更")),
+    ("remanded", re.compile(r"發回|另為適法之處分")),
+    ("partially_upheld", re.compile(r"部分.{0,4}(?:駁回|撤銷|不受理)")),
+]
+
+
+def extract_outcome_parts(main_text_quote: str) -> dict:
+    """從主文段文字比對結果關鍵詞；可能多款併存，回傳陣列。找不到任何關鍵詞
+    時 value 為 []，missing_reason 說明原因（非等於「駁回以外」）。"""
+    if not main_text_quote or not main_text_quote.strip():
+        return fact(missing_reason="no_explicit_section")
+    hits = [key for key, rx in _OUTCOME_PATTERNS if rx.search(main_text_quote)]
+    if not hits:
+        return fact(missing_reason="ambiguous")
+    return fact(hits, confidence=0.5, method="rule")
+
+
+_CASE_TYPE_HINTS = [
+    ("環境保護", re.compile(r"廢棄物清理法|空氣污染防制法|空氣汙染防制法|噪音管制法")),
+    ("金融監理", re.compile(r"洗錢防制法|金融監督管理委員會")),
+    ("建築管理", re.compile(r"建築法|違章建築|建築物")),
+    ("交通裁罰", re.compile(r"道路交通管理處罰條例")),
+]
+
+
+def guess_case_type(full_text: str) -> dict:
+    """從全文比對粗粒度案件類型（供分流／評估分桶參考，非法律定性）。
+    多類別可能同時命中，僅取第一個命中者；未命中則缺值待確認。"""
+    for label, rx in _CASE_TYPE_HINTS:
+        if rx.search(full_text):
+            return fact(label, confidence=0.4, method="rule")
+    return fact(missing_reason="ambiguous")
 
 
 # ---- 引用抽取 ----
@@ -223,3 +258,96 @@ def guess_related_statutes(text: str) -> list[str]:
             if norm not in found:
                 found.append(norm)
     return found
+
+
+# ---- 引用解析（庫內對照）----
+
+def build_statute_article_index(sections: list[dict]) -> dict:
+    """由本 release 的 statute_article sections 建立 (statute_name, article_key)
+    -> section_id 索引，供 resolve_citations 對照。同名同條號若重複（不同法規
+    版本文件重疊，本次未發生）優先保留先出現、且 article_status 非 deleted 者。"""
+    index: dict[tuple[str, str], str] = {}
+    for s in sections:
+        if s["section_type"] != "statute_article":
+            continue
+        meta = s["metadata"]
+        name = meta.get("statute_name")
+        name_norm = STATUTE_ALIASES.get(name, name) if name else None
+        key = (name_norm, meta.get("article_key"))
+        if key[0] is None or key[1] is None:
+            continue
+        if key not in index or meta.get("article_status") == "deleted":
+            # 非刪除條文優先；若目前已是非刪除版本則不覆蓋
+            existing = index.get(key)
+            if existing is None:
+                index[key] = s["section_id"]
+            elif meta.get("article_status") != "deleted":
+                index[key] = s["section_id"]
+    return index
+
+
+def resolve_citations(citations: list[dict], statute_index: dict,
+                      corpus_statute_names: set,
+                      unsectioned_statute_names: set | None = None) -> list[dict]:
+    """依庫內法規條文索引解析引用 target_id。找不到時保留 unresolved 並附
+    unresolved_reason，不編造目標（依規格 §5 步驟 F：庫內沒有時填 unresolved）。
+
+    `unsectioned_statute_names` 是本 release 內存在但因跳頁小工具改採章節
+    退場機制、完全沒有 statute_article 可對照的法規名稱（見
+    segment._segment_statute_unreliable_titles）。這些法規『在庫內』，只是
+    這個 release 沒有逐條索引，不該和『根本不在 11 部法規庫內』的
+    statute_not_in_corpus 混為一談，否則會誤導成庫外來源。"""
+    unsectioned_statute_names = unsectioned_statute_names or set()
+    out = []
+    for c in citations:
+        c = dict(c)
+        if c["statute_name"] not in corpus_statute_names:
+            c["resolved"] = "unresolved"
+            c["unresolved_reason"] = "statute_not_in_corpus"
+        elif c["statute_name"] in unsectioned_statute_names:
+            c["resolved"] = "unresolved"
+            c["unresolved_reason"] = "statute_unsectioned_in_this_release"
+        elif c["article_key"] is None:
+            c["resolved"] = "unresolved"
+            c["unresolved_reason"] = "article_key_unparsed"
+        else:
+            target = statute_index.get((c["statute_name"], c["article_key"]))
+            if target:
+                c["target_id"] = target
+                c["resolved"] = "resolved"
+            else:
+                c["resolved"] = "unresolved"
+                c["unresolved_reason"] = "article_not_found_in_corpus_snapshot"
+        out.append(c)
+    return out
+
+
+# ---- 法規版面日期（法規名稱／修正日期標籤行）----
+_LAW_NAME_LINE = re.compile(r"^法規名稱[：:]\s*(.+)$")
+_LAW_DATE_LINE = re.compile(r"^(制定日期|修正日期)[：:]\s*(.+)$")
+
+
+def find_law_header(lines: list[dict]) -> dict:
+    """在條文標題出現前的版頭找『法規名稱：』與『制定/修正日期：』標籤行。
+    回傳 {name_idx, name, date_label_idx, date_label, date_raw}；找不到的鍵為 None。
+    供 segment.segment_statute 取得 law 名稱與公布／修正日期；假條號標題的
+    排除改用結構特徵（見 segment._filter_toc_widget_titles），不依賴此處
+    的版頭位置。"""
+    out = {"name_idx": None, "name": None, "date_label_idx": None,
+           "date_label": None, "date_raw": None}
+    for i, ln in enumerate(lines):
+        text = ln["text"].strip()
+        if out["name_idx"] is None:
+            m = _LAW_NAME_LINE.match(text)
+            if m:
+                name = re.sub(r"\s*EN\s*$", "", m.group(1).strip())
+                out["name_idx"] = i
+                out["name"] = name
+                continue
+        if out["date_label_idx"] is None:
+            m = _LAW_DATE_LINE.match(text)
+            if m:
+                out["date_label_idx"] = i
+                out["date_label"] = m.group(1)
+                out["date_raw"] = m.group(2).strip()
+    return out

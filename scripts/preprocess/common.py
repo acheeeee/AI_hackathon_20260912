@@ -12,10 +12,18 @@ from typing import Optional
 
 # ---- 版本常數（切點/清理規則變動時必須更新）----
 SCHEMA_VERSION = "1.0"
-EXTRACTION_VERSION = "ext-1.0"
+# ext-2.0：保留 ext-1.1 的內嵌換行修復，並對法規列印 PDF 依 bbox 重建視覺
+# 閱讀順序，避免 PyMuPDF block 原序先列出整頁條號、再列正文。
+EXTRACTION_VERSION = "ext-2.0"
 SEGMENTATION_VERSION = "seg-1.0"
-CHUNKING_VERSION = "chunk-1.0"
+# chunk-2.0：改用逐字元 offset 對應原行，取代整段沿用 section 全部 spans；
+# 修正 r1 623/3,106 個 chunk quote 與 spans 重建不同的缺口。
+CHUNKING_VERSION = "chunk-2.0"
 ALIAS_TABLE_VERSION = "alias-1.0"
+# 案件家族分組規則版本（依 case_no 正規化分組；規則變動須更新）
+CASE_FAMILY_VERSION = "casefam-1.0"
+# 評估切分演算法版本（依《資料前處理與切分交接規格》§7.1）
+EVAL_SPLIT_VERSION = "evalsplit-1.0"
 
 # ---- 枚舉 ----
 DOCUMENT_TYPES = {"decision", "statute", "interpretation", "precedent"}
@@ -63,6 +71,27 @@ def make_section_id(document_id: str, ordinal: int) -> str:
 def make_chunk_id(section_id: str, source_spans_key: str, quote_text: str) -> str:
     raw = f"{section_id}|{CHUNKING_VERSION}|{source_spans_key}|{sha256_text(quote_text)}"
     return "chk_" + short_hash(raw, 16)
+
+
+def make_law_id(statute_name: str) -> str:
+    """法規穩定 ID：以法規名稱（非版本文件）產生，跨版本文件共用同一 law_id。"""
+    return "law_" + short_hash(f"law|{statute_name}", 16)
+
+
+def make_case_family_id(normalized_case_no: str) -> str:
+    """依正規化案號分組的評估／去重家族 ID（§6.1 case_family_id）。"""
+    raw = f"{CASE_FAMILY_VERSION}|{normalized_case_no}"
+    return "fam_" + short_hash(raw, 16)
+
+
+def normalize_case_no(raw: Optional[str]) -> Optional[str]:
+    """案號正規化：去除全形/半形空白與常見標點差異，供家族分組比對。"""
+    if not raw:
+        return None
+    s = raw.strip().replace("　", "")
+    s = re.sub(r"\s+", "", s)
+    s = s.rstrip("號")
+    return s or None
 
 
 def spans_key(source_spans: list[dict]) -> str:
@@ -132,6 +161,39 @@ _CN_DIGITS = {"零": 0, "一": 1, "二": 2, "三": 3, "四": 4, "五": 5,
 
 
 _CN_UNITS = {"十": 10, "百": 100, "千": 1000}
+
+
+_ROC_FULL = re.compile(r"民國\s*(\d+)\s*年\s*(\d+)\s*月\s*(\d+)\s*日")
+_ROC_YM = re.compile(r"民國\s*(\d+)\s*年\s*(\d+)\s*月")
+_ROC_Y = re.compile(r"民國\s*(\d+)\s*年")
+
+
+def parse_roc_date(raw: str) -> dict:
+    """解析含『民國 N 年 M 月 D 日』的原始字串，回傳 date_raw/calendar/date_iso/
+    date_precision/roc_year。只知年度或年月時 date_iso 為 None，不補日期。"""
+    calendar = "roc"
+    date_iso = None
+    precision = "unknown"
+    year = month = day = None
+    m = _ROC_FULL.search(raw)
+    if m:
+        year, month, day = int(m.group(1)), int(m.group(2)), int(m.group(3))
+        precision = "day"
+        date_iso = f"{year + 1911:04d}-{month:02d}-{day:02d}"
+    elif _ROC_YM.search(raw):
+        m = _ROC_YM.search(raw)
+        year, month = int(m.group(1)), int(m.group(2))
+        precision = "month"  # 只知年月不補日
+    elif _ROC_Y.search(raw):
+        year = int(_ROC_Y.search(raw).group(1))
+        precision = "year"  # 只知年度不補月日
+    return {
+        "date_raw": raw,
+        "calendar": calendar,
+        "date_iso": date_iso,
+        "date_precision": precision,
+        "roc_year": year,
+    }
 
 
 def cn_to_int(s: str) -> Optional[int]:
