@@ -12,7 +12,7 @@
 annotations,citations,duplicates,review_queue}.jsonl + manifest.json + qa_report.{json,md}
 
 守則：
-- 原 PDF 不改；不覆寫 app/data/kb/。
+- 原 PDF 不改；不覆寫 backend/data/kb/。
 - 禁止零輸入成功：輸入不存在 / 基準少檔 / 全類別零筆 -> 非零退出。
 - 先寫 staging，validate 通過才標 validated。
 """

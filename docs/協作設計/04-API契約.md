@@ -4,7 +4,7 @@
 
 ## 1. 共通規約
 
-新 API 基底為 `/api/v1`。下表相對路徑以 `C = /api/v1/cases/{case_id}` 表示；實作不能把字母 C 當實際 URL。舊 `app/api.py` 的 `/api/analyze`／`/api/draft` 不是新契約，前端切換時一併更換 client。
+新 API 基底為 `/api/v1`。下表相對路徑以 `C = /api/v1/cases/{case_id}` 表示；實作不能把字母 C 當實際 URL。舊 `backend/api.py` 的 `/api/analyze`／`/api/draft` 不是新契約，前端切換時一併更換 client。
 
 JSON 欄位 `snake_case`；時間使用 UTC RFC 3339，日曆日期使用西元 `YYYY-MM-DD`，前端可轉民國年。未知值為 `null`，不以空字串／0 代替。ID 為 opaque 字串，`case_revision` 為整數。
 

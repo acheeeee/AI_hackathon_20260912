@@ -1,4 +1,4 @@
-// 對應 app/src/models.py 與 app/api.py 回傳的 JSON 結構。
+// 對應 backend/src/models.py 與 backend/api.py 回傳的 JSON 結構。
 // api.py 目前沒有用到 models.py 的 DraftDecision（那個型別定義了但沒被 draft.py 使用），
 // 草稿實際回傳的是 draft.py 的 build_draft() 直接組出的 dict，型別以那份為準。
 

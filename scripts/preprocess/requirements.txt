@@ -1,0 +1,3 @@
+# r1 重現環境的既有版本；與 backend/requirements.txt 分開，勿混用。
+# 2026-09-12 已在既有 Python 3.9.6 環境重現；其他 Python 版本尚未驗證。
+PyMuPDF==1.26.5

@@ -1,0 +1,137 @@
+{
+  "runs": [
+    {
+      "layout": "current-layout",
+      "release": "current",
+      "exit_code": 1,
+      "manifest": {
+        "release_id": "current",
+        "schema_version": "1.0",
+        "extraction_version": "ext-1.0",
+        "segmentation_version": "seg-1.0",
+        "chunking_version": "chunk-1.0",
+        "alias_table_version": "alias-1.0",
+        "input_pdf_count": 153,
+        "unique_document_count": 153,
+        "duplicate_count": 0,
+        "page_count": 755,
+        "section_count": 0,
+        "chunk_count": 0,
+        "citation_count": 686,
+        "review_queue_count": 27244,
+        "publish_status": "partial"
+      }
+    },
+    {
+      "layout": "original-layout",
+      "release": "replay-a",
+      "exit_code": 0,
+      "manifest": {
+        "release_id": "replay-a",
+        "schema_version": "1.0",
+        "extraction_version": "ext-1.0",
+        "segmentation_version": "seg-1.0",
+        "chunking_version": "chunk-1.0",
+        "alias_table_version": "alias-1.0",
+        "input_pdf_count": 141,
+        "unique_document_count": 141,
+        "duplicate_count": 0,
+        "page_count": 731,
+        "section_count": 2623,
+        "chunk_count": 3108,
+        "citation_count": 675,
+        "review_queue_count": 7,
+        "publish_status": "validated"
+      }
+    },
+    {
+      "layout": "original-layout",
+      "release": "replay-b",
+      "exit_code": 0,
+      "manifest": {
+        "release_id": "replay-b",
+        "schema_version": "1.0",
+        "extraction_version": "ext-1.0",
+        "segmentation_version": "seg-1.0",
+        "chunking_version": "chunk-1.0",
+        "alias_table_version": "alias-1.0",
+        "input_pdf_count": 141,
+        "unique_document_count": 141,
+        "duplicate_count": 0,
+        "page_count": 731,
+        "section_count": 2623,
+        "chunk_count": 3108,
+        "citation_count": 675,
+        "review_queue_count": 7,
+        "publish_status": "validated"
+      }
+    }
+  ],
+  "core_comparison": [
+    {
+      "file": "citations.jsonl",
+      "r1_sha256": "90102788681d4217296f665fdc8dcb93b8bbd9e6b00aaf397414e7aecd30a0c9",
+      "replay_a_sha256": "918f3e60ea5f23a95430edc369abb7959eece3f040d86054549354027a9fec53",
+      "replay_b_sha256": "918f3e60ea5f23a95430edc369abb7959eece3f040d86054549354027a9fec53",
+      "replays_identical": true,
+      "matches_r1": false
+    },
+    {
+      "file": "annotations.jsonl",
+      "r1_sha256": "52a882cddcd8f4af92c7f59573e0ff252235d2074036db66a9cda10d902a41dd",
+      "replay_a_sha256": "52a882cddcd8f4af92c7f59573e0ff252235d2074036db66a9cda10d902a41dd",
+      "replay_b_sha256": "52a882cddcd8f4af92c7f59573e0ff252235d2074036db66a9cda10d902a41dd",
+      "replays_identical": true,
+      "matches_r1": true
+    },
+    {
+      "file": "review_queue.jsonl",
+      "r1_sha256": "ec9ab55d737873c8a0d2f040c514ec32ac833ec44805d5ff7c1ddc464ddacfce",
+      "replay_a_sha256": "ec9ab55d737873c8a0d2f040c514ec32ac833ec44805d5ff7c1ddc464ddacfce",
+      "replay_b_sha256": "ec9ab55d737873c8a0d2f040c514ec32ac833ec44805d5ff7c1ddc464ddacfce",
+      "replays_identical": true,
+      "matches_r1": true
+    },
+    {
+      "file": "chunks.jsonl",
+      "r1_sha256": "f4efeab02e638cbfd9c969c09d8d038a41bf5dab150a7ff0e0354906cf602460",
+      "replay_a_sha256": "8adc2e1037e4a29418d63b867b133178e5c44c801d2b44bd5e360acf71285f83",
+      "replay_b_sha256": "8adc2e1037e4a29418d63b867b133178e5c44c801d2b44bd5e360acf71285f83",
+      "replays_identical": true,
+      "matches_r1": false
+    },
+    {
+      "file": "pages.jsonl",
+      "r1_sha256": "583389f77be6295724ce1c79da34c99c12203e822be009f680625b49bcecb6b5",
+      "replay_a_sha256": "853dd0899eeba65f2659923bd7c525442fcf89a5a9c7b89dbb1bc5a62cbcf768",
+      "replay_b_sha256": "853dd0899eeba65f2659923bd7c525442fcf89a5a9c7b89dbb1bc5a62cbcf768",
+      "replays_identical": true,
+      "matches_r1": false
+    },
+    {
+      "file": "duplicates.jsonl",
+      "r1_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replay_a_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replay_b_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "replays_identical": true,
+      "matches_r1": true
+    },
+    {
+      "file": "sections.jsonl",
+      "r1_sha256": "c056ac079c54fe032e60fb562fdfa18cdd1ee572ebb387e157be54701e5fcf09",
+      "replay_a_sha256": "5f77b6feb037826bf69790196308dfad21f72350458543bde47767373d60082e",
+      "replay_b_sha256": "5f77b6feb037826bf69790196308dfad21f72350458543bde47767373d60082e",
+      "replays_identical": true,
+      "matches_r1": false
+    },
+    {
+      "file": "documents.jsonl",
+      "r1_sha256": "8f48d0db83578805d833066e225ad0b07676e143b83247bf0851785058bae476",
+      "replay_a_sha256": "8f48d0db83578805d833066e225ad0b07676e143b83247bf0851785058bae476",
+      "replay_b_sha256": "8f48d0db83578805d833066e225ad0b07676e143b83247bf0851785058bae476",
+      "replays_identical": true,
+      "matches_r1": true
+    }
+  ],
+  "limits": "Original layout is reconstructed only in /tmp using SHA-256 matched symlinks. The actual repo and r1 are unchanged."
+}

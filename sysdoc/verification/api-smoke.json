@@ -1,0 +1,82 @@
+{
+  "date": "2026-09-12",
+  "base_url": "http://127.0.0.1:18000",
+  "scope": "existing API transport and template behavior; no legal accuracy or live LLM claim",
+  "checks": [
+    {
+      "check": "health with cloud disabled",
+      "result": "PASS",
+      "detail": 200
+    },
+    {
+      "check": "manual analysis",
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "statutes": 6,
+        "refs": 3,
+        "similar": 5
+      }
+    },
+    {
+      "check": "decision full text",
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "bytes": 7268
+      }
+    },
+    {
+      "check": "reference full text",
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "bytes": 23982
+      }
+    },
+    {
+      "check": "template draft",
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "mode": "template",
+        "keys": [
+          "fact",
+          "reason",
+          "main",
+          "mode"
+        ]
+      }
+    },
+    {
+      "check": "edited DOCX XML readback",
+      "result": "PASS",
+      "detail": {
+        "status": 200,
+        "zip_valid": true,
+        "all_edited_fields_present": true
+      }
+    },
+    {
+      "check": "text analysis",
+      "result": "PASS",
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "check": "two PDF upload analysis",
+      "result": "PASS",
+      "detail": {
+        "status": 200
+      }
+    },
+    {
+      "check": "missing PDF rejected",
+      "result": "PASS",
+      "detail": {
+        "status": 400
+      }
+    }
+  ]
+}

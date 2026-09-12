@@ -1,0 +1,6 @@
+{
+  "root_status": 307,
+  "location": "/docs",
+  "docs_status": 200,
+  "vue_proxy_health_status": 200
+}

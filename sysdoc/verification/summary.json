@@ -1,0 +1,41 @@
+{
+  "audit_date": "2026-09-12",
+  "frontend": {
+    "node": "26.5.0",
+    "npm": "11.17.0",
+    "build_exit": 0,
+    "oxlint_exit": 0,
+    "eslint_exit": 0,
+    "vitest_exit": 1,
+    "vitest_tests_executed": 0
+  },
+  "backend": {
+    "python": "3.12.14",
+    "pymupdf": "1.24.9",
+    "cloud_calls": "NOT RUN",
+    "api_checks_passed": 9
+  },
+  "preprocess": {
+    "reproduction_python": "3.9.6",
+    "pymupdf": "1.26.5",
+    "custom_regression_checks_passed": 19,
+    "repeated_reproduction_core_files": 8
+  },
+  "cleanup": {
+    "tracked_environment_files_untracked": 687,
+    "environment_preserved": true,
+    "retired_ui_files_removed": 4,
+    "new_feature_development": false,
+    "committed": false,
+    "deployed": false,
+    "audit_api_and_vite_stopped": true,
+    "audit_browser_closed": true
+  },
+  "verification_limits": [
+    "No frontend test files",
+    "Browser screenshot unavailable: CDP timeout",
+    "Browser download location unconfirmed; DOCX content independently checked via API",
+    "No fresh dependency installation",
+    "No legal accuracy or production validation"
+  ]
+}

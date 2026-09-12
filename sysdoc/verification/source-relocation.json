@@ -1,0 +1,2040 @@
+{
+  "r1_documents": [
+    {
+      "document_id": "doc_2c228be6cb7a3a65",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院102年度判字第147號行政判決-政府資訊公開法精神.pdf 的副本.pdf",
+      "source_sha256": "2c228be6cb7a3a650abb4d84061a0e3f9afe5d49429b637069f8ad00a394b7f8",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院102年度判字第147號行政判決-政府資訊公開法精神.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_d9bcc0640844866f",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院102年度裁字第266號行政裁定-公法上權利.pdf 的副本.pdf",
+      "source_sha256": "d9bcc0640844866fa9910f56ba8647d2bca3677da0216d26c0b359d7da4799af",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院102年度裁字第266號行政裁定-公法上權利.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b3d4b13fbc55b3c4",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院106年度判字第151號行政判決-行政罰法第5條從新從輕.pdf 的副本.pdf",
+      "source_sha256": "b3d4b13fbc55b3c43901ba300c24cc82b794a7ca9dc0238cad127215c8912809",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院106年度判字第151號行政判決-行政罰法第5條從新從輕.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_10abac54bb6ddf4a",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院106年度判字第557號行政判決-資訊分離原則.pdf 的副本.pdf",
+      "source_sha256": "10abac54bb6ddf4a9ef16a6e532ff5c38fe8cddc1c749439d565a7861913f1b3",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院106年度判字第557號行政判決-資訊分離原則.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f1f2bf4ad67e5112",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院108年度上字第930號行政判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "source_sha256": "f1f2bf4ad67e511292781abb97e0258cd01cdb198815a66e418c2a400532b24b",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院108年度上字第930號行政判決-政府資訊公開法18條2項.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_99498a9068593abc",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院108年度判字第531號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "source_sha256": "99498a9068593abc6224225fb19c4a70655879eabd0ae8d393388d40c2c6f0ec",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院108年度判字第531號行政判決-行政罰法7條1項.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_0e489a019fc45024",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院109年度上字第780號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "source_sha256": "0e489a019fc450245554fe34c66cf68f3f3870d8e4768be1af1555c6de4ce470",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院109年度上字第780號行政判決-行政罰法7條1項.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f6bb241c0a19a084",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院109年度判字第158號行政判決-政府資訊公開法18條1項3款.pdf 的副本.pdf",
+      "source_sha256": "f6bb241c0a19a084312007332f63bfda6c37880267798561c296ed708a4740a7",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院109年度判字第158號行政判決-政府資訊公開法18條1項3款.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_cd0a1db79b99bd12",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院109度上字第817號判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "source_sha256": "cd0a1db79b99bd12bd5c7991bc79979376bc29249899b4d310b967cba8a23386",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院109度上字第817號判決-政府資訊公開法18條2項.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_1a8e1ce8c63f0881",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院92年度判字第275號判決-行政程序法第6條.pdf 的副本.pdf",
+      "source_sha256": "1a8e1ce8c63f08810a32ab698d16ec1abb31825e103412bef1d1e6fc5ffea55f",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院92年度判字第275號判決-行政程序法第6條.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_ce3e7a7ea220f906",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院93年度判字第1624號行政判決-行政程序法114條1項&2項.pdf 的副本.pdf",
+      "source_sha256": "ce3e7a7ea220f9068618e9c5510a3dbac5db15a965dca8876c1a8a110357f9ee",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院93年度判字第1624號行政判決-行政程序法114條1項&2項.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_7502d1e73e9968f0",
+      "source_file": "data/司法院釋字及行政判解/最高行政法院94年度判字第1497號行政判決-權利保護必要定義.pdf 的副本.pdf",
+      "source_sha256": "7502d1e73e9968f0b617789983cadcb7752360b788cbf3a35db0266b19d29845",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/最高行政法院94年度判字第1497號行政判決-權利保護必要定義.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_6f043523158657c8",
+      "source_file": "data/司法院釋字及行政判解/臺北高等行政法院105年度訴字第1301號行政判決-利害關係人.pdf 的副本.pdf",
+      "source_sha256": "6f043523158657c8e6edd8a13665cad26c15399bba038652eee4e652b2268f05",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/臺北高等行政法院105年度訴字第1301號行政判決-利害關係人.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_489d8cdc5a949eb3",
+      "source_file": "data/司法院釋字及行政判解/臺北高等行政法院114年度簡上字第13號判決-洗錢防制法第22條.pdf 的副本.pdf",
+      "source_sha256": "489d8cdc5a949eb355d32232d702553ce8a1a56dc3c05ab44b243de8b6d76c96",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/臺北高等行政法院114年度簡上字第13號判決-洗錢防制法第22條.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9d8d5ae8599efcbc",
+      "source_file": "data/司法院釋字及行政判解/臺北高等行政法院98年度訴字第2374號行政判決-非處分相對人.pdf 的副本.pdf",
+      "source_sha256": "9d8d5ae8599efcbc992800a34695dfd6faa4b621cb33a58482d1c8b1f827fc05",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/臺北高等行政法院98年度訴字第2374號行政判決-非處分相對人.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f16fcf1f137b6918",
+      "source_file": "data/司法院釋字及行政判解/臺灣新北地方法院106年度簡字第119號行政判決-廢棄物清理法9條1項後段.pdf 的副本.pdf",
+      "source_sha256": "f16fcf1f137b6918b66f6483ba4defdff685ded499551e9346910b3fb356d35e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/臺灣新北地方法院106年度簡字第119號行政判決-廢棄物清理法9條1項後段.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_092ce5c57485d94f",
+      "source_file": "data/司法院釋字及行政判解/釋字第469號解釋-公法上請求權.pdf 的副本.pdf",
+      "source_sha256": "092ce5c57485d94ff75c5d76da1d8788b6b3f01d21a834b1d56af2e9281f8d11",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/釋字第469號解釋-公法上請求權.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a0e4c6807cf5ab42",
+      "source_file": "data/司法院釋字及行政判解/釋字第546號解釋-訴願無實益.pdf 的副本.pdf",
+      "source_sha256": "a0e4c6807cf5ab42d13414c07d15e9aa4140486a647e53071eeeca77b404d5aa",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/釋字第546號解釋-訴願無實益.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8d5b0adfeb9d17f9",
+      "source_file": "data/司法院釋字及行政判解/高雄高等行政法院109年度訴字第186號行政判決-欠缺權利保護必要.pdf 的副本.pdf",
+      "source_sha256": "8d5b0adfeb9d17f9f5b82b885bdd0c632c2a6921c9ec9838649e80278f498733",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/司法院釋字及行政判解/高雄高等行政法院109年度訴字第186號行政判決-欠缺權利保護必要.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_cee2a18511c1a79c",
+      "source_file": "data/歷史訴願決定書/110年/01.110年-社會救助事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "cee2a18511c1a79ccb9700f3a5b07e70e94056e4ca0c48fcf2de6809a99a88b0",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/01.110年-社會救助事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a5b886b25ce8c7a7",
+      "source_file": "data/歷史訴願決定書/110年/02.110年-違反噪音管制法事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "a5b886b25ce8c7a7f845302eb53b03ea6bb0b6cc5194f732ca2eb84ed8714ed5",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/02.110年-違反噪音管制法事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_ff583139acc6c4e4",
+      "source_file": "data/歷史訴願決定書/110年/03.110年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "ff583139acc6c4e431c521e68a3844817be33213a838cc5f3ad8b83b16c30dbb",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/03.110年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_750ac7b3150ff84f",
+      "source_file": "data/歷史訴願決定書/110年/04.110年-違反毒品危害防制條例事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "750ac7b3150ff84fd40f7f3ce480063840894d903078e3b33b5806e8d4511dbe",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/04.110年-違反毒品危害防制條例事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_1677da0d843c4337",
+      "source_file": "data/歷史訴願決定書/110年/05.110年-都市更新事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "1677da0d843c43371c16265b7e6a40a8d591ba4124393bdfeae984b039881cbb",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/05.110年-都市更新事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_bc5ffa3fbc59631a",
+      "source_file": "data/歷史訴願決定書/110年/06.110年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "bc5ffa3fbc59631a7890aa997317c12fa987d28c8a44f259a4bf6db43d8758b2",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/06.110年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9f5434f39d28d208",
+      "source_file": "data/歷史訴願決定書/110年/07.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "9f5434f39d28d20831d578c6f4a9ef43aac0114e7f54fb3d225fa1bcd6b5c0b8",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/07.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_0600e5882ba0e838",
+      "source_file": "data/歷史訴願決定書/110年/08.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "0600e5882ba0e8381c0d0654d3914b743fdb6ecd70416e4ebbe9d4c36c13ad9e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/08.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8b1419768b56ce06",
+      "source_file": "data/歷史訴願決定書/110年/09.110年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "8b1419768b56ce06339188b8e1a4990cd8a7ba171efd191fb14a6dc7892f6de5",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/09.110年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_933415b8887d015e",
+      "source_file": "data/歷史訴願決定書/110年/10.110年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "933415b8887d015eb247ba1aa090b66bd6814526eef3d50376244ff1e4721bb8",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/10.110年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_3ae9ccffa1f22fa0",
+      "source_file": "data/歷史訴願決定書/110年/11.110年-申請閱覽卷宗事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "3ae9ccffa1f22fa0a4ba09fb5c431e95421cb8eda5665558295b0a49bebec4e4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/11.110年-申請閱覽卷宗事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f62f9fa8e35de82a",
+      "source_file": "data/歷史訴願決定書/110年/12.110年-陳情事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "f62f9fa8e35de82a3aabe3aaeacf6fda9be80124b0158a199c799f21ee1e0598",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/12.110年-陳情事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f35afc8716ed763a",
+      "source_file": "data/歷史訴願決定書/110年/13.110年-違章建築事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "f35afc8716ed763aeac366017c31fcd7d6abba16c4812c9bb9f7a7e324450f1e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/13.110年-違章建築事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_68197ab46869e235",
+      "source_file": "data/歷史訴願決定書/110年/14.110年-公寓大廈管理條例事件-77(8)-非行政處分&不屬訴願救濟範圍內事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "68197ab46869e235feb6a6f799c199257b052a0da812a4ab7179a269f937ef6d",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/14.110年-公寓大廈管理條例事件-77(8)-非行政處分&不屬訴願救濟範圍內事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b35324c1408e4b93",
+      "source_file": "data/歷史訴願決定書/110年/15.110年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "b35324c1408e4b9371e618855cb685daa8a7ccd0a89ba30a6bfa86c9fae45479",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/15.110年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f0f312d5cd5b4993",
+      "source_file": "data/歷史訴願決定書/110年/16.110年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "f0f312d5cd5b4993c7afe771d9330e0b0f1fc673f3305c70be89c8e24ebec27a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/16.110年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_cc5f4ff43f0c50a1",
+      "source_file": "data/歷史訴願決定書/110年/17.110年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "cc5f4ff43f0c50a19b539ead023aabe260feb56ebc0b46482c67de6249851113",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/17.110年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_21f00babb9233db6",
+      "source_file": "data/歷史訴願決定書/110年/18.110年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "21f00babb9233db6921c3cdd9524fff1a05aa18688200ee6de42904fd0dc0957",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/18.110年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_6dad9a9c63c09eff",
+      "source_file": "data/歷史訴願決定書/110年/19.110年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "6dad9a9c63c09eff06910bbeb400539f4f2f3a0578d3c750ed072400d654ebaa",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/19.110年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_176d802b03d98e58",
+      "source_file": "data/歷史訴願決定書/110年/20.110年-違反空氣汙染防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "176d802b03d98e586afe1650bdcc7194fe83d51c7f57668f8e2a20dc70951140",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/110年/20.110年-違反空氣汙染防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_d6d8ad902fab45a7",
+      "source_file": "data/歷史訴願決定書/111年/01.111年-違反空氣汙染防制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "d6d8ad902fab45a7cfc894310f03f319c3a46457592a275daad12146e6d86a46",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/01.111年-違反空氣汙染防制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c419e0b87cefcde9",
+      "source_file": "data/歷史訴願決定書/111年/02.111年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "c419e0b87cefcde9517234b623af8f037c845bfd52ddf2c70d209f45f484f035",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/02.111年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c51f723c6988ff9c",
+      "source_file": "data/歷史訴願決定書/111年/03.111年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "c51f723c6988ff9c45322d0c8083c4c5b57eae836e2cc7ca0ba9c3ca0236fe1c",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/03.111年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_554bab9eaa81c7ce",
+      "source_file": "data/歷史訴願決定書/111年/04.111年-違反建築法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "554bab9eaa81c7ce453b35506f9070d054115b4978a646fea242e730d4d631a1",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/04.111年-違反建築法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9b14b42b2bb49eea",
+      "source_file": "data/歷史訴願決定書/111年/05.111年-違反空氣汙染管制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "9b14b42b2bb49eea6ae6ee1533cea9128b17165551664e1d6877a083897137a1",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/05.111年-違反空氣汙染管制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_51992959b08bef55",
+      "source_file": "data/歷史訴願決定書/111年/06.111年-違反廢棄物清理法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "51992959b08bef55ea271f074073b13cf8649c5155769fa0983f94457fcdd1b9",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/06.111年-違反廢棄物清理法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_cd3b1e13a4d514c6",
+      "source_file": "data/歷史訴願決定書/111年/07.111年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "cd3b1e13a4d514c6a2be22b034fdc198b71731f2848e41a342b7721b54d3a961",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/07.111年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_29ff4f37cc494ff5",
+      "source_file": "data/歷史訴願決定書/111年/08.111年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "29ff4f37cc494ff514e6948b740444cdb910d9a857058f15e63ccf6c9230c8b4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/08.111年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_40d6b8b27c282e7d",
+      "source_file": "data/歷史訴願決定書/111年/09.111年-申請閱覽卷宗事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "40d6b8b27c282e7d8b798b6fb7ab32456cb1daffc10ea77dfce163766529c8b7",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/09.111年-申請閱覽卷宗事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_7efb67e6a325e9e5",
+      "source_file": "data/歷史訴願決定書/111年/10.111年-土地增值稅事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "7efb67e6a325e9e51018c1da10439a02af765e1ebb9cc3ce96dc130dbfa84806",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/10.111年-土地增值稅事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f010d7d6464a795c",
+      "source_file": "data/歷史訴願決定書/111年/11.111年-違反公寓大廈管理條例事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "f010d7d6464a795cd3e87c25fd068fc90f653a73001f17bf39c7dcd2746e59f5",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/11.111年-違反公寓大廈管理條例事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_3afdacb9b4227f6f",
+      "source_file": "data/歷史訴願決定書/111年/12.111年-違反噪音管制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "3afdacb9b4227f6ffce936c6434b2458110c3a3a4bf764b59caef8770650a99e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/12.111年-違反噪音管制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_ec2bda1322b629dd",
+      "source_file": "data/歷史訴願決定書/111年/13.111年-陳情事件-77(8)-非行政處分&不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "ec2bda1322b629dd30b37528096da6949ac98d6503edace3cb931497e8e29ca0",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/13.111年-陳情事件-77(8)-非行政處分&不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f9e3d4941880a45a",
+      "source_file": "data/歷史訴願決定書/111年/14.111年-違反建築法事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "f9e3d4941880a45a069c05b50b1b3c96eae5792d5cb2a25c3bbbbbf9f33d1787",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/14.111年-違反建築法事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_467e8654d04e2878",
+      "source_file": "data/歷史訴願決定書/111年/15.111年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "467e8654d04e2878b6c275a2eaa05fa098fe2caa795662c435f85beda4839dee",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/15.111年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a7733864320fb1de",
+      "source_file": "data/歷史訴願決定書/111年/16.111年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "a7733864320fb1de30c8bc5ab8afbc4beb34891384369cdf8a54d40b52a7013f",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/16.111年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b3fab04b6107ca47",
+      "source_file": "data/歷史訴願決定書/111年/17.111年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "b3fab04b6107ca4731121239162b7c3cbcccfca4930d88cd7475159f492fbb36",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/17.111年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_3d54ee23256ca216",
+      "source_file": "data/歷史訴願決定書/111年/18.111年-違反廢棄物清理法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "source_sha256": "3d54ee23256ca2162da98dce9468361a218ddd23e4088019cbcdfa0e0e8b765a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/18.111年-違反廢棄物清理法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9a2dd43505712bd6",
+      "source_file": "data/歷史訴願決定書/111年/19.111年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "source_sha256": "9a2dd43505712bd64dc65f08dd971121444ab2e8a3eed22de892e99a33f853e3",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/19.111年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e68f26e75d20e5f8",
+      "source_file": "data/歷史訴願決定書/111年/20.111年-廢止工廠登記事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "e68f26e75d20e5f82eedfa954d2eb87b7a0c9c0437a72eb3756bbf736b81c8b4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/111年/20.111年-廢止工廠登記事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b8acd1eeea682a74",
+      "source_file": "data/歷史訴願決定書/112年/01.112年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "b8acd1eeea682a74a55365a7c90d1e2bc85cf5df93931cc11e22b2596199d14e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/01.112年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_2a14f45edb0721de",
+      "source_file": "data/歷史訴願決定書/112年/02.112年-違反建築法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "2a14f45edb0721debcb83e277df67c6135a35b22bfa902f16f2722c1dbd3b20a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/02.112年-違反建築法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f195f2b357a1184f",
+      "source_file": "data/歷史訴願決定書/112年/03.112年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "f195f2b357a1184fe8f886a26cb584c09235e27348898b03b9b6fb52581c3eac",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/03.112年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_56d51fbde2bd348c",
+      "source_file": "data/歷史訴願決定書/112年/04.112年-違反噪音管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "56d51fbde2bd348cd560fc55eddbb904b877051e7a32887159ba06e08d2bcc41",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/04.112年-違反噪音管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_86ece08710cc86c8",
+      "source_file": "data/歷史訴願決定書/112年/05.112年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "86ece08710cc86c83d901a674ffd2e04d61839d92c3ffb4f963f22c28d380e63",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/05.112年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_5b5fbd83a89402bb",
+      "source_file": "data/歷史訴願決定書/112年/06.112年-違章建築事件-77(3)&77(8)-當事人不適格&非訴願救濟範圍-不受理.pdf 的副本.pdf",
+      "source_sha256": "5b5fbd83a89402bb1c62fea559abc1e285df826ec5b1fc74e3ea9412876b843a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/06.112年-違章建築事件-77(3)&77(8)-當事人不適格&非訴願救濟範圍-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_6c8454f53bca80ea",
+      "source_file": "data/歷史訴願決定書/112年/07.112年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "6c8454f53bca80eae1db67765812b791f9292acfc4187baa84d19804bda59db4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/07.112年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a6b06bd212ce026f",
+      "source_file": "data/歷史訴願決定書/112年/08.112年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "a6b06bd212ce026fa1b46a23da9355a563c9575abf71d6325cdaec9d69af286b",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/08.112年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_75eef8016caf1f9d",
+      "source_file": "data/歷史訴願決定書/112年/09.112年-建造執照事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "75eef8016caf1f9d3bddc9c6aa978a09b5170278c8ed7eddfef5ed2d558e85e4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/09.112年-建造執照事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_801dc51013e2c930",
+      "source_file": "data/歷史訴願決定書/112年/10.112年-農業用地作農業使用證明事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "801dc51013e2c9304bd5279d102b556fcef09afe9d1ea7009d94108a404a1434",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/10.112年-農業用地作農業使用證明事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_ff15c9e43dd80954",
+      "source_file": "data/歷史訴願決定書/112年/11.112年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "ff15c9e43dd8095444a15b5bb0ba17529ff4569ec352a30d715af1796fac3cde",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/11.112年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8235948e955d9d05",
+      "source_file": "data/歷史訴願決定書/112年/12.112年-檢舉事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "8235948e955d9d05eb660ea51af5d33068dbd21efbee42ce5aa907f7c60e0007",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/12.112年-檢舉事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8f1578462142e4ad",
+      "source_file": "data/歷史訴願決定書/112年/13.112年-違反空氣汙染防制法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "8f1578462142e4ad6ac837cb858e4567b319e3ed69b0a354b62347a00807b930",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/13.112年-違反空氣汙染防制法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c0e60412872d1efc",
+      "source_file": "data/歷史訴願決定書/112年/14.112年-違反廢棄物清理法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "c0e60412872d1efc399d9c870ac743990f8fb3a5c5f21a3aa0f3d3ac0d627f42",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/14.112年-違反廢棄物清理法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8b67af88e986c368",
+      "source_file": "data/歷史訴願決定書/112年/15.112年-違反空氣汙染管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "8b67af88e986c3684481401727e3022b410977e2674c9b40c82e89422f5e4eb2",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/15.112年-違反空氣汙染管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_82ea4d976741adbe",
+      "source_file": "data/歷史訴願決定書/112年/16.112年-違章建築事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "82ea4d976741adbe0fd36c1ee3d1f4c1367a5be36007980b937ffbb90eab10e4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/16.112年-違章建築事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_6a7571d960fec4fe",
+      "source_file": "data/歷史訴願決定書/112年/17.112年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "6a7571d960fec4feb467bdeb80f05a2e997498d16798387c4e483b425efd109f",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/17.112年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_4d9114cde968f5d0",
+      "source_file": "data/歷史訴願決定書/112年/18.112年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "4d9114cde968f5d0e490f2e432d1987b292fc3953f2dd3d9cccbf812be300287",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/18.112年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b4eefd8c34d41659",
+      "source_file": "data/歷史訴願決定書/112年/19.112年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "b4eefd8c34d41659ef44e54d05eb786b04bbbc918672e1100b37fa638c70dfa6",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/19.112年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_77eef8b4ebfaafa9",
+      "source_file": "data/歷史訴願決定書/112年/20.112年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "77eef8b4ebfaafa9f1991db57ca907bdd27c920e8065c748b1346f696190570d",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/112年/20.112年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_fb7939b4e6e89b69",
+      "source_file": "data/歷史訴願決定書/113年/01.113年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "fb7939b4e6e89b6912c354cda843c662d94be35b722722c2a271486dc5818c09",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/01.113年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_40662b0893c5f21e",
+      "source_file": "data/歷史訴願決定書/113年/02.113年-違反空氣汙染管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "40662b0893c5f21e8d2e610f0654ed64c7492021dec9cfacdb4500690a40c823",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/02.113年-違反空氣汙染管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_871bcf11d13f5c44",
+      "source_file": "data/歷史訴願決定書/113年/03.113年-違反空氣汙染防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "871bcf11d13f5c44cc4373eee5741c0bdd93046546128a06fd3c35025eadf163",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/03.113年-違反空氣汙染防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_691837d803f91ee3",
+      "source_file": "data/歷史訴願決定書/113年/04.113年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "691837d803f91ee35007fef726495e9970aaa8ea855d58e6a6ee5571586d51df",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/04.113年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_17c61493c881bc47",
+      "source_file": "data/歷史訴願決定書/113年/05.113年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "17c61493c881bc471e1d1f85e904a9b62ab14c37cfb3334317827869e8c11ffb",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/05.113年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_1586046e1dad6736",
+      "source_file": "data/歷史訴願決定書/113年/06.113年-違反建築法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "1586046e1dad6736cad85cb435e990a18037b43a3c432390e67aa9c6f2a099ef",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/06.113年-違反建築法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_af9def3bacb8ebe5",
+      "source_file": "data/歷史訴願決定書/113年/07.113年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "af9def3bacb8ebe5f07e67a1726a631c7f84026d00811fec17ad7b62621e350e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/07.113年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_71cba539bde4aa46",
+      "source_file": "data/歷史訴願決定書/113年/08.113年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "71cba539bde4aa4608d815fc871241fd4e507babb7a7d4d4e0f561d9038b0124",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/08.113年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_26241063b74e0c1d",
+      "source_file": "data/歷史訴願決定書/113年/09.113年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "26241063b74e0c1dc4765994d258bd6d057be0665e52da2a062e1be10c122e1f",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/09.113年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8e652ef908c3df71",
+      "source_file": "data/歷史訴願決定書/113年/10.113年-違反建築法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "8e652ef908c3df71215d2d3cee3b34e6338634de9150bcefebca1335cc96d8d4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/10.113年-違反建築法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_93498d17a91c9bac",
+      "source_file": "data/歷史訴願決定書/113年/11.113年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "93498d17a91c9bacad1590cff2b0273e11041e528c7b4850735fa883623cc8b9",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/11.113年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_261d2e3aad403f96",
+      "source_file": "data/歷史訴願決定書/113年/12.113年-違章建築事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "261d2e3aad403f964cf5e11413c06a031462c763221e0a4875ad2e3d68470c0e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/12.113年-違章建築事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b84298a661e40db8",
+      "source_file": "data/歷史訴願決定書/113年/13.113年-申請提供政府資訊事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "b84298a661e40db872226c1e55dd95734af9d6fa4c34f8cd92cc29b1c29951c4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/13.113年-申請提供政府資訊事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_1a20eebae8504c55",
+      "source_file": "data/歷史訴願決定書/113年/14.113年-檢舉事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "1a20eebae8504c55d64468c3b12dbd782dc8b9c5e45e112797b72323faae8a4a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/14.113年-檢舉事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_fc9d8643e0f2bdae",
+      "source_file": "data/歷史訴願決定書/113年/15.113年-違反洗錢防制法事件-79II-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "fc9d8643e0f2bdae92d4a342377ae76affd9bd40d0f601aa83a6534678b7faca",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/15.113年-違反洗錢防制法事件-79II-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c844d754922e19d3",
+      "source_file": "data/歷史訴願決定書/113年/16.113年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "c844d754922e19d3962dbd3214cea6b8b84bf6bf07687302ec2d290dccb768f1",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/16.113年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_ee2de36a467870d2",
+      "source_file": "data/歷史訴願決定書/113年/17.113年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "ee2de36a467870d2c52d1e65b359e7d2d3f04b0a03498f36958b89f02e0ef358",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/17.113年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_87863455d37c8379",
+      "source_file": "data/歷史訴願決定書/113年/18.113年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "87863455d37c83795ff8346a5a43ece836ca6f7c5cdfd586be33e88041f56a3d",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/18.113年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9d876efcd5924910",
+      "source_file": "data/歷史訴願決定書/113年/19.113年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "9d876efcd5924910cef8bf42953e8ff5073e4a536f8c3394b61e100090a944d0",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/19.113年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9bd002e3ca746523",
+      "source_file": "data/歷史訴願決定書/113年/20.113年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "9bd002e3ca74652309edb6e22201680eec79a7bf51f6d51881e0b9d9b08b4149",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/113年/20.113年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_24889cebf01a52aa",
+      "source_file": "data/歷史訴願決定書/114年/01.114年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "source_sha256": "24889cebf01a52aab51366d3a494f81fe77efa421270c66cd6429bfd51722581",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/01.114年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_96be0f5ed99f529e",
+      "source_file": "data/歷史訴願決定書/114年/02.114年-違反廢棄物清理法事件-77(1)-不合法定程式-不受理.pdf 的副本.pdf",
+      "source_sha256": "96be0f5ed99f529e404a261f490981d0b4274f97557efe1f87dd854c874cfa5f",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/02.114年-違反廢棄物清理法事件-77(1)-不合法定程式-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c520f5177fe9b546",
+      "source_file": "data/歷史訴願決定書/114年/03.114年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "c520f5177fe9b546cb947afebd2b52bcabcbd83464eb6252e8f118946796db4e",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/03.114年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e8424fedb71fc250",
+      "source_file": "data/歷史訴願決定書/114年/04.114年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "source_sha256": "e8424fedb71fc25034fca5acde31f1d03ffcb0e908e2c8d4ddc38a7462977235",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/04.114年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_3035101709f90e9c",
+      "source_file": "data/歷史訴願決定書/114年/05.114年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "3035101709f90e9c3e06305d7aabc3b11aa6968811d56eca7ba23b4b78ec9361",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/05.114年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9d55cd20c6a9df79",
+      "source_file": "data/歷史訴願決定書/114年/06.114年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "source_sha256": "9d55cd20c6a9df79cecb0830e664b935b6b3e0745081b515b95f7f7e9dfd9be3",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/06.114年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_4dd44fd66324bb90",
+      "source_file": "data/歷史訴願決定書/114年/07.114年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "4dd44fd66324bb908428dbd328b23a49480f0360e7c583b14a47c1f354048655",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/07.114年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e0858d03c03ada79",
+      "source_file": "data/歷史訴願決定書/114年/08.114年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "source_sha256": "e0858d03c03ada7990c81caaf97fe4b87bb538993566851fbc047f3d7151181a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/08.114年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_2b7bfbd6f5ea1f24",
+      "source_file": "data/歷史訴願決定書/114年/09.114年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "2b7bfbd6f5ea1f24198e6c0ae475f3831ae81f0ad07dc06339ad5f877510962b",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/09.114年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_59f532d8a24a455c",
+      "source_file": "data/歷史訴願決定書/114年/10.114年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "source_sha256": "59f532d8a24a455c3895245ca1edd1c3a281f7d76a051a2d88a903928aae28e4",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/10.114年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_66abf18fd8e962d5",
+      "source_file": "data/歷史訴願決定書/114年/11.114年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "66abf18fd8e962d58230e416e18b545d6340592ca350e68fb76977780047ffbd",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/11.114年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_f67b57921c48043b",
+      "source_file": "data/歷史訴願決定書/114年/12.114年-申請提供政府資訊事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "source_sha256": "f67b57921c48043bff98758b360ab4f55dd28a8505b6bd3bc1d7ffcba48f13b1",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/12.114年-申請提供政府資訊事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_dadfec551461d3e2",
+      "source_file": "data/歷史訴願決定書/114年/13.114年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "source_sha256": "dadfec551461d3e2f395361692cb3d3a6c5f8557896640888412bd0882bf8ebb",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/13.114年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_703d99df9dbfff72",
+      "source_file": "data/歷史訴願決定書/114年/14.114年-道路交通管理處罰條例事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "source_sha256": "703d99df9dbfff725fc7a70c5df4d861bf538fc6e6cc968660e4d2610236a00d",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/14.114年-道路交通管理處罰條例事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e7034724e35f0925",
+      "source_file": "data/歷史訴願決定書/114年/15.114年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "e7034724e35f092543e9a806119c50b422d6bada4649b46c15bc0d43dd4970ea",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/15.114年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e95523a827eab04c",
+      "source_file": "data/歷史訴願決定書/114年/16.114年-違反空氣汙染防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "e95523a827eab04cd9cd15019c72d0703dbf40fec327df5dc9e4ffd25c896c6a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/16.114年-違反空氣汙染防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_94ee0063064cdcbb",
+      "source_file": "data/歷史訴願決定書/114年/17.114年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "source_sha256": "94ee0063064cdcbbc7ddd3c6cf6fa840406fbd4de7315bfc80215fafa610c965",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/17.114年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_36e96868f53ecdb2",
+      "source_file": "data/歷史訴願決定書/114年/18.114年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "36e96868f53ecdb2f81e61a29fc7eff15ba98a238a3799dcbf63746d704928b8",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/18.114年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_156bf76678734c26",
+      "source_file": "data/歷史訴願決定書/114年/19.114年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "source_sha256": "156bf76678734c26cc6a8a0b0ae367d145b19c406ce2bef096ed8787a6b45698",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/19.114年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e223ad36652a1e88",
+      "source_file": "data/歷史訴願決定書/114年/20.114年-申請政府資訊事件-81I、II-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "source_sha256": "e223ad36652a1e88f7c90b5c81bd4a1644ce7e8988d120fe1fbffec5f9601ac7",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/20.114年-申請政府資訊事件-81I、II-訴願有理由-撤銷另處.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_fffff4627aa91853",
+      "source_file": "data/歷史訴願決定書/114年/21.114年-違反建築法事件-77(8)&79I-部分不受理&部分駁回.pdf 的副本.pdf",
+      "source_sha256": "fffff4627aa91853c5361f055a7ab4783c93e17886b1e7af90cdd05f3d79adf3",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/歷史訴願決定書/114年/21.114年-違反建築法事件-77(8)&79I-部分不受理&部分駁回.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c2b1e04d419ab212",
+      "source_file": "data/相關法規/噪音管制法.pdf 的副本.pdf",
+      "source_sha256": "c2b1e04d419ab2126804ac074d0d65eda6082c2d9da903bedb7ca88f20a03fb8",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/噪音管制法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_7273feece75143f9",
+      "source_file": "data/相關法規/廢棄物清理法.pdf 的副本.pdf",
+      "source_sha256": "7273feece75143f93ff9999b639aaed6ce8caf1f9e0fd837b901d1404ad906fc",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/廢棄物清理法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_50402698dd6c98a8",
+      "source_file": "data/相關法規/建築法.pdf 的副本.pdf",
+      "source_sha256": "50402698dd6c98a85fbc17723b4697f9a9406de839f1c907f962f1e0b4741259",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/建築法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e46a6f6df134027e",
+      "source_file": "data/相關法規/民法.pdf 的副本.pdf",
+      "source_sha256": "e46a6f6df134027e25f2798462cabc3e3a2ca4301901adf5ad0e36c01c4adf91",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/民法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_9b5f7895adc34b02",
+      "source_file": "data/相關法規/洗錢防制法.pdf 的副本.pdf",
+      "source_sha256": "9b5f7895adc34b02b2058ebfc7899de9594a936e9f71bdae35134f36a2588a2c",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/洗錢防制法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_252967d2f0a2b645",
+      "source_file": "data/相關法規/空氣污染防制法.pdf 的副本.pdf",
+      "source_sha256": "252967d2f0a2b6459786e079a396ea89f6b7c7029765576d3a831ac6f86144e3",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/空氣污染防制法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a4b9bc5cd36a6584",
+      "source_file": "data/相關法規/行政執行法.pdf 的副本.pdf",
+      "source_sha256": "a4b9bc5cd36a6584132f0ac47dc680366cf30249418b5a9f5a921056190c3284",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/行政執行法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b5e4b1244888e048",
+      "source_file": "data/相關法規/行政程序法.pdf 的副本.pdf",
+      "source_sha256": "b5e4b1244888e048258179da6d3c368e945c17ed199c157bfae3701256af8e90",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/行政程序法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_e3bb86a73f8d1f32",
+      "source_file": "data/相關法規/行政罰法.pdf 的副本.pdf",
+      "source_sha256": "e3bb86a73f8d1f3229c9a79ddf0f3ae2e15192983746a0d2ebc6c985d9f873ce",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/行政罰法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_622d0ac69cfd3add",
+      "source_file": "data/相關法規/行政院及各級行政機關訴願審議委員會審議規則.pdf 的副本.pdf",
+      "source_sha256": "622d0ac69cfd3addd15c80ea3d9cab87214b5790f1279c9a3f0ea48c1bfd133b",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/行政院及各級行政機關訴願審議委員會審議規則.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_4ea9a19155ed41e5",
+      "source_file": "data/相關法規/訴願法.pdf 的副本.pdf",
+      "source_sha256": "4ea9a19155ed41e549d8310f5a454063ba13c28d6d293eddd0a2f4e168c8f62a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/相關法規/訴願法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b4c6decf118f6cde",
+      "source_file": "data/行政函釋/內政部100年12月9日內授營建管字第1000810874號函釋-場所區隔方式.pdf 的副本.pdf",
+      "source_sha256": "b4c6decf118f6cde7231c77d62f3f937ace63fa2b8dd5b29fe84870a106a2ab7",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/內政部100年12月9日內授營建管字第1000810874號函釋-場所區隔方式.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_6f7283be995a4547",
+      "source_file": "data/行政函釋/內政部111年3月17日內授營建管字第1110805153號函釋-停歇業公安申報.pdf 的副本.pdf",
+      "source_sha256": "6f7283be995a45479ef2b0a82f9bbc252709264550173972391d1dee113396fa",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/內政部111年3月17日內授營建管字第1110805153號函釋-停歇業公安申報.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_041e47724d3e7531",
+      "source_file": "data/行政函釋/內政部96年8月8日營署建管字第0960041955號函釋-公寓大廈管委會解任.pdf 的副本.pdf",
+      "source_sha256": "041e47724d3e753110f46dbcd95cf7d3488d876007473229a6bc9cae163bfaa9",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/內政部96年8月8日營署建管字第0960041955號函釋-公寓大廈管委會解任.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8ef26e866f98c2bf",
+      "source_file": "data/行政函釋/法務部103年10月27日10303512490號函釋-行政程序法第36、39、42、43條&行政罰法第42條.pdf 的副本.pdf",
+      "source_sha256": "8ef26e866f98c2bfc6b521d27ed205de86dbfbe64d16e75baa7ed447a64ad584",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部103年10月27日10303512490號函釋-行政程序法第36、39、42、43條&行政罰法第42條.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a8a0bf6f3814493e",
+      "source_file": "data/行政函釋/法務部104年9月2日10403507770號函釋-政府資訊公開法.pdf 的副本.pdf",
+      "source_sha256": "a8a0bf6f3814493eabc208383854573d1985515978e9cf3039c85b2ba12f3b3a",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部104年9月2日10403507770號函釋-政府資訊公開法.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_1d6bca2cbd551e33",
+      "source_file": "data/行政函釋/法務部107年10月17日法律字第10703515450號函釋-廢棄物清理法第11條&第27條第11款.pdf 的副本.pdf",
+      "source_sha256": "1d6bca2cbd551e338a1fe9445493b167bcba0fa35330f46002ab8b555fdfa761",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部107年10月17日法律字第10703515450號函釋-廢棄物清理法第11條&第27條第11款.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_c70469dbc338b88d",
+      "source_file": "data/行政函釋/法務部108年8月14日10803511720號函釋-行政罰法第2條.pdf 的副本.pdf",
+      "source_sha256": "c70469dbc338b88da4694bece71302beacc1c7e6b3abeb4e9ad5d5a497fc49db",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部108年8月14日10803511720號函釋-行政罰法第2條.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_8dd24908c7e01ed8",
+      "source_file": "data/行政函釋/法務部113年10月17日法律字11303514230號函-行政程序第128條第2款程序再開.pdf 的副本.pdf",
+      "source_sha256": "8dd24908c7e01ed8f4c5f67a83ff76e65826f116251c7cf12ae212bbb482f416",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部113年10月17日法律字11303514230號函-行政程序第128條第2款程序再開.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_b608ffcb2ab2e132",
+      "source_file": "data/行政函釋/法務部93年4月13日法律字0930014628號函-寄存送達.pdf 的副本.pdf",
+      "source_sha256": "b608ffcb2ab2e1327d812acf42e380726f795a2d39ad1439d631318442d30296",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部93年4月13日法律字0930014628號函-寄存送達.pdf 的副本.pdf"
+      ]
+    },
+    {
+      "document_id": "doc_a22f856f69c10c6a",
+      "source_file": "data/行政函釋/法務部97年1月29日法律字第0970000279號函釋-廢棄物清理法共有人連帶負責.pdf 的副本.pdf",
+      "source_sha256": "a22f856f69c10c6a93bcef18129e3b3e3fb5088d2658c19ac801329b7346c474",
+      "exists_at_recorded_path": false,
+      "matching_raw_paths": [
+        "data/raw/行政函釋/法務部97年1月29日法律字第0970000279號函釋-廢棄物清理法共有人連帶負責.pdf 的副本.pdf"
+      ]
+    }
+  ],
+  "preexisting_pdf_moves": [
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院102年度判字第147號行政判決-政府資訊公開法精神.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院102年度判字第147號行政判決-政府資訊公開法精神.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院102年度裁字第266號行政裁定-公法上權利.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院102年度裁字第266號行政裁定-公法上權利.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院106年度判字第151號行政判決-行政罰法第5條從新從輕.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院106年度判字第151號行政判決-行政罰法第5條從新從輕.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院106年度判字第557號行政判決-資訊分離原則.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院106年度判字第557號行政判決-資訊分離原則.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院108年度上字第930號行政判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院108年度上字第930號行政判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院108年度判字第531號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院108年度判字第531號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院109年度上字第780號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院109年度上字第780號行政判決-行政罰法7條1項.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院109年度判字第158號行政判決-政府資訊公開法18條1項3款.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院109年度判字第158號行政判決-政府資訊公開法18條1項3款.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院109度上字第817號判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院109度上字第817號判決-政府資訊公開法18條2項.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院92年度判字第275號判決-行政程序法第6條.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院92年度判字第275號判決-行政程序法第6條.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院93年度判字第1624號行政判決-行政程序法114條1項&2項.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院93年度判字第1624號行政判決-行政程序法114條1項&2項.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/最高行政法院94年度判字第1497號行政判決-權利保護必要定義.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/最高行政法院94年度判字第1497號行政判決-權利保護必要定義.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/臺北高等行政法院105年度訴字第1301號行政判決-利害關係人.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/臺北高等行政法院105年度訴字第1301號行政判決-利害關係人.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/臺北高等行政法院114年度簡上字第13號判決-洗錢防制法第22條.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/臺北高等行政法院114年度簡上字第13號判決-洗錢防制法第22條.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/臺北高等行政法院98年度訴字第2374號行政判決-非處分相對人.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/臺北高等行政法院98年度訴字第2374號行政判決-非處分相對人.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/臺灣新北地方法院106年度簡字第119號行政判決-廢棄物清理法9條1項後段.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/臺灣新北地方法院106年度簡字第119號行政判決-廢棄物清理法9條1項後段.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/釋字第469號解釋-公法上請求權.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/釋字第469號解釋-公法上請求權.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/釋字第546號解釋-訴願無實益.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/釋字第546號解釋-訴願無實益.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/司法院釋字及行政判解/高雄高等行政法院109年度訴字第186號行政判決-欠缺權利保護必要.pdf 的副本.pdf",
+      "new": "data/raw/司法院釋字及行政判解/高雄高等行政法院109年度訴字第186號行政判決-欠缺權利保護必要.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/01.110年-社會救助事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/01.110年-社會救助事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/02.110年-違反噪音管制法事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/02.110年-違反噪音管制法事件-77(1)-逾期不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/03.110年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/03.110年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/04.110年-違反毒品危害防制條例事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/04.110年-違反毒品危害防制條例事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/05.110年-都市更新事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/05.110年-都市更新事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/06.110年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/06.110年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/07.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/07.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/08.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/08.110年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/09.110年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/09.110年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/10.110年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/10.110年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/11.110年-申請閱覽卷宗事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/11.110年-申請閱覽卷宗事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/12.110年-陳情事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/12.110年-陳情事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/13.110年-違章建築事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/13.110年-違章建築事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/14.110年-公寓大廈管理條例事件-77(8)-非行政處分&不屬訴願救濟範圍內事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/14.110年-公寓大廈管理條例事件-77(8)-非行政處分&不屬訴願救濟範圍內事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/15.110年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/15.110年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/16.110年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/16.110年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/17.110年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/17.110年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/18.110年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/18.110年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/19.110年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/19.110年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/110年/20.110年-違反空氣汙染防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/110年/20.110年-違反空氣汙染防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/01.111年-違反空氣汙染防制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/01.111年-違反空氣汙染防制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/02.111年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/02.111年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/03.111年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/03.111年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/04.111年-違反建築法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/04.111年-違反建築法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/05.111年-違反空氣汙染管制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/05.111年-違反空氣汙染管制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/06.111年-違反廢棄物清理法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/06.111年-違反廢棄物清理法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/07.111年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/07.111年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/08.111年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/08.111年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/09.111年-申請閱覽卷宗事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/09.111年-申請閱覽卷宗事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/10.111年-土地增值稅事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/10.111年-土地增值稅事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/11.111年-違反公寓大廈管理條例事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/11.111年-違反公寓大廈管理條例事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/12.111年-違反噪音管制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/12.111年-違反噪音管制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/13.111年-陳情事件-77(8)-非行政處分&不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/13.111年-陳情事件-77(8)-非行政處分&不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/14.111年-違反建築法事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/14.111年-違反建築法事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/15.111年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/15.111年-違反建築法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/16.111年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/16.111年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/17.111年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/17.111年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/18.111年-違反廢棄物清理法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/18.111年-違反廢棄物清理法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/19.111年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/19.111年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/111年/20.111年-廢止工廠登記事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/111年/20.111年-廢止工廠登記事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/01.112年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/01.112年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/02.112年-違反建築法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/02.112年-違反建築法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/03.112年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/03.112年-違反空氣汙染管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/04.112年-違反噪音管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/04.112年-違反噪音管制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/05.112年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/05.112年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/06.112年-違章建築事件-77(3)&77(8)-當事人不適格&非訴願救濟範圍-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/06.112年-違章建築事件-77(3)&77(8)-當事人不適格&非訴願救濟範圍-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/07.112年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/07.112年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/08.112年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/08.112年-違反停車場法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/09.112年-建造執照事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/09.112年-建造執照事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/10.112年-農業用地作農業使用證明事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/10.112年-農業用地作農業使用證明事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/11.112年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/11.112年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/12.112年-檢舉事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/12.112年-檢舉事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/13.112年-違反空氣汙染防制法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/13.112年-違反空氣汙染防制法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/14.112年-違反廢棄物清理法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/14.112年-違反廢棄物清理法事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/15.112年-違反空氣汙染管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/15.112年-違反空氣汙染管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/16.112年-違章建築事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/16.112年-違章建築事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/17.112年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/17.112年-違反噪音管制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/18.112年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/18.112年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/19.112年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/19.112年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/112年/20.112年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/112年/20.112年-違反建築法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/01.113年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/01.113年-違反廢棄物清理法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/02.113年-違反空氣汙染管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/02.113年-違反空氣汙染管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/03.113年-違反空氣汙染防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/03.113年-違反空氣汙染防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/04.113年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/04.113年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/05.113年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/05.113年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/06.113年-違反建築法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/06.113年-違反建築法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/07.113年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/07.113年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/08.113年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/08.113年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/09.113年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/09.113年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/10.113年-違反建築法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/10.113年-違反建築法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/11.113年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/11.113年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/12.113年-違章建築事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/12.113年-違章建築事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/13.113年-申請提供政府資訊事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/13.113年-申請提供政府資訊事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/14.113年-檢舉事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/14.113年-檢舉事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/15.113年-違反洗錢防制法事件-79II-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/15.113年-違反洗錢防制法事件-79II-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/16.113年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/16.113年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/17.113年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/17.113年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/18.113年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/18.113年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/19.113年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/19.113年-申請提供政府資訊事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/113年/20.113年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/113年/20.113年-違反廢棄物清理法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/01.114年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/01.114年-違反噪音管制法事件-77(1)-不合法定程式不補正-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/02.114年-違反廢棄物清理法事件-77(1)-不合法定程式-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/02.114年-違反廢棄物清理法事件-77(1)-不合法定程式-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/03.114年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/03.114年-違反洗錢防制法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/04.114年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/04.114年-違反廢棄物清理法事件-77(2)-訴願逾期-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/05.114年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/05.114年-違反空氣汙染防制法事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/06.114年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/06.114年-請求撤銷建造執照事件-77(3)-當事人不適格-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/07.114年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/07.114年-違反噪音管制法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/08.114年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/08.114年-違反建築法事件-77(4)-無訴願能力-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/09.114年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/09.114年-違反洗錢防制法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/10.114年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/10.114年-違反廢棄物清理法事件-77(6)-行政處分已不存在-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/11.114年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/11.114年-違反洗錢防制法事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/12.114年-申請提供政府資訊事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/12.114年-申請提供政府資訊事件-77(7)-重行提起訴願-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/13.114年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/13.114年-陳情事件-77(8)-非行政處分-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/14.114年-道路交通管理處罰條例事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/14.114年-道路交通管理處罰條例事件-77(8)-不屬訴願救濟範圍事項-不受理.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/15.114年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/15.114年-違反洗錢防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/16.114年-違反空氣汙染防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/16.114年-違反空氣汙染防制法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/17.114年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/17.114年-違反廢棄物清理法事件-79I-訴願無理由-駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/18.114年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/18.114年-違反洗錢防制法事件-81I-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/19.114年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/19.114年-違反建築法事件-81I-訴願有理由-原處分撤銷.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/20.114年-申請政府資訊事件-81I、II-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/20.114年-申請政府資訊事件-81I、II-訴願有理由-撤銷另處.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/歷史訴願決定書/114年/21.114年-違反建築法事件-77(8)&79I-部分不受理&部分駁回.pdf 的副本.pdf",
+      "new": "data/raw/歷史訴願決定書/114年/21.114年-違反建築法事件-77(8)&79I-部分不受理&部分駁回.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/噪音管制法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/噪音管制法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/廢棄物清理法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/廢棄物清理法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/建築法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/建築法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/民法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/民法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/洗錢防制法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/洗錢防制法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/空氣污染防制法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/空氣污染防制法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/行政執行法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/行政執行法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/行政程序法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/行政程序法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/行政罰法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/行政罰法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/行政院及各級行政機關訴願審議委員會審議規則.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/行政院及各級行政機關訴願審議委員會審議規則.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/相關法規/訴願法.pdf 的副本.pdf",
+      "new": "data/raw/相關法規/訴願法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/內政部100年12月9日內授營建管字第1000810874號函釋-場所區隔方式.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/內政部100年12月9日內授營建管字第1000810874號函釋-場所區隔方式.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/內政部111年3月17日內授營建管字第1110805153號函釋-停歇業公安申報.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/內政部111年3月17日內授營建管字第1110805153號函釋-停歇業公安申報.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/內政部96年8月8日營署建管字第0960041955號函釋-公寓大廈管委會解任.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/內政部96年8月8日營署建管字第0960041955號函釋-公寓大廈管委會解任.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部103年10月27日10303512490號函釋-行政程序法第36、39、42、43條&行政罰法第42條.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部103年10月27日10303512490號函釋-行政程序法第36、39、42、43條&行政罰法第42條.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部104年9月2日10403507770號函釋-政府資訊公開法.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部104年9月2日10403507770號函釋-政府資訊公開法.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部107年10月17日法律字第10703515450號函釋-廢棄物清理法第11條&第27條第11款.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部107年10月17日法律字第10703515450號函釋-廢棄物清理法第11條&第27條第11款.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部108年8月14日10803511720號函釋-行政罰法第2條.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部108年8月14日10803511720號函釋-行政罰法第2條.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部113年10月17日法律字11303514230號函-行政程序第128條第2款程序再開.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部113年10月17日法律字11303514230號函-行政程序第128條第2款程序再開.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部93年4月13日法律字0930014628號函-寄存送達.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部93年4月13日法律字0930014628號函-寄存送達.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/行政函釋/法務部97年1月29日法律字第0970000279號函釋-廢棄物清理法共有人連帶負責.pdf 的副本.pdf",
+      "new": "data/raw/行政函釋/法務部97年1月29日法律字第0970000279號函釋-廢棄物清理法共有人連帶負責.pdf 的副本.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案01_金管會不予洗錢防制登記_1155000434__行政處分函.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案01_金管會不予洗錢防制登記_1155000434__行政處分函.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案01_金管會不予洗錢防制登記_1155000434__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案01_金管會不予洗錢防制登記_1155000434__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案02_金管會不予登記副知會計師_1155011523__行政處分函.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案02_金管會不予登記副知會計師_1155011523__行政處分函.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案02_金管會不予登記副知會計師_1155011523__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案02_金管會不予登記副知會計師_1155011523__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案03_金管會限期停止虛擬通貨業務_1135015691__行政處分函.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案03_金管會限期停止虛擬通貨業務_1135015691__行政處分函.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案03_金管會限期停止虛擬通貨業務_1135015691__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案03_金管會限期停止虛擬通貨業務_1135015691__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案04_環保署噪音管制區劃定作業準則_1100168552__令.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案04_環保署噪音管制區劃定作業準則_1100168552__令.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案04_環保署噪音管制區劃定作業準則_1100168552__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案04_環保署噪音管制區劃定作業準則_1100168552__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案05_環境部補繳回收清除處理費_1155008557__行政處分函.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案05_環境部補繳回收清除處理費_1155008557__行政處分函.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案05_環境部補繳回收清除處理費_1155008557__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案05_環境部補繳回收清除處理費_1155008557__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案06_環境部撤銷部分處分費用_1155002314__行政處分函.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案06_環境部撤銷部分處分費用_1155002314__行政處分函.pdf",
+      "same_bytes_as_HEAD": true
+    },
+    {
+      "old": "data/訴願書予行政處分函-1/案06_環境部撤銷部分處分費用_1155002314__訴願書.pdf",
+      "new": "data/raw/訴願書予行政處分函-1/案06_環境部撤銷部分處分費用_1155002314__訴願書.pdf",
+      "same_bytes_as_HEAD": true
+    }
+  ]
+}

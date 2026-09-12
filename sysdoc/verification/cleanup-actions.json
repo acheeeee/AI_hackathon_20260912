@@ -1,0 +1,69 @@
+{
+  "deleted": [
+    {
+      "path": "app/app.py",
+      "sha256": "f0fa318b07fb82639483773574a186e2552c2b50a86a3714b4230bf6fcfbc567",
+      "reason": "retired demo UI; Vue frontend retained"
+    },
+    {
+      "path": "app/web/app.js",
+      "sha256": "7d9181ebf6d2d0376ae39e9e1dd776c00cda896120a624a472c9ded54884a260",
+      "reason": "retired demo UI; Vue frontend retained"
+    },
+    {
+      "path": "app/web/bedo-logo.svg",
+      "sha256": "0b7b2c0b2d585d94be944e35f06013e9b2c60229d6fbe5ff7163c903498271ed",
+      "reason": "retired demo UI; Vue frontend retained"
+    },
+    {
+      "path": "app/web/index.html",
+      "sha256": "7ed341c87b8e27047f74394ed29bb979663930f3378e410c460ab460b434375f",
+      "reason": "retired demo UI; Vue frontend retained"
+    },
+    {
+      "path": "app/web/style.css",
+      "sha256": "e149cf61101d29f80e585830c408865411dc066a941b3808a038a4e1f334f0b8",
+      "reason": "retired demo UI; Vue frontend retained"
+    },
+    {
+      "path": ".DS_Store",
+      "reason": "macOS generated metadata"
+    },
+    {
+      "path": "data/.DS_Store",
+      "reason": "macOS generated metadata"
+    },
+    {
+      "path": "data/raw/歷史訴願決定書/.DS_Store",
+      "reason": "macOS generated metadata"
+    },
+    {
+      "path": "app/.DS_Store",
+      "reason": "macOS generated metadata"
+    },
+    {
+      "path": "app/data/.DS_Store",
+      "reason": "macOS generated metadata"
+    }
+  ],
+  "moved": [
+    {
+      "from": "app/frontend/node_modules",
+      "to": "frontend/node_modules"
+    },
+    {
+      "from": "app/frontend/.vscode/settings.json",
+      "to": "frontend/.vscode/settings.json"
+    }
+  ],
+  "preserved": [
+    "app/api.py",
+    "app/src/",
+    "app/data/kb/",
+    "app/data/index/",
+    "data/raw/",
+    "data/processed/releases/r1/",
+    ".venv_pre/",
+    "app/.venv/"
+  ]
+}

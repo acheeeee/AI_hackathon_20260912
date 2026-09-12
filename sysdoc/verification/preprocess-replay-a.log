@@ -1,0 +1,30 @@
+[process] release=replay-a 產出於 data/processed/releases/replay-a
+  release_id: replay-a
+  schema_version: 1.0
+  extraction_version: ext-1.0
+  segmentation_version: seg-1.0
+  chunking_version: chunk-1.0
+  alias_table_version: alias-1.0
+  input_pdf_count: 141
+  unique_document_count: 141
+  duplicate_count: 0
+  page_count: 731
+  section_count: 2623
+  chunk_count: 3108
+  citation_count: 675
+  review_queue_count: 7
+  publish_status: draft
+[validate] release=replay-a status=validated
+  [PASS] 原件清點-PDF數: input=141 baseline=141
+  [PASS] 原件清點-頁數: unique_pages=731 baseline=731（含重複別名頁見備註）
+  [PASS] 主鍵唯一-document_id: n=141
+  [PASS] 主鍵唯一-section_id: n=2623
+  [PASS] 主鍵唯一-chunk_id: n=3108
+  [PASS] 外鍵-chunk.section_id: dangling=0
+  [PASS] 外鍵-section.document_id: dangling=0
+  [PASS] span合法性: illegal_spans=0
+  [PASS] quote可重建: mismatch_sections=0
+  [PASS] 法條邊界-附加條號存在: 附加條號 section 數=238
+  [PASS] 法條邊界-條號可解析: 無法解析 article_key 的條文 section=0
+  [PASS] 全文覆蓋-未歸屬行已記錄: uncovered_lines_logged=0（進 review_queue，未靜默掉段）
+  [PASS] index_eligible-布林: non_bool=0

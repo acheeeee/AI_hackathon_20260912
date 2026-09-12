@@ -1,0 +1,30 @@
+[process] release=current 產出於 data/processed/releases/current
+  release_id: current
+  schema_version: 1.0
+  extraction_version: ext-1.0
+  segmentation_version: seg-1.0
+  chunking_version: chunk-1.0
+  alias_table_version: alias-1.0
+  input_pdf_count: 153
+  unique_document_count: 153
+  duplicate_count: 0
+  page_count: 755
+  section_count: 0
+  chunk_count: 0
+  citation_count: 686
+  review_queue_count: 27244
+  publish_status: draft
+[validate] release=current status=partial
+  [FAIL] 原件清點-PDF數: input=153 baseline=141
+  [FAIL] 原件清點-頁數: unique_pages=755 baseline=731（含重複別名頁見備註）
+  [PASS] 主鍵唯一-document_id: n=153
+  [PASS] 主鍵唯一-section_id: n=0
+  [PASS] 主鍵唯一-chunk_id: n=0
+  [PASS] 外鍵-chunk.section_id: dangling=0
+  [PASS] 外鍵-section.document_id: dangling=0
+  [PASS] span合法性: illegal_spans=0
+  [PASS] quote可重建: mismatch_sections=0
+  [FAIL] 法條邊界-附加條號存在: 附加條號 section 數=0
+  [PASS] 法條邊界-條號可解析: 無法解析 article_key 的條文 section=0
+  [PASS] 全文覆蓋-未歸屬行已記錄: uncovered_lines_logged=27237（進 review_queue，未靜默掉段）
+  [PASS] index_eligible-布林: non_bool=0

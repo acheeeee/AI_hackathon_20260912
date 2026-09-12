@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "files_checked": 168,
+  "raw_pdfs": 153,
+  "r1_files": 11,
+  "legacy_kb_json": 4,
+  "changed_or_missing": [],
+  "r1_original_manifest_untouched": true,
+  "note": "Initial snapshot saved before cleanup; checks compare all bytes, not only record counts."
+}

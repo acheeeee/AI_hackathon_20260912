@@ -1,47 +1,64 @@
 # Repository Guidelines
 
-## Project Structure & Module Organization
+## Source of Truth and Scope
 
-Backend code lives in `app/`. The shared Python pipeline is under `app/src/`; `app/api.py` exposes FastAPI endpoints, while `app/app.py` provides the Streamlit demo. The active UI is the Vue 3/TypeScript app at the repository root in `frontend/src/`. Treat `app/web/` as legacy and do not add features there. Raw official PDFs live in root `data/`; parsed, versioned knowledge-base JSON lives in `app/data/kb/`, while rebuildable indexes in `app/data/index/` stay untracked. Domain and legal-design notes are under `docs/`, with `docs/Reference/開發文件.md` as the authority for legal rules.
+Read `sysdoc/README.md` for the verified current system and `sysdoc/驗證報告.md` for evidence and limitations. `docs/README.md` maps the requirement documents. Design documents describe intended behavior, not implemented capabilities.
 
-## Build, Test, and Development Commands
+The 2026-09-12 task is audit and cleanup only. Further feature development requires explicit user authorization. Do not silently implement the new RAG, LLM, API, SQLite, or collaboration design while tidying this repository.
 
-Use Python 3.12 because the pinned scientific/PDF dependencies are not compatible with every Python release.
+## Project Structure
+
+- `frontend/`: active Vue 3 / TypeScript UI. Its `/api/*` calls still depend on `backend/api.py`.
+- `backend/`: legacy compatibility backend; `backend/src/` contains its Python pipeline. Retain it until a replacement is integrated and tested. The Streamlit `app/app.py` and static `app/web/` UIs were removed while this directory was still named `app/`; it was renamed to `backend/` on 2026-09-12.
+- `backend/data/kb/`: versioned legacy JSON. `backend/data/index/`: rebuildable, ignored local indexes. Neither is the new r1 release.
+- `data/raw/`: original PDFs, with 141 corpus PDFs and 12 incoming-document PDFs. Preserve bytes and provenance.
+- `data/processed/releases/r1/`: immutable audit subject, not accepted for new RAG ingestion. Do not trust its `validated` label as full contract acceptance; read the sysdoc findings.
+- `scripts/preprocess/`, `tests/preprocess/`: current preprocessing tools and custom regression runner.
+- `docs/design/`: visual design artifacts. `docs/協作設計/`: next-stage collaboration and `/api/v1` design. `docs/Reference/開發文件.md`: legal-source/design reference.
+
+## Environments and Verification
+
+Use Python 3.12 for the backend's pinned dependencies (`backend/requirements.txt`). The existing preprocessing environment `.venv_pre/` uses Python 3.9.6 with PyMuPDF 1.26.5; that exact local environment reproduced r1. Its dependency declaration is separate at `scripts/preprocess/requirements.txt`. Do not mix the backend's PyMuPDF 1.24.9 with r1 reproduction or assume other interpreter versions have been verified. Both environments must stay untracked.
+
+From the repo root, with existing environments:
 
 ```bash
-cd app
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m src.build_kb                 # PDFs -> app/data/kb/*.json
-python -m src.demo_retrieval          # CLI retrieval smoke test
-python -m uvicorn api:app --reload --port 8000
-streamlit run app.py                  # alternative demo UI
+backend/.venv/bin/python -m tests.preprocess.test_regression
 ```
 
-For the active frontend:
+From `backend/`:
 
 ```bash
-cd frontend
-npm ci
-npm run dev        # Vite on :5173; proxies /api to :8000
-npm run build      # type-checks and creates the production bundle
-npm run test:unit  # runs Vitest
-npm run lint       # runs Oxlint and ESLint with fixes
+GEMINI_API_KEY='' GOOGLE_API_KEY='' .venv/bin/python -m src.demo_retrieval
+GEMINI_API_KEY='' GOOGLE_API_KEY='' .venv/bin/python -m uvicorn api:app --host 127.0.0.1 --port 8000
+# Only if the legacy index is missing; leaves legacy KB and r1 untouched:
+GEMINI_API_KEY='' GOOGLE_API_KEY='' .venv/bin/python -c 'from src.build_index import build_all; build_all(use_vector=False)'
 ```
 
-## Coding Style & Naming Conventions
+Do not run the old `src.build_kb` or preprocess `all/process/validate --release r1` as a smoke test: these commands write data, and validation does not cover the full handoff contract. Current `data/raw/` layout also breaks the preprocessor's category inference. Verify in an isolated output location.
 
-Use four spaces and PEP 8 for Python; name modules/functions `snake_case` and Pydantic models/classes `PascalCase`. Add type annotations at public boundaries. Route model and embedding calls through `src/providers.py`, and preserve the BM25-only fallback and source-grounding guarantees. Vue/TypeScript uses two spaces, single quotes, no semicolons, and a 100-column target via EditorConfig and Prettier. Name Vue components `PascalCase.vue` and variables/functions `camelCase`.
+From `frontend/`:
 
-## Testing Guidelines
+```bash
+npm run dev
+npm run build
+npm run test:unit -- --run  # Currently exits 1: no test files
+./node_modules/.bin/oxlint .
+./node_modules/.bin/eslint .
+```
 
-Vitest is configured, but no tests are committed and no coverage threshold is enforced. Add frontend tests as `src/**/__tests__/*.spec.ts`. The Python project does not yet declare pytest; until a backend suite is introduced, run `python -m src.demo_retrieval` and manually exercise changed API paths. Legal-logic changes must include source-based regression cases.
+`npm run lint` applies fixes. Use the read-only linter commands for audits. Do not install packages or change runtime setup without authorization.
 
-## Commit & Pull Request Guidelines
+## Coding and Testing
 
-History uses short English summaries; make them specific and imperative, for example `Add BM25 fallback regression test`. Keep commits focused. PRs should explain scope, data/index impacts, validation commands, and linked issues. Include screenshots for UI changes and cite the relevant legal source or design note when changing domain logic.
+Python: four spaces, PEP 8, `snake_case` functions/modules, `PascalCase` models, annotations at public boundaries. Keep provider calls in `backend/src/providers.py`; preserve the BM25 fallback and explicit source limitations.
 
-## Security & Configuration
+Vue/TypeScript: two spaces, single quotes, no semicolons, 100-column target; `PascalCase.vue` components and `camelCase` variables/functions.
 
-Create `app/.env` with `GEMINI_API_KEY=<your key>` (obtain one at https://aistudio.google.com/apikey); without it the system degrades to BM25 retrieval plus template drafts. Never commit `.env`, API keys, `.venv/`, `node_modules/`, or `app/data/index/`. A single root `.gitignore` covers both the Python and frontend trees. Do not log uploaded appeal contents or credentials.
+Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. The preprocessing runner has 19 custom checks and no pytest dependency. Legal-logic changes require source-based regression cases; passing transport tests or showing a legal label is not evidence of legal correctness.
+
+## Git and Configuration
+
+Use focused commits with short imperative English summaries. PRs explain scope, data/index impact, validation and limitations. Preserve existing user changes and never stage unrelated files.
+
+Never commit API keys, `.env`, `.venv/`, `.venv_pre/`, `node_modules/`, or `backend/data/index/`. Keep uploaded contents and credentials out of logs. Provider configuration is process environment or local env files; no secret values belong in documentation. Offline tests set both `GEMINI_API_KEY` and `GOOGLE_API_KEY` to empty strings. New backends must follow the approved case isolation and versioning contract rather than extending the legacy global `_last` state.

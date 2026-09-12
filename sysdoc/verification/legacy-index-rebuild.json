@@ -1,0 +1,10 @@
+{
+  "result": "PASS",
+  "use_vector": false,
+  "counts": {
+    "statutes": 1976,
+    "decisions": 101,
+    "refs": 29
+  },
+  "output": "temporary directory; original index untouched"
+}

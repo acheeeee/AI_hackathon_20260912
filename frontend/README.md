@@ -1,54 +1,30 @@
-# frontend
+# 現役前端
 
-This template should help get you started developing with Vue 3 in Vite.
+Vue 3＋TypeScript＋Vite＋Pinia＋Element Plus。唯一 route `/` 顯示五步驟 wizard；步驟狀態由 Pinia 管理。
 
-## Recommended IDE Setup
+## 依據與狀態
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- 視覺／原始流程：[docs/design](../docs/design/README.md)。
+- 下一階段互動與 API：[docs/協作設計](../docs/協作設計/README.md)，尚未實作。
+- 實際已完成程度：[sysdoc](../sysdoc/README.md) 與 [驗證報告](../sysdoc/驗證報告.md)。
 
-## Recommended Browser Setup
+五個頁面在 `src/views/steps/`：Upload、Extract、Gate、Select、Draft。API client 在 `src/api/client.ts`，型別在 `src/types/appeal.ts`，跨步驟狀態在 `src/stores/case.ts`。
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## 指令
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
+```bash
+npm ci                 # 新環境依 package-lock 安裝；本次驗證復用既有套件，沒有重裝
+npm run dev            # :5173，/api 代理至 localhost:8000
+npm run build          # 型別檢查＋正式打包
+npm run test:unit -- --run  # 目前沒有測試檔，會 exit 1
+./node_modules/.bin/oxlint .
+./node_modules/.bin/eslint .
 ```
 
-### Compile and Hot-Reload for Development
+`npm run lint` 帶 `--fix`，會改動程式；只盤點時使用上述兩個無修正指令。Node 版本限制以 `package.json` 為準，本次使用 Node 26.5.0、npm 11.17.0。
 
-```sh
-npm run dev
-```
+## 執行邊界
 
-### Type-Check, Compile and Minify for Production
+前端必須連到 [backend/api.py](../backend/api.py) 才能分析、生成草稿與匯出。API 未啟動時，畫面載入不代表功能可用。正式部署需要另外配置 `/api` 反向代理，Vite 開發代理不會被打包進正式網站。
 
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+目前沒有案件持久化；重新整理會回到上傳頁。程序檢核狀態只在 Gate 元件記憶體中；引用勾選只在前端，生成草稿不會送出勾選項目。這些是待修缺口，不能依畫面文字宣稱已完成。

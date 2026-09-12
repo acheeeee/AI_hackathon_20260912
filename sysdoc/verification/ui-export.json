@@ -1,0 +1,9 @@
+{
+  "draft_download": [
+    {
+      "url": "http://127.0.0.1:15173/api/draft/docx",
+      "status": 200
+    }
+  ],
+  "error": null
+}
