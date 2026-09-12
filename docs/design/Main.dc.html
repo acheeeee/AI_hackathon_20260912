@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+  <style>
+    :root{
+      --blue:#0b3d91; --blue-light:#1a56c4; --yellow:#ffd400;
+      --ink:#1a2b4a; --muted:#6b7794; --line:#e2e8f2;
+      --bg:#f4f7fc; --card:#ffffff; --ok:#1a7f4b; --warn:#c0392b;
+      --shadow:0 2px 12px rgba(11,61,145,.08);
+    }
+    body{margin:0;background:#f4f7fc;color:#1a2b4a;
+      font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      line-height:1.6;font-size:15px;}
+    a{color:#1a56c4;text-decoration:none;} a:hover{color:#0b3d91;}
+    code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;}
+  </style>
+</helmet>
+
+<div style="display:flex; flex-direction:column">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(100deg,#0b3d91,#1a56c4); color:#ffffff; padding:14px 28px; box-shadow:0 2px 12px rgba(11,61,145,.08)">
+    <div style="display:flex; align-items:center; gap:16px">
+      <svg width="124" height="52" viewBox="0 0 200 84" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEDO logo">
+        <rect x="2" y="2" width="196" height="80" rx="12" fill="#0b3d91"/>
+        <ellipse cx="100" cy="42" rx="86" ry="30" fill="#ffd400"/>
+        <text x="100" y="42" text-anchor="middle" dominant-baseline="central" font-family="Arial Black, Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#0b3d91" letter-spacing="1">BEDO</text>
+      </svg>
+      <div>
+        <div style="font-size:20px; font-weight:800; letter-spacing:.5px">新北市政府訴願管理 AI 輔助系統</div>
+        <div style="font-size:12px; opacity:.85; margin-top:2px">Appeals Management AI Assistant　·　程序審查｜法規推薦｜相似前例｜草稿生成</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <div style="font-size:12px; background:rgba(26,127,75,.9); padding:6px 12px; border-radius:20px">Gemini 已連線</div>
+      <div style="font-size:12px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:20px">承辦人　王○明</div>
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border-bottom:1px solid #e2e8f2">
+    <div style="max-width:1280px; margin:0 auto; padding:0 20px; display:flex; align-items:center; gap:8px; height:60px">
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; border-radius:20px; background:#0b3d91; color:#ffffff">
+        <div style="width:20px; height:20px; border-radius:50%; background:#ffd400; color:#0b3d91; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">1</div>
+        <span style="font-size:14px; font-weight:700">進件上傳</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">2</div>
+        <span style="font-size:14px">擷取與解析</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">3</div>
+        <span style="font-size:14px">程序審查 §77</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">4</div>
+        <span style="font-size:14px">法條與前例</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">5</div>
+        <span style="font-size:14px">決定書草稿</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px; width:100%; margin:0 auto; padding:26px 20px 40px; display:grid; grid-template-columns:1fr 360px; gap:20px; align-items:start">
+
+    <div style="display:flex; flex-direction:column; gap:20px">
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:22px">
+        <div style="font-size:16px; font-weight:700; color:#0b3d91; padding-bottom:10px; border-bottom:2px solid #e2e8f2; margin-bottom:18px">上傳案件文件</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px">
+
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <div style="width:20px; height:20px; border-radius:6px; background:#0b3d91; color:#ffffff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">1</div>
+              <span style="font-size:13px; font-weight:700; color:#6b7794">訴願書</span>
+              <span style="font-size:11px; font-weight:700; color:#c0392b; background:#fdecea; padding:1px 7px; border-radius:10px">必要</span>
+            </div>
+            <div style="border:1px solid #e2e8f2; border-radius:12px; background:#eef4ff; padding:18px 18px; display:flex; align-items:center; gap:14px; min-height:132px">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0b3d91" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h3"/></svg>
+              <div style="flex:1; min-width:0">
+                <div style="font-size:14px; font-weight:700; color:#0b3d91; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">112年訴願書-光○紙印花.pdf</div>
+                <div style="font-size:12px; color:#6b7794; margin-top:3px">3 頁　·　248 KB　·　文字層可讀</div>
+                <div style="font-size:12px; color:#1a7f4b; margin-top:6px; display:flex; align-items:center; gap:5px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  已解析文字，不需 OCR
+                </div>
+              </div>
+              <div style="width:26px; height:26px; border-radius:7px; border:1px solid #e2e8f2; background:#ffffff; color:#6b7794; display:flex; align-items:center; justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex; flex-direction:column; gap:8px">
+            <div style="display:flex; align-items:center; gap:8px">
+              <div style="width:20px; height:20px; border-radius:6px; background:#0b3d91; color:#ffffff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">2</div>
+              <span style="font-size:13px; font-weight:700; color:#6b7794">原處分書</span>
+              <span style="font-size:11px; font-weight:700; color:#c0392b; background:#fdecea; padding:1px 7px; border-radius:10px">必要</span>
+            </div>
+            <div style="border:1px solid #e2e8f2; border-radius:12px; background:#eef4ff; padding:18px; display:flex; align-items:center; gap:14px; min-height:132px">
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0b3d91" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15h6"/><path d="M9 11h3"/></svg>
+              <div style="flex:1; min-width:0">
+                <div style="font-size:14px; font-weight:700; color:#0b3d91; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">新北環稽字第1120829275號函.pdf</div>
+                <div style="font-size:12px; color:#6b7794; margin-top:3px">5 頁　·　512 KB　·　含 2 份裁處書</div>
+                <div style="font-size:12px; color:#1a7f4b; margin-top:6px; display:flex; align-items:center; gap:5px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  已解析文字，不需 OCR
+                </div>
+              </div>
+              <div style="width:26px; height:26px; border-radius:7px; border:1px solid #e2e8f2; background:#ffffff; color:#6b7794; display:flex; align-items:center; justify-content:center">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:16px">
+          <div style="display:flex; align-items:center; gap:8px">
+            <div style="width:20px; height:20px; border-radius:6px; background:#6b7794; color:#ffffff; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">3</div>
+            <span style="font-size:13px; font-weight:700; color:#6b7794">送達證書、委任狀、其他卷證</span>
+            <span style="font-size:11px; font-weight:700; color:#6b7794; background:#f4f7fc; padding:1px 7px; border-radius:10px">選填</span>
+            <span style="font-size:12px; color:#6b7794">缺了送達日，第 2 款會判成「證據不足」而不是「不成立」</span>
+          </div>
+          <div style="border:2px dashed #b9c6e0; border-radius:12px; background:#fafcff; padding:22px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#b9c6e0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></svg>
+            <div style="font-size:14px; color:#6b7794">拖曳檔案至此，或 <span style="color:#1a56c4; font-weight:700">點擊選擇檔案</span></div>
+            <div style="font-size:12px; color:#6b7794">支援 PDF，可一次多選</div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <div style="display:flex; align-items:center; gap:8px; border:1px solid #e2e8f2; background:#ffffff; border-radius:20px; padding:5px 12px 5px 8px">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0b3d91" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+              <span style="font-size:12px; font-weight:700; color:#0b3d91">送達證書-1120505.pdf</span>
+              <span style="font-size:11px; color:#6b7794">1 頁</span>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7794" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:16px">
+        <div style="display:flex; align-items:flex-start; gap:8px; flex:1">
+          <div style="width:16px; height:16px; border-radius:4px; background:#0b3d91; display:flex; align-items:center; justify-content:center; margin-top:3px">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <div style="font-size:13px; color:#6b7794">使用 LLM 補強爭點擷取與理由欄撰寫（耗用 Gemini 額度；關閉時降級為規則擷取＋模板草稿，流程不中斷）</div>
+        </div>
+        <div style="background:#0b3d91; color:#ffffff; border-radius:8px; padding:13px 34px; font-size:15px; font-weight:700; display:flex; align-items:center; gap:8px; white-space:nowrap">
+          開始解析
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; margin-bottom:12px">載入示範案例</div>
+        <div style="font-size:13px; color:#6b7794; margin-bottom:14px">不想上傳檔案時，直接用語料庫裡的真實決定書跑完整條流程。</div>
+
+        <div style="border:1.5px solid #0b3d91; border-radius:10px; padding:12px 14px; background:#eef4ff; margin-bottom:10px">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+            <span style="font-size:13px; font-weight:700; color:#0b3d91">112 年 #03　逾期不受理</span>
+            <span style="font-size:11px; font-weight:700; color:#0b3d91; background:#ffd400; padding:1px 8px; border-radius:10px">§77(2)</span>
+          </div>
+          <div style="font-size:12px; color:#6b7794; margin-top:5px">違反空氣污染防制法　·　末日逢星期日順延</div>
+        </div>
+
+        <div style="border:1px solid #e2e8f2; border-radius:10px; padding:12px 14px; margin-bottom:10px">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+            <span style="font-size:13px; font-weight:700">114 年 #09　訴願駁回</span>
+            <span style="font-size:11px; font-weight:700; color:#6b7794; background:#f4f7fc; padding:1px 8px; border-radius:10px">§79</span>
+          </div>
+          <div style="font-size:12px; color:#6b7794; margin-top:5px">違反噪音管制法　·　進實體審查</div>
+        </div>
+
+        <div style="border:1px solid #e2e8f2; border-radius:10px; padding:12px 14px">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px">
+            <span style="font-size:13px; font-weight:700">113 年 #06　當事人不適格</span>
+            <span style="font-size:11px; font-weight:700; color:#7a5c00; background:#fff8e1; padding:1px 8px; border-radius:10px">§77(3)</span>
+          </div>
+          <div style="font-size:12px; color:#6b7794; margin-top:5px">實質法律判斷　·　系統標黃轉人工</div>
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; margin-bottom:12px">這個系統會做什麼</div>
+        <div style="display:flex; flex-direction:column; gap:11px">
+          <div style="display:flex; gap:9px; font-size:13px; color:#6b7794"><span style="color:#1a7f4b; font-weight:900">·</span><span>把八款程序審查從「心裡一眼排除」變成「有紀錄的排除」</span></div>
+          <div style="display:flex; gap:9px; font-size:13px; color:#6b7794"><span style="color:#1a7f4b; font-weight:900">·</span><span>期間算式整條攤開，逐步可驗算</span></div>
+          <div style="display:flex; gap:9px; font-size:13px; color:#6b7794"><span style="color:#1a7f4b; font-weight:900">·</span><span>推薦的法條與前例都附原文出處，抽不到就留空</span></div>
+          <div style="display:flex; gap:9px; font-size:13px; color:#6b7794"><span style="color:#c0392b; font-weight:900">·</span><span style="color:#c0392b; font-weight:700">系統不做決定。草稿要不要用，是承辦人與委員會的事</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
