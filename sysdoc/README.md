@@ -6,19 +6,19 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座與 B1 run／事件持久化已完成；後端 77 項測試通過，`caseapi` 覆蓋率 94%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，`ai_runs`／`jobs`／`run_events` 已能凍結 context、持久事件、JSON replay 與冪等取消。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。現有 Vue 仍未接新版 API。
+2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化與 B2 Evidence 工具 adapter 已完成；後端 83 項測試通過，`caseapi` 覆蓋率 94%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，adapter 能將實際搜尋／開啟活動寫入 run 事件，且只有開啟原文會產生 program-verified evidence。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。現有 Vue 仍未接新版 API。
 
 ## 1. 判斷與工作邊界
 
-目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物與獨立 EvidenceRepository。**新證據層尚未接進 run／`evidence_records`／前端來源卡，現有 Vue 仍走舊資料路徑。**
+目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物、EvidenceRepository 與內部工具 adapter。**新證據層已能寫 run 事件與 `evidence_records`，但尚未有模型 runner、聊天 API 或前端來源卡；現有 Vue 仍走舊資料路徑。**
 
 | 問題 | 盤點結論 |
 |---|---|
 | 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。 |
 | `backend/` 能刪嗎？ | 不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API。本次只刪除兩套已退役 demo UI。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
-| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座與 run／事件持久化已有實作；下一步是 Evidence 工具 adapter，再用固定假模型完成端到端。線上模型已排入後續授權順序；向量仍須先有 BM25 評估不足的證據。 |
-| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A 與 B0；未新增線上 LLM、embedding、run／SSE、登入或前端整合。 |
+| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化與 Evidence adapter 已有實作；下一步是固定假模型端到端。線上模型已排入後續授權順序；向量仍須先有 BM25 評估不足的證據。 |
+| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1 與 B2；未新增線上 LLM、embedding、SSE、登入或前端整合。 |
 
 ## 2. 目前程式架構
 
@@ -38,8 +38,9 @@ flowchart TD
   PRE -. 舊布局可重現 .-> R1[data/processed/releases/r1]
   PRE --> R3[data/processed/releases/r3]
   R3 --> ER[caseapi/evidence：hash-bound BM25 / open_source]
-  ER -. 尚未接 run / evidence_records .-> NEWAPI[caseapi：新版案件 API]
-  NEWAPI -. 尚未接現有 Vue .-> FUTURE[run／工具活動／前端來源卡：待開發]
+  ER --> TOOL[caseapi/tools：server activity / evidence_records]
+  TOOL --> NEWAPI[caseapi：新版案件 API / run 狀態]
+  NEWAPI -. 尚未接現有 Vue .-> FUTURE[固定假模型／SSE／前端來源卡：待開發]
 ```
 
 ### 2.1 現役前端
@@ -72,7 +73,7 @@ flowchart TD
 
 `_last` 是 Python 程序全域 dict。分析、草稿、匯出共享最近一案；兩個使用者／分頁會互相覆蓋，多 worker 也不共享一致狀態。這是程式結構已確認的限制；本次沒有把它修成案件服務，也未執行負載／多人競爭測試。
 
-舊 `api.py` 沒有 SQLite、case revision、Proposal、EvidenceRef 或 SSE run events。新版 `caseapi` 已有 `/api/v1`、SQLite、不可變版本、Proposal／EvidenceRef 與三方採用，但尚無 run／SSE。舊 API 的 `doc_id` 仍與 release 的 `document_id/section_id/chunk_id` 不相容，未交付遷移映射。
+舊 `api.py` 沒有 SQLite、case revision、Proposal、EvidenceRef 或 SSE run events。新版 `caseapi` 已有 `/api/v1`、SQLite、不可變版本、Proposal／EvidenceRef、三方採用、run 持久化與 JSON 事件 replay，但尚無聊天入口與 SSE。舊 API 的 `doc_id` 仍與 release 的 `document_id/section_id/chunk_id` 不相容，未交付遷移映射。
 
 ### 2.3 檢索與模型
 

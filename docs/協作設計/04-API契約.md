@@ -1,6 +1,6 @@
 # 案件、AI 協作與修改提案 API 契約
 
-日期：2026-09-12｜v1.0 設計｜階段 A 與 run 讀取／JSON 事件 replay／取消已實作；SSE／聊天端點尚未實作，偏離見 05 §6
+日期：2026-09-12｜v1.0 設計｜階段 A、B1 run／JSON replay 與 B2 內部工具已實作；SSE／聊天端點尚未實作，偏離見 05 §6
 
 ## 1. 共通規約
 
@@ -35,7 +35,7 @@ JSON 欄位 `snake_case`；時間使用 UTC RFC 3339，日曆日期使用西元 
 
 `evidence_id, source_ref, quote, source_exists, quote_matches, support_status, assessed_by, temporal_status, opened_event_id`。source_ref 包含 `kb_release_id` 或本案文件版本、`document_id, extraction_version, source_spans`；每個 span 以 page／line／字元範圍定位。
 
-外部來源另有 `url, retrieved_at, snapshot_id, content_hash`。同一工具搜尋結果與已開啟來源要分開，`opened_event_id` 不能指向 search 事件。無法逐字定位的模型概述放 answer，不放 quote。
+外部來源另有 `url, retrieved_at, snapshot_id, content_hash`。同一工具搜尋結果與已開啟來源要分開，`opened_event_id` 不能指向 search 事件。B2 的 `open_source` 由伺服器重建 quote 與 hash，成功時寫 `assessed_by=program`；`support_status` 仍為 `unknown`，不冒充法律關係已審定。無法逐字定位的模型概述放 answer，不放 quote。
 
 ### Proposal
 

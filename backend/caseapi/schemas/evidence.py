@@ -1,8 +1,7 @@
 """EvidenceRef。
 
 契約 §5.1：source_exists 與 quote_matches 是程式檢查的結果，不是模型自稱。
-A3 還沒有接語料儲存，所以這兩項一律 null、assessed_by 為 unverified，
-不冒充已查證。
+fixture 提案仍保存 unverified；B2 ``open_source`` 才能保存 program 查證結果。
 """
 
 from typing import Any, Literal
@@ -10,6 +9,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 ASSESSED_BY_UNVERIFIED = 'unverified'
+ASSESSED_BY_PROGRAM = 'program'
 SUPPORT_UNKNOWN = 'unknown'
 TEMPORAL_UNKNOWN = 'unknown'
 

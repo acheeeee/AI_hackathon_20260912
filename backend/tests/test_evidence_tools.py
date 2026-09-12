@@ -1,5 +1,6 @@
 """B2 server-side tool adapters and the verified evidence write path."""
 
+import hashlib
 import json
 import sqlite3
 from dataclasses import replace
@@ -38,7 +39,9 @@ class FakeEvidenceRepository:
             ),
             source_file='data/raw/相關法規/訴願法.pdf',
             source_sha256='law-sha',
-            content_hash='quote-sha',
+            content_hash=hashlib.sha256(
+                '訴願應於三十日內提起。'.encode('utf-8')
+            ).hexdigest(),
             source_exists=True,
             quote_matches=True,
             temporal_status='snapshot_only',
@@ -208,6 +211,39 @@ def test_failed_open_records_tool_failure_without_evidence(
             run_id=run_id,
             release_id='r3',
             chunk_id='missing',
+        )
+
+    assert _event_types(settings.db_path, run_id) == [
+        'run.started',
+        'tool.started',
+        'tool.failed',
+    ]
+    conn = connect(settings.db_path)
+    try:
+        assert conn.execute('SELECT COUNT(*) FROM evidence_records').fetchone()[0] == 0
+    finally:
+        conn.close()
+
+
+def test_open_source_fails_closed_when_repository_did_not_verify_quote(
+    client: TestClient, settings
+) -> None:
+    case_id = create_case(client)
+    run_id = _running_run(settings.db_path, case_id)
+    repository = FakeEvidenceRepository()
+    repository.opened = replace(repository.opened, quote_matches=False)
+    adapter = EvidenceToolAdapter(
+        db_path=settings.db_path,
+        actor_id=settings.actor_id,
+        repository=repository,
+    )
+
+    with pytest.raises(ValueError, match='not verified'):
+        adapter.open_source(
+            case_id=case_id,
+            run_id=run_id,
+            release_id='r3',
+            chunk_id='chk_law_14',
         )
 
     assert _event_types(settings.db_path, run_id) == [

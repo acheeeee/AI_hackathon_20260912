@@ -2,7 +2,7 @@
 
 協助承辦人整理案件、檢索法規與歷史前例、編修決定書草稿。決定與法律覆核由人負責。
 
-**2026-09-12 現況：既有 Vue＋舊版 API 可跑離線示範；新版案件 API、r3/BM25 證據層與 B1 run／事件持久化已完成，但 Evidence 工具 adapter 與端到端 AI 流程尚未接上。**
+**2026-09-12 現況：既有 Vue＋舊版 API 可跑離線示範；新版案件 API、r3/BM25 證據層、B1 run／事件持久化與 B2 Evidence 工具 adapter 已完成，但固定假模型端到端流程尚未接上。**
 
 - [系統文件 sysdoc](sysdoc/README.md)：目前架構、功能邊界、資料缺口、啟動方法及後續交接。
 - [本次驗證報告](sysdoc/驗證報告.md)：PASS／FAIL／NOT RUN 與實測證據。
@@ -63,4 +63,4 @@ npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 - r1 可在原抽取器版本與原目錄布局重現，但來源路徑失效、623 個 chunk 引用座標不精確，尚不能直接簽收為 RAG 輸入。
 - r2 修復來源路徑、chunk 座標、版本、案件家族與部分引用解析；其「4 部法規只能章節切分」結論後來確認是抽取閱讀順序誤判，不是原 PDF 缺資料。
 - r3 使用同一批、位元組未改的原 PDF，依 bbox 還原法規視覺閱讀順序：15／15 資料檢查通過，2,214 個法條 section 均有可解析條號，3,103 個 chunk 的 quote 全量可重建；仍未完成法律人工覆核與評估 gold。詳見 [r3 稽核報告](sysdoc/verification/r3-audit.json)。
-- 新 `/api/v1` 的案件隔離、SQLite、版本、提案／diff／採用已完成階段 A；`EvidenceRepository` 已能對 r3 做 hash 驗證、離線 BM25、同案排除與精確原文回查。B1 已加入 `ai_runs`／`jobs`／`run_events`、JSON 事件 replay 與冪等取消；工具 adapter、SSE、固定假模型流程、線上模型與前端串接仍未完成。
+- 新 `/api/v1` 的案件隔離、SQLite、版本、提案／diff／採用已完成階段 A；`EvidenceRepository` 已能對 r3 做 hash 驗證、離線 BM25、同案排除與精確原文回查。B1 已加入 run／job／事件；B2 已加入四個 server-side tool，且只有 `open_source` 會在同一交易寫入已驗證 evidence 與 `source.opened`。SSE、固定假模型流程、線上模型與前端串接仍未完成。

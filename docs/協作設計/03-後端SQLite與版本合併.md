@@ -1,6 +1,6 @@
 # 後端案件管理、SQLite 與版本合併
 
-日期：2026-09-12｜v1.0 工程方案｜階段 A 與 B1 run／事件持久化已實作；未完成項見 05 §6
+日期：2026-09-12｜v1.0 工程方案｜階段 A、B1 run／事件與 B2 evidence 寫入已實作；未完成項見 05 §6
 
 ## 1. 架構與責任
 
@@ -49,7 +49,7 @@ Vue 工作畫面／AI 側邊欄
 | `ai_runs` | `id, case_id, state, context_manifest_json, prompt_version, provider_config_json, lease_until, error_code` |
 | `jobs` | `id, case_id, run_id, kind, input_refs_json, state, attempt, lease_until`；抽文／規則／AI 工作排程，輸入凍結，重試保留紀錄 |
 | `run_events` | `run_id, sequence, event_type, tool_call_id, payload_json, created_at`；序號唯一，用於串流補送 |
-| `evidence_records` | `id, case_id, run_id, source_ref_json, quote, quote_hash, verification_json`；外部來源另含 URL／快照 |
+| `evidence_records` | `id, case_id, run_id, source_ref_json, quote, quote_hash, verification_json`；B2 只允許 `open_source` 在同一交易與 `source.opened` 一起寫程式驗證值；外部來源另含 URL／快照 |
 | `proposals` | `id, case_id, origin, run_id, reverts_mutation_id, base_case_revision, candidate_json, dependency_hash, state`；人工撤回的 run 可為 null |
 | `merge_previews` | `id, proposal_id, current_case_revision, selected_groups_json, resolved_candidate_json, preview_hash, conflict_json` |
 | `proposal_applications` | `proposal_id, group_id, mutation_id, resulting_revision`；防止同組套用兩次 |

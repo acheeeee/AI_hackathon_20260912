@@ -16,6 +16,7 @@
 
 - `caseapi/db/`：SQLite 連線、短交易與 migration。
 - `caseapi/evidence/`：讀取不可變 r3 release，先驗 manifest／artifact hash，再對 `index_eligible=true` 的 chunk 建離線 BM25；可排除同案件家族、開啟精確來源並核對 quote。
+- `caseapi/tools/evidence_tools.py`：四個案件受限工具。每次呼叫由伺服器追加 activity；search 不落 evidence，`open_source` 在同一交易寫 program-verified evidence 與 `source.opened`。
 - `caseapi/services/run_service.py`：凍結 run context、queued job、狀態轉移與每個 run 單調遞增的 append-only 事件。
 - `caseapi/api/routes_runs.py`：讀 run、以 `after_sequence` 分頁 replay JSON 事件、冪等取消未完成 run；SSE 尚未實作。
 - `caseapi/schemas/`：請求與回應的 Pydantic 模型，含 TargetRef。
@@ -27,7 +28,7 @@
 .venv/bin/python -m uvicorn caseapi.main:app --host 127.0.0.1 --port 8001
 ```
 
-目前測試結果為 77 passed，`caseapi` 總覆蓋率 94%，其中 `run_service` 93%、`EvidenceRepository` 87%。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH` 可改位置。測試依賴在 `requirements-dev.txt`。
+目前測試結果為 83 passed，`caseapi` 總覆蓋率 94%，其中 `EvidenceToolAdapter` 93%、`EvidenceRepository` 87%。資料庫預設寫入 `data/caseapi.db`，未納版控；用 `CASEAPI_DB_PATH` 可改位置。測試依賴在 `requirements-dev.txt`。
 
 證據層的最小用法（從 `backend/` 執行）：
 
@@ -44,7 +45,7 @@ hits = repo.search('訴願應自行政處分達到次日起三十日內提起')
 source = repo.open_source(hits[0].chunk_id)
 ```
 
-EvidenceRepository 仍是內部讀取／檢索層，尚未由工具 adapter 寫入 `evidence_records`。run／事件已持久化，但還沒有聊天入口、SSE、模型協調器或前端來源卡。實作進度與已知缺口見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。
+EvidenceRepository 已由 `EvidenceToolAdapter` 包裝；它還沒有聊天入口、SSE、模型協調器或前端來源卡。目前只有 adapter 的 `open_source` 可寫程式驗證的 `evidence_records`；階段 A fixture 提案傳入的 evidence 仍為 `unverified`。實作進度與已知缺口見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。
 
 ## 舊版執行
 
