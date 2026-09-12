@@ -1,0 +1,21 @@
+# 訴願管理 AI 系統 依賴
+pymupdf==1.24.9          # PDF 文字抽取
+pydantic==2.9.2          # 資料模型與驗證
+rank-bm25==0.2.2         # BM25 關鍵字檢索
+jieba==0.42.1            # 中文斷詞（BM25 用）
+numpy==1.26.4            # 向量運算
+
+# FastAPI 介面（api.py，供根目錄 frontend/ 的 Vue 前端呼叫）
+fastapi==0.141.1
+uvicorn==0.52.4
+python-multipart==0.0.32  # File/Form 上傳
+python-docx==1.2.0        # 決定書草稿匯出 Word（docx_export.py）
+
+# 舊版 Gemini Provider 使用的 SDK；模型設定見 src/providers.py。
+# 本次 repo 驗證只跑離線 BM25 與模板，未驗證線上模型可用性。
+google-generativeai==0.8.3
+
+# 說明：
+# - BM25 關鍵字檢索本地執行（jieba），不耗額度
+# - 索引快取存於 data/index/；有向量時，查詢仍可能呼叫 embedding API
+# - 比賽當天如換官方 API，只需改 src/providers.py
