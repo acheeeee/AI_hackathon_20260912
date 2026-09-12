@@ -15,6 +15,11 @@ python-docx==1.2.0        # 決定書草稿匯出 Word（docx_export.py）
 # 本次 repo 驗證只跑離線 BM25 與模板，未驗證線上模型可用性。
 google-generativeai==0.8.3
 
+# 新後端線上 provider：caseapi/ai/agentcore_provider.py 呼叫 AWS Bedrock
+# AgentCore Runtime；backend/scripts/deploy_agentcore.py 也用它部署代理與打包
+# 純 Python 依賴。憑證一律從環境變數讀，不寫進任何檔案。
+boto3==1.43.93
+
 # 說明：
 # - BM25 關鍵字檢索本地執行（jieba），不耗額度
 # - 索引快取存於 data/index/；有向量時，查詢仍可能呼叫 embedding API

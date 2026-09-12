@@ -12,6 +12,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from caseapi.ai.agentcore_provider import AgentCoreModelProvider
 from caseapi.ai.contracts import ModelProvider
 from caseapi.ai.fixed_provider import FixedModelProvider
 from caseapi.api.routes_annotations import router as annotations_router
@@ -61,7 +62,7 @@ def create_app(
     )
     app.state.settings = settings or load_settings()
     app.state.evidence_repository = evidence_repository
-    app.state.model_provider = model_provider or FixedModelProvider()
+    app.state.model_provider = model_provider or _build_model_provider(app.state.settings)
 
     @app.middleware('http')
     async def attach_request_id(request: Request, call_next):
@@ -97,6 +98,29 @@ def create_app(
     ):
         app.include_router(router)
     return app
+
+
+def _build_model_provider(settings: Settings) -> ModelProvider:
+    """Pick the provider by `settings.model_provider`; default stays offline.
+
+    `fixed` needs nothing else and works with no network or credentials.
+    `agentcore` needs a deployed runtime ARN (see
+    `backend/scripts/deploy_agentcore.py`); fail fast on misconfiguration
+    instead of silently falling back, so a demo never *looks* like it is
+    using the online model when it is actually still on the fixed one.
+    """
+    if settings.model_provider == 'fixed':
+        return FixedModelProvider()
+    if settings.model_provider == 'agentcore':
+        if not settings.agentcore_runtime_arn:
+            raise ValueError(
+                'CASEAPI_MODEL_PROVIDER=agentcore requires CASEAPI_AGENTCORE_RUNTIME_ARN'
+            )
+        return AgentCoreModelProvider(
+            runtime_arn=settings.agentcore_runtime_arn,
+            region=settings.agentcore_region or 'us-west-2',
+        )
+    raise ValueError(f'unknown CASEAPI_MODEL_PROVIDER: {settings.model_provider!r}')
 
 
 def _translate_validation_error(exc: RequestValidationError) -> ApiError:

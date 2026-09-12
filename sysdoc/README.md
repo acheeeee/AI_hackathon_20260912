@@ -6,11 +6,11 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter 與 B3 固定模型端到端已完成；後端 92 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定 provider 能經 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。使用者已決定前端最終全面改接新後端並刪除舊後端，但逐畫面推進，現有 Vue 目前仍走舊 API。
+2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端，以及線上 AWS Bedrock AgentCore provider 都已完成；後端 104 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定與 AgentCore 兩個 provider 都經同一個 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run；已用真實 AWS 請求跑過一次完整端到端流程。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)，AgentCore 部署細節見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。使用者已決定前端最終全面改接新後端並刪除舊後端，但逐畫面推進，現有 Vue 目前仍走舊 API。
 
 ## 1. 判斷與工作邊界
 
-目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物、EvidenceRepository、內部工具 adapter 與固定模型聊天端到端。**新證據層已能寫 run 事件、`evidence_records`、assistant 訊息與冪等聊天 run，但還沒有線上模型、AI 生成草稿的提案鏈或前端側邊欄；現有 Vue 仍走舊資料路徑。**
+目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物、EvidenceRepository、內部工具 adapter、固定模型聊天端到端與線上 AgentCore provider。**新證據層已能寫 run 事件、`evidence_records`、assistant 訊息與冪等聊天 run，兩種 provider 都已可用；但還沒有 AI 生成草稿的提案鏈或前端側邊欄，現有 Vue 仍走舊資料路徑。**
 
 | 問題 | 盤點結論 |
 |---|---|
@@ -18,7 +18,7 @@
 | `backend/` 能刪嗎？ | 現階段不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API，也是新後端上傳建案／程序審查兩個缺口要搬用的規則式抽取邏輯來源。使用者已決定等新後端補齊對應能力、前端全部改接完成後才刪除。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
 | 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化、Evidence adapter 與固定模型端到端已有實作；下一步是接 AWS Bedrock AgentCore 線上 provider，然後補上傳建案、案件列表、程序審查與草稿生成四個後端缺口讓前端能逐步改接。gold 評估排在整條 demo 流程能跑之後；向量仍須先有 BM25 評估不足的證據。 |
-| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1、B2 與 B3（固定模型聊天端到端）；未新增線上 LLM、embedding、長連線 SSE、登入或前端整合。 |
+| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1、B2、B3（固定模型聊天端到端）與線上 AgentCore provider；未新增 embedding、長連線 SSE、登入或前端整合。 |
 
 ## 2. 目前程式架構
 
@@ -257,7 +257,7 @@ scripts/preprocess/README.md  前處理版本、重現限制與入口
 
 1. **資料與共同契約（部分完成）。** r3 已修復 raw 分類、精確 chunk spans、版本、案件家族與發布驗證；仍要補法律人工覆核、低文字頁處置及評估 inputs／gold。
 2. **最小案件狀態與 API（階段 A 完成）。** `case_id`、revision、EvidenceRef、TargetRef、Proposal、SQLite、衝突與採用鏈已有測試；真登入、規則引擎、送審與前端整合仍未完成。
-3. **可驗證檢索與 run 基底（B0/B1 完成）。** r3 read／search／open、BM25、同案排除、run context、持久事件、JSON replay 與取消已完成；下一步把 EvidenceRepository 包成會寫真實工具事件與 `evidence_records` 的 adapter。
-4. **接固定假模型與線上模型（已授權、尚未完成）。** Evidence adapter 完成後先以固定假回應驗證 SSE、取消／重連與完整 run，再接線上 provider；之後建立 gold 量 BM25。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
+3. **可驗證檢索與 run 基底（B0/B1/B2 完成）。** r3 read／search／open、BM25、同案排除、run context、持久事件、JSON replay、取消與寫真實工具事件／`evidence_records` 的 adapter 都已完成。
+4. **固定假模型與線上模型（都已完成）。** 固定 provider 已驗證聊天、Last-Event-ID SSE replay、取消／重連與完整 run；線上 AWS Bedrock AgentCore provider 已部署並用真實請求跑過端到端流程，見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。下一步是補前端能上場的四個後端缺口（上傳建案、案件列表、程序審查、草稿生成），再建 gold 量 BM25。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
 
-每階段完成狀態應回寫 [協作設計的驗收表](../docs/協作設計/05-實作順序與驗收.md)，並以真實執行結果更新 sysdoc。未經端到端實跑的 A03、A04、A06、A08、S01、S02 維持 NOT RUN。
+每階段完成狀態應回寫 [協作設計的驗收表](../docs/協作設計/05-實作順序與驗收.md)，並以真實執行結果更新 sysdoc。未經端到端實跑的 A05、A06、A07 維持 NOT RUN；A03、A04、A08、S01、S02 已有實跑證據（見 05 §3）。
