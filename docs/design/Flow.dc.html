@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+  <style>
+    :root{
+      --blue:#0b3d91; --blue-light:#1a56c4; --yellow:#ffd400;
+      --ink:#1a2b4a; --muted:#6b7794; --line:#e2e8f2;
+      --bg:#f4f7fc; --card:#ffffff; --ok:#1a7f4b; --warn:#c0392b;
+      --shadow:0 2px 12px rgba(11,61,145,.08);
+    }
+    body{margin:0;background:var(--bg);color:var(--ink);
+      font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      line-height:1.6;font-size:15px;}
+    a{color:var(--blue-light);text-decoration:none;} a:hover{color:var(--blue);}
+    code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;}
+  </style>
+</helmet>
+
+<div style="padding:36px 80px 40px; display:flex; flex-direction:column; gap:26px">
+
+  <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:24px">
+    <div>
+      <div style="font-size:12px; font-weight:700; letter-spacing:2px; color:#1a56c4">DESIGN SPEC ／ 畫面流程</div>
+      <div style="font-size:26px; font-weight:900; color:#0b3d91; margin-top:4px">訴願案 AI 輔助處理系統　五個畫面與一個分流</div>
+    </div>
+    <div style="font-size:13px; color:#6b7794; text-align:right; line-height:1.7">
+      系統只產出有出處的草稿，不做決定。<br>
+      決定權在承辦人與訴願審議委員會。
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:stretch; gap:16px">
+
+    <div style="flex:1; background:#ffffff; border:1px solid #e2e8f2; border-radius:12px; padding:18px 20px; box-shadow:0 2px 12px rgba(11,61,145,.08); display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div style="width:26px; height:26px; border-radius:7px; background:#0b3d91; color:#ffffff; font-size:13px; font-weight:900; display:flex; align-items:center; justify-content:center">1</div>
+        <div style="font-size:16px; font-weight:700">進件上傳</div>
+      </div>
+      <div style="font-size:13px; color:#6b7794">訴願書、原處分書、送達證書。可一鍵載入示範案例。</div>
+      <div style="margin-top:auto; padding-top:8px; border-top:1px dashed #e2e8f2"><code style="color:#1a56c4">POST /api/analyze</code> <span style="color:#6b7794">·</span> <code style="color:#6b7794">src/parsers.py</code></div>
+    </div>
+
+    <div style="display:flex; align-items:center; color:#b9c6e0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+
+    <div style="flex:1; background:#ffffff; border:1px solid #e2e8f2; border-radius:12px; padding:18px 20px; box-shadow:0 2px 12px rgba(11,61,145,.08); display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div style="width:26px; height:26px; border-radius:7px; background:#0b3d91; color:#ffffff; font-size:13px; font-weight:900; display:flex; align-items:center; justify-content:center">2</div>
+        <div style="font-size:16px; font-weight:700">擷取與解析</div>
+      </div>
+      <div style="font-size:13px; color:#6b7794">欄位逐格標來源頁行號，抽不到就留空。摘要＋關鍵字。</div>
+      <div style="margin-top:auto; padding-top:8px; border-top:1px dashed #e2e8f2"><code style="color:#6b7794">src/intake.py</code> <span style="color:#6b7794">→</span> <code style="color:#6b7794">IncomingAppeal</code></div>
+    </div>
+
+    <div style="display:flex; align-items:center; color:#b9c6e0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+
+    <div style="flex:1.05; background:#ffffff; border:2px solid #0b3d91; border-radius:12px; padding:18px 20px; box-shadow:0 2px 12px rgba(11,61,145,.08); display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div style="width:26px; height:26px; border-radius:7px; background:#ffd400; color:#0b3d91; font-size:13px; font-weight:900; display:flex; align-items:center; justify-content:center">3</div>
+        <div style="font-size:16px; font-weight:700">程序審查　訴願法 §77 八款</div>
+      </div>
+      <div style="font-size:13px; color:#6b7794">八款排除性確認。任一款成立即不受理，這是「或」的邏輯。</div>
+      <div style="margin-top:auto; padding-top:8px; border-top:1px dashed #e2e8f2"><code style="color:#c0392b">src/gate.py 尚未實作</code> <span style="color:#6b7794">→</span> <code style="color:#6b7794">GateResult</code></div>
+    </div>
+  </div>
+
+  <div style="display:flex; align-items:stretch; gap:16px">
+
+    <div style="width:118px; display:flex; flex-direction:column; justify-content:center; gap:10px; padding-left:4px">
+      <div style="font-size:12px; font-weight:700; color:#6b7794; letter-spacing:1px">分流</div>
+      <div style="font-size:12px; color:#6b7794; line-height:1.7">八款結果決定<br>走哪一條路</div>
+    </div>
+
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px">
+
+      <div style="display:flex; align-items:stretch; gap:14px">
+        <div style="width:92px; background:#eafaf1; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
+          <div style="font-size:19px; font-weight:900; color:#1a7f4b">過</div>
+          <div style="font-size:11px; color:#1a7f4b">八款皆不成立</div>
+        </div>
+        <div style="flex:1; background:#ffffff; border:1px solid #e2e8f2; border-radius:12px; padding:16px 20px; box-shadow:0 2px 12px rgba(11,61,145,.08); display:flex; align-items:center; gap:18px">
+          <div style="flex:1">
+            <div style="display:flex; align-items:center; gap:10px">
+              <div style="width:24px; height:24px; border-radius:7px; background:#1a7f4b; color:#ffffff; font-size:12px; font-weight:900; display:flex; align-items:center; justify-content:center">4</div>
+              <div style="font-size:15px; font-weight:700">實體審查：法條與前例勾選</div>
+            </div>
+            <div style="font-size:13px; color:#6b7794; margin-top:4px">系統推薦、承辦人勾選。勾了什麼，草稿就只引什麼。</div>
+          </div>
+          <div style="font-size:11px; color:#6b7794; text-align:right; line-height:1.8; white-space:nowrap">
+            <code>src/recommend.py</code><br><code>src/similar.py</code>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:stretch; gap:14px">
+        <div style="width:92px; background:#fdecea; border-radius:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px">
+          <div style="font-size:19px; font-weight:900; color:#c0392b">不過</div>
+          <div style="font-size:11px; color:#c0392b">任一款成立</div>
+        </div>
+        <div style="flex:1; background:#ffffff; border:1px solid #e2e8f2; border-radius:12px; padding:16px 20px; box-shadow:0 2px 12px rgba(11,61,145,.08); display:flex; align-items:center; gap:18px">
+          <div style="flex:1">
+            <div style="display:flex; align-items:center; gap:10px">
+              <div style="width:24px; height:24px; border-radius:7px; background:#c0392b; color:#ffffff; font-size:12px; font-weight:900; display:flex; align-items:center; justify-content:center">4</div>
+              <div style="font-size:15px; font-weight:700">跳過實體審查，直接寫不受理</div>
+            </div>
+            <div style="font-size:13px; color:#6b7794; margin-top:4px">第 3、8 款屬實質法律判斷，一律標黃轉人工，不自動成案。</div>
+          </div>
+          <div style="font-size:11px; color:#6b7794; text-align:right; line-height:1.8; white-space:nowrap">
+            <code>src/draft.py</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; color:#b9c6e0">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+    </div>
+
+    <div style="width:290px; background:#0b3d91; border-radius:12px; padding:18px 20px; color:#ffffff; display:flex; flex-direction:column; gap:8px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <div style="width:26px; height:26px; border-radius:7px; background:#ffd400; color:#0b3d91; font-size:13px; font-weight:900; display:flex; align-items:center; justify-content:center">5</div>
+        <div style="font-size:16px; font-weight:700">決定書草稿</div>
+      </div>
+      <div style="font-size:13px; opacity:.85">可編輯、可下載 Word。右欄逐段攤開依據，每段標示來源。</div>
+      <div style="margin-top:auto; padding-top:8px; border-top:1px solid rgba(255,255,255,.25); font-size:11px; opacity:.8"><code>POST /api/draft</code> · <code>/api/draft/docx</code></div>
+    </div>
+  </div>
+
+  <div style="background:#fff8e1; border-left:4px solid #ffd400; border-radius:6px; padding:12px 16px; font-size:12px; color:#7a5c00">
+    兩條路走到同一個畫面 5。差別只在右欄：走「不過」時右欄放八款檢核與期間算式，走「過」時右欄放勾選的法條與前例。左欄的草稿編輯器一模一樣。
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

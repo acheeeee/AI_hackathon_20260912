@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+  <style>
+    body{margin:0;background:#f4f7fc;color:#1a2b4a;
+      font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      line-height:1.6;font-size:15px;}
+    a{color:#1a56c4;text-decoration:none;} a:hover{color:#0b3d91;}
+    code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;}
+    .row{display:grid; grid-template-columns:104px 1fr 176px 58px; gap:10px; padding:9px 12px; border-bottom:1px solid #e2e8f2; align-items:center}
+    .k{font-size:12px; color:#6b7794; font-weight:700}
+    .v{font-size:13px; font-weight:500}
+    .s{font-size:11px; color:#6b7794}
+    .c{font-size:11px; font-weight:700; text-align:right}
+  </style>
+</helmet>
+
+<div style="display:flex; flex-direction:column">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(100deg,#0b3d91,#1a56c4); color:#ffffff; padding:14px 28px; box-shadow:0 2px 12px rgba(11,61,145,.08)">
+    <div style="display:flex; align-items:center; gap:16px">
+      <svg width="124" height="52" viewBox="0 0 200 84" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEDO logo">
+        <rect x="2" y="2" width="196" height="80" rx="12" fill="#0b3d91"/>
+        <ellipse cx="100" cy="42" rx="86" ry="30" fill="#ffd400"/>
+        <text x="100" y="42" text-anchor="middle" dominant-baseline="central" font-family="Arial Black, Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#0b3d91" letter-spacing="1">BEDO</text>
+      </svg>
+      <div>
+        <div style="font-size:20px; font-weight:800; letter-spacing:.5px">新北市政府訴願管理 AI 輔助系統</div>
+        <div style="font-size:12px; opacity:.85; margin-top:2px">案號 1121031094　·　違反空氣污染防制法事件</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <div style="font-size:12px; background:rgba(26,127,75,.9); padding:6px 12px; border-radius:20px">Gemini 已連線</div>
+      <div style="font-size:12px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:20px">承辦人　王○明</div>
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border-bottom:1px solid #e2e8f2">
+    <div style="max-width:1280px; margin:0 auto; padding:0 20px; display:flex; align-items:center; gap:8px; height:60px">
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#1a7f4b">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="m8 12 3 3 5-6"/></svg>
+        <span style="font-size:14px">進件上傳</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; border-radius:20px; background:#0b3d91; color:#ffffff">
+        <div style="width:20px; height:20px; border-radius:50%; background:#ffd400; color:#0b3d91; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">2</div>
+        <span style="font-size:14px; font-weight:700">擷取與解析</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">3</div>
+        <span style="font-size:14px">程序審查 §77</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">4</div>
+        <span style="font-size:14px">法條與前例</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">5</div>
+        <span style="font-size:14px">決定書草稿</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px; width:100%; margin:0 auto; padding:22px 20px 40px; display:grid; grid-template-columns:220px 1fr 320px; gap:20px; align-items:start">
+
+    <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px; display:flex; flex-direction:column; gap:12px">
+      <div style="font-size:15px; font-weight:700; color:#0b3d91; padding-bottom:9px; border-bottom:2px solid #e2e8f2">案件文件</div>
+
+      <div style="border:1.5px solid #0b3d91; background:#eef4ff; border-radius:10px; padding:10px 12px">
+        <div style="font-size:13px; font-weight:700; color:#0b3d91">訴願書</div>
+        <div style="font-size:11px; color:#6b7794; margin-top:2px">3 頁　·　擷取 7 欄</div>
+      </div>
+      <div style="border:1px solid #e2e8f2; border-radius:10px; padding:10px 12px">
+        <div style="font-size:13px; font-weight:700">原處分書</div>
+        <div style="font-size:11px; color:#6b7794; margin-top:2px">5 頁　·　擷取 3 欄</div>
+      </div>
+      <div style="border:1px solid #e2e8f2; border-radius:10px; padding:10px 12px">
+        <div style="font-size:13px; font-weight:700">送達證書</div>
+        <div style="font-size:11px; color:#6b7794; margin-top:2px">1 頁　·　擷取 1 欄</div>
+      </div>
+
+      <div style="border-top:1px dashed #e2e8f2; padding-top:12px; display:flex; flex-direction:column; gap:8px">
+        <div style="font-size:12px; font-weight:700; color:#6b7794">原文對照</div>
+        <div style="font-size:12px; color:#6b7794; line-height:1.8">點欄位右側的來源標籤，右側會跳到 PDF 原文並把該行反白。</div>
+        <div style="border:1px solid #e2e8f2; border-radius:8px; padding:9px 11px; background:#fafcff; font-size:11px; color:#6b7794; line-height:1.9">
+          訴願書 p1 L5<br>
+          <span style="background:#ffd400; color:#1a2b4a; padding:0 3px">新北市○○區○○路○段 101 巷 10 號之 1</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px 22px">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding-bottom:10px; border-bottom:2px solid #e2e8f2; margin-bottom:6px">
+        <div style="font-size:16px; font-weight:700; color:#0b3d91">擷取欄位</div>
+        <div style="font-size:12px; color:#6b7794">11 欄　·　10 欄有出處　·　<span style="color:#7a5c00; font-weight:700">1 欄查無</span></div>
+      </div>
+
+      <div class="row" style="border-bottom:1.5px solid #e2e8f2; padding-top:4px">
+        <div class="k" style="color:#0b3d91">欄位</div>
+        <div class="k" style="color:#0b3d91">擷取值</div>
+        <div class="k" style="color:#0b3d91">來源</div>
+        <div class="k" style="color:#0b3d91; text-align:right">信心</div>
+      </div>
+
+      <div class="row"><div class="k">訴願人</div><div class="v">光○紙印花企業有限公司</div><div class="s">訴願書 p1 L3</div><div class="c" style="color:#1a7f4b">0.98</div></div>
+      <div class="row"><div class="k">訴願人性質</div><div class="v">法人　<span style="font-size:11px; color:#6b7794">（規則：名稱含「有限公司」）</span></div><div class="s">規則推導</div><div class="c" style="color:#6b7794">規則</div></div>
+      <div class="row" style="background:#fff8e1; margin:0 -12px; padding-left:24px; padding-right:24px; border-radius:6px">
+        <div class="k" style="color:#7a5c00">代表人</div>
+        <div class="v" style="color:#7a5c00; font-weight:700">查無　—　不猜、不填</div>
+        <div class="s" style="color:#7a5c00">訴願書全文無此欄</div>
+        <div class="c" style="color:#7a5c00">0.00</div>
+      </div>
+      <div class="row"><div class="k">訴願人地址</div><div class="v">新北市○○區○○路○段 101 巷 10 號之 1</div><div class="s">訴願書 p1 L5</div><div class="c" style="color:#1a7f4b">0.96</div></div>
+      <div class="row"><div class="k">原處分機關</div><div class="v">新北市政府環境保護局</div><div class="s">訴願書 p1 L4</div><div class="c" style="color:#1a7f4b">0.97</div></div>
+      <div class="row"><div class="k">案件類型</div><div class="v">違反空氣污染防制法事件</div><div class="s">規則：要旨標頭</div><div class="c" style="color:#6b7794">規則</div></div>
+      <div class="row"><div class="k">原處分文號</div><div class="v">新北環稽字第 1120829275 號函（併附裁處書 2 份）</div><div class="s">原處分書 p1 L2</div><div class="c" style="color:#1a7f4b">0.95</div></div>
+      <div class="row"><div class="k">處分日期</div><div class="v">民國 112 年 5 月 3 日</div><div class="s">原處分書 p1 L2</div><div class="c" style="color:#1a7f4b">0.99</div></div>
+      <div class="row" style="background:#eef4ff; margin:0 -12px; padding-left:24px; padding-right:24px; border-radius:6px">
+        <div class="k" style="color:#0b3d91">送達日期</div>
+        <div class="v" style="color:#0b3d91; font-weight:700">民國 112 年 5 月 5 日　<span style="font-size:11px; font-weight:400">受雇人余○娟簽收</span></div>
+        <div class="s" style="color:#0b3d91">送達證書 p1</div>
+        <div class="c" style="color:#1a7f4b">0.94</div>
+      </div>
+      <div class="row" style="background:#eef4ff; margin:0 -12px; padding-left:24px; padding-right:24px; border-radius:6px">
+        <div class="k" style="color:#0b3d91">提起日期</div>
+        <div class="v" style="color:#0b3d91; font-weight:700">民國 112 年 9 月 5 日</div>
+        <div class="s" style="color:#0b3d91">訴願書收文戳／條碼</div>
+        <div class="c" style="color:#1a7f4b">0.92</div>
+      </div>
+      <div class="row" style="border-bottom:none"><div class="k">有無代理人</div><div class="v">無</div><div class="s">訴願書 p1 未列代理人</div><div class="c" style="color:#1a7f4b">0.90</div></div>
+
+      <div style="background:#f4f7fc; border-radius:8px; padding:12px 14px; margin-top:14px; font-size:12px; color:#6b7794; line-height:1.8">
+        藍底兩欄是程序審查會用到的日期，任何一欄被改，第 3 步的期間算式會同步重算。<br>
+        欄位可直接點進去改；改過的欄位會標成「人工修正」並寫進稽核紀錄。
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px 20px">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; padding-bottom:9px; border-bottom:2px solid #e2e8f2; margin-bottom:12px">案件摘要</div>
+        <div style="font-size:13px; line-height:1.9; color:#1a2b4a">
+          訴願人為設於本市之紙品印花公司。原處分機關於 112 年 5 月 3 日以新北環稽字第 1120829275 號函併附 2 份裁處書為處分，於同月 5 日在訴願人廠區送達，由受雇人簽收。訴願人於 112 年 9 月 5 日具狀提起訴願。
+        </div>
+        <div style="background:#fff8e1; border-left:3px solid #ffd400; border-radius:6px; padding:10px 12px; margin-top:12px; font-size:12px; color:#7a5c00; line-height:1.8">
+          摘要只寫程序事實。實體主張要等程序審查通過後才擷取 —— 先程序、後實體，是訴願法的條文結構。
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px 20px">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; padding-bottom:9px; border-bottom:2px solid #e2e8f2; margin-bottom:12px">關鍵字</div>
+        <div style="display:flex; flex-wrap:wrap; gap:7px">
+          <span style="font-size:12px; font-weight:700; background:#0b3d91; color:#ffffff; padding:4px 11px; border-radius:14px">空氣污染防制法</span>
+          <span style="font-size:12px; font-weight:700; background:#0b3d91; color:#ffffff; padding:4px 11px; border-radius:14px">30 日不變期間</span>
+          <span style="font-size:12px; background:#eef4ff; color:#0b3d91; padding:4px 11px; border-radius:14px">裁處書</span>
+          <span style="font-size:12px; background:#eef4ff; color:#0b3d91; padding:4px 11px; border-radius:14px">受雇人簽收</span>
+          <span style="font-size:12px; background:#eef4ff; color:#0b3d91; padding:4px 11px; border-radius:14px">在途期間</span>
+          <span style="font-size:12px; background:#eef4ff; color:#0b3d91; padding:4px 11px; border-radius:14px">末日順延</span>
+          <span style="font-size:12px; background:#eef4ff; color:#0b3d91; padding:4px 11px; border-radius:14px">法人代表人</span>
+          <span style="font-size:12px; background:#f4f7fc; color:#6b7794; border:1px dashed #b9c6e0; padding:4px 11px; border-radius:14px">＋ 自行加入</span>
+        </div>
+        <div style="font-size:12px; color:#6b7794; margin-top:12px; line-height:1.8">深色是系統判定的主軸關鍵字，會拿去做法條與前例檢索。點一下可以關掉，檢索結果即時跟著變。</div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px 20px; display:flex; flex-direction:column; gap:12px">
+        <div style="font-size:13px; color:#6b7794; line-height:1.8">確認欄位無誤後，進入程序審查。八款會一次全部跑完，不是逐款問你。</div>
+        <div style="background:#0b3d91; color:#ffffff; border-radius:8px; padding:13px; font-size:15px; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px">
+          開始程序審查
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+        </div>
+        <div style="font-size:11px; color:#6b7794; text-align:center">上一步：重新上傳文件</div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
