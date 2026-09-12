@@ -18,6 +18,7 @@ from caseapi.api.routes_drafts import router as drafts_router
 from caseapi.api.routes_facts import router as facts_router
 from caseapi.api.routes_proposals import router as proposals_router
 from caseapi.api.routes_resources import router as resources_router
+from caseapi.api.routes_runs import router as runs_router
 from caseapi.config import Settings, load_settings
 from caseapi.db.connection import connect
 from caseapi.db.migrations import apply_migrations
@@ -72,7 +73,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         return error_response(request, database_busy())
 
     for router in (cases_router, facts_router, drafts_router, annotations_router,
-                   proposals_router, resources_router):
+                   proposals_router, resources_router, runs_router):
         app.include_router(router)
     return app
 

@@ -77,3 +77,12 @@ def invalid_citation(message: str, details: dict[str, Any] | None = None) -> Api
 
 def proposal_already_applied(details: dict[str, Any] | None = None) -> ApiError:
     return ApiError('PROPOSAL_ALREADY_APPLIED', 409, '這些修改組已經套用過，不再重複變更', details)
+
+
+def run_not_cancellable(state: str) -> ApiError:
+    return ApiError(
+        'RUN_NOT_CANCELLABLE',
+        409,
+        '這個 run 已經結束，不能再取消',
+        {'state': state},
+    )

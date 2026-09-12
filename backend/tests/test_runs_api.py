@@ -182,7 +182,10 @@ def test_cancellation_is_idempotent_and_cancels_queued_job(
 
     conn = connect(settings.db_path)
     try:
-        job = conn.execute('SELECT state FROM jobs WHERE run_id = ?', (created['run_id'],)).fetchone()
+        job = conn.execute(
+            'SELECT state FROM jobs WHERE run_id = ?',
+            (created['run_id'],),
+        ).fetchone()
         events = conn.execute(
             'SELECT sequence, event_type FROM run_events WHERE run_id = ?',
             (created['run_id'],),

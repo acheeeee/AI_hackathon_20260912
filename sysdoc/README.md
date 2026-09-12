@@ -6,7 +6,7 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A（A1 至 A3）與 B0 證據底座已完成；後端 71 項測試通過，`caseapi` 覆蓋率 94%。r3 release 修正法規視覺閱讀順序並通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25、同案排除與原文核對。逐案狀態、已知偏離與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。本文件第 2 節的舊 Vue/API 流程仍未被新版前端整合取代。
+2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座與 B1 run／事件持久化已完成；後端 77 項測試通過，`caseapi` 覆蓋率 94%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，`ai_runs`／`jobs`／`run_events` 已能凍結 context、持久事件、JSON replay 與冪等取消。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。現有 Vue 仍未接新版 API。
 
 ## 1. 判斷與工作邊界
 
@@ -17,7 +17,7 @@
 | 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。 |
 | `backend/` 能刪嗎？ | 不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API。本次只刪除兩套已退役 demo UI。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
-| 下一步只有 RAG、LLM、API 嗎？ | 案件 API 與 BM25 證據底座已有實作；下一步仍要 run／事件、工具 adapter、來源卡、規則 trace、評估與前端整合。線上模型與向量尚未授權。 |
+| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座與 run／事件持久化已有實作；下一步是 Evidence 工具 adapter，再用固定假模型完成端到端。線上模型已排入後續授權順序；向量仍須先有 BM25 評估不足的證據。 |
 | 這輪是否繼續開發？ | 已在使用者授權後完成階段 A 與 B0；未新增線上 LLM、embedding、run／SSE、登入或前端整合。 |
 
 ## 2. 目前程式架構
@@ -256,7 +256,7 @@ scripts/preprocess/README.md  前處理版本、重現限制與入口
 
 1. **資料與共同契約（部分完成）。** r3 已修復 raw 分類、精確 chunk spans、版本、案件家族與發布驗證；仍要補法律人工覆核、低文字頁處置及評估 inputs／gold。
 2. **最小案件狀態與 API（階段 A 完成）。** `case_id`、revision、EvidenceRef、TargetRef、Proposal、SQLite、衝突與採用鏈已有測試；真登入、規則引擎、送審與前端整合仍未完成。
-3. **可驗證檢索（B0 完成）。** r3 的來源 read／search／open、BM25 baseline、同案排除與引文定位已完成；下一步先把它包成有真實活動事件的工具，並建立 dev inputs／gold 量品質。不能把 3,103 chunks 無差別送去 embedding；目前只有 3,002 個准入。
-4. **接 run 與協作（未授權／未完成）。** 先用固定假回應完成 run、事件、工具 adapter、取消／重連，再決定線上模型與向量；後續完整候選與前端來源卡按階段 B–E 驗收。
+3. **可驗證檢索與 run 基底（B0/B1 完成）。** r3 read／search／open、BM25、同案排除、run context、持久事件、JSON replay 與取消已完成；下一步把 EvidenceRepository 包成會寫真實工具事件與 `evidence_records` 的 adapter。
+4. **接固定假模型與線上模型（已授權、尚未完成）。** Evidence adapter 完成後先以固定假回應驗證 SSE、取消／重連與完整 run，再接線上 provider；之後建立 gold 量 BM25。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
 
 每階段完成狀態應回寫 [協作設計的驗收表](../docs/協作設計/05-實作順序與驗收.md)，並以真實執行結果更新 sysdoc。未經端到端實跑的 A03、A04、A06、A08、S01、S02 維持 NOT RUN。

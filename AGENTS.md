@@ -4,7 +4,7 @@
 
 Read `sysdoc/README.md` for the verified current system and `sysdoc/驗證報告.md` for evidence and limitations. `docs/README.md` maps the requirement documents. Design documents describe intended behavior, not implemented capabilities.
 
-The initial 2026-09-12 task was audit and cleanup only. The user later explicitly authorized collaboration backend Stage A and the r3/BM25 evidence layer. Further feature development still requires explicit user authorization; do not silently add online LLM, vector, run/SSE, authentication, or frontend integration.
+The initial 2026-09-12 task was audit and cleanup only. The user later explicitly authorized Stage A, r3/BM25, run/events, evidence adapters, a fixed-model end-to-end flow, online-model integration, BM25 gold evaluation, and vector retrieval only if measured evidence shows BM25 is insufficient. Implement in that order; each completed stage requires RED/GREEN evidence, a focused commit, and updated handoff docs. Authentication and frontend integration still require separate authorization.
 
 ## Project Structure
 
@@ -59,7 +59,7 @@ Python: four spaces, PEP 8, `snake_case` functions/modules, `PascalCase` models,
 
 Vue/TypeScript: two spaces, single quotes, no semicolons, 100-column target; `PascalCase.vue` components and `camelCase` variables/functions.
 
-Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. The backend suite currently has 71 passing tests with 94% aggregate `caseapi` coverage; `EvidenceRepository` has 87% coverage. The preprocessing release validator passes 15/15 for r3 and the four-document layout regression passes 4/4. Legal-logic changes require source-based regression cases; passing transport/data-contract tests or showing a legal label is not evidence of legal correctness.
+Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. After B1, the backend suite has 77 passing tests with 94% aggregate `caseapi` coverage; `run_service` has 93% and `EvidenceRepository` 87%. The preprocessing release validator passes 15/15 for r3 and the four-document layout regression passes 4/4. Legal-logic changes require source-based regression cases; passing transport/data-contract tests or showing a legal label is not evidence of legal correctness.
 
 ## Git and Configuration
 

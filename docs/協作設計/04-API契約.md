@@ -1,6 +1,6 @@
 # 案件、AI 協作與修改提案 API 契約
 
-日期：2026-09-12｜v1.0 設計｜階段 A 子集已實作；run／SSE／聊天端點尚未實作，偏離見 05 §6
+日期：2026-09-12｜v1.0 設計｜階段 A 與 run 讀取／JSON 事件 replay／取消已實作；SSE／聊天端點尚未實作，偏離見 05 §6
 
 ## 1. 共通規約
 
@@ -53,7 +53,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 
 ### Run
 
-`id, case_id, kind, state, base_case_revision, context_manifest, proposal_ids, last_event_sequence, error`。kind 含 `chat/regenerate/analysis`；state 使用 `queued/running/completed/failed/cancelled/needs_input`。run 完成不表示提案已套用。
+`run_id, case_id, kind, state, base_case_revision, context_manifest, proposal_ids, last_event_sequence, error`。kind 含 `chat/regenerate/analysis`；state 使用 `queued/running/completed/failed/cancelled/needs_input`。run 完成不表示提案已套用。
 
 ## 3. 案件與直接編輯端點
 
@@ -94,7 +94,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | POST | `C/drafts/{draft_id}/generation-runs` | 完整重生入口；202；內部仍產生同一 Proposal 物件 |
 | GET | `C/runs/{run_id}` | 查看結果、狀態、候選 IDs |
 | GET | `C/runs/{run_id}/events` | SSE；可依 Last-Event-ID 補送 |
-| POST | `C/runs/{run_id}/cancellations` | 取消尚未完成 run；完成的 run 回 409 |
+| POST | `C/runs/{run_id}/cancellations` | 取消尚未終止 run；已完成、失敗或取消的 run 回 409 |
 | GET | `C/evidence/{evidence_id}` | 原文引用、版本、檢查結果與受控預覽連結 |
 | GET | `C/documents/{document_id}/pages/{page}` | 本案來源頁預覽／行座標；案件權限檢查 |
 
@@ -168,6 +168,8 @@ apply 請求：
 
 ## 6. SSE 事件
 
+> **B1 實作狀態：** `ai_runs`／`jobs`／`run_events` 與 `GET run`、`GET events?format=json&after_sequence=...`、`POST cancellations` 已完成。真正 SSE response 與 Last-Event-ID header replay 留到固定假模型端到端階段；目前不得把 JSON replay 說成 S01 通過。
+
 事件型別：`run.started/tool.started/tool.completed/tool.failed/source.opened/answer.delta/proposal.ready/run.completed/run.failed/run.cancelled/run.needs_input`。事件 `id` 為該 run 單調遞增整數；data 含 `run_id, sequence, timestamp, payload`。屬文字串流的 answer.delta 不單獨成為正式消息版本。
 
 ```text
@@ -192,6 +194,7 @@ tool 事件由伺服器執行層產生。`run.completed` 包含最終 message／
 | 409 | `TARGET_MOVED` | 重新定位，禁止猜測替換 |
 | 409 | `WORKFLOW_BLOCKED` | 顯示需覆核項目，仍可聊天／加註 |
 | 409 | `IDEMPOTENCY_KEY_REUSED`／`PROPOSAL_ALREADY_APPLIED` | 取得原結果或修正請求 |
+| 409 | `RUN_NOT_CANCELLABLE` | run 已完成／失敗／取消，不再送第二次取消 |
 | 422 | `INVALID_FIELD`／`OUT_OF_SCOPE_PATCH`／`INVALID_CITATION` | 顯示具體欄位或提案驗證失敗 |
 | 429 | `RUN_LIMIT_EXCEEDED` | 依 Retry-After 等待／取消舊工作 |
 | 503 | `PROVIDER_UNAVAILABLE`／`DATABASE_BUSY` | 可重試；人工操作按可用能力繼續 |
