@@ -1,0 +1,269 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+  <style>
+    body{margin:0;background:#f4f7fc;color:#1a2b4a;
+      font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      line-height:1.6;font-size:15px;}
+    a{color:#1a56c4;text-decoration:none;} a:hover{color:#0b3d91;}
+    code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;}
+    .item{display:grid; grid-template-columns:20px 1fr 62px; gap:13px; padding:13px 15px;
+          border:1px solid #e2e8f2; border-radius:10px; background:#ffffff; align-items:start}
+    .on{border-color:#0b3d91; background:#eef4ff}
+    .cb{width:18px; height:18px; border-radius:5px; border:1.5px solid #b9c6e0; background:#ffffff; margin-top:2px}
+    .cbon{width:18px; height:18px; border-radius:5px; background:#0b3d91; display:flex; align-items:center; justify-content:center; margin-top:2px}
+    .nm{font-size:14px; font-weight:700}
+    .tx{font-size:12px; color:#6b7794; line-height:1.8; margin-top:4px}
+    .sc{font-size:12px; font-weight:700; color:#1a56c4; text-align:right}
+    .hd{font-size:16px; font-weight:700; color:#0b3d91; padding-bottom:10px; border-bottom:2px solid #e2e8f2; margin-bottom:14px; display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+  </style>
+</helmet>
+
+<div style="display:flex; flex-direction:column">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(100deg,#0b3d91,#1a56c4); color:#ffffff; padding:14px 28px; box-shadow:0 2px 12px rgba(11,61,145,.08)">
+    <div style="display:flex; align-items:center; gap:16px">
+      <svg width="124" height="52" viewBox="0 0 200 84" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEDO logo">
+        <rect x="2" y="2" width="196" height="80" rx="12" fill="#0b3d91"/>
+        <ellipse cx="100" cy="42" rx="86" ry="30" fill="#ffd400"/>
+        <text x="100" y="42" text-anchor="middle" dominant-baseline="central" font-family="Arial Black, Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#0b3d91" letter-spacing="1">BEDO</text>
+      </svg>
+      <div>
+        <div style="font-size:20px; font-weight:800; letter-spacing:.5px">新北市政府訴願管理 AI 輔助系統</div>
+        <div style="font-size:12px; opacity:.85; margin-top:2px">案號 1137061268　·　違反洗錢防制法事件　·　程序審查八款皆不成立</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <div style="font-size:12px; background:rgba(26,127,75,.9); padding:6px 12px; border-radius:20px">程序審查通過</div>
+      <div style="font-size:12px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:20px">承辦人　王○明</div>
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border-bottom:1px solid #e2e8f2">
+    <div style="max-width:1280px; margin:0 auto; padding:0 20px; display:flex; align-items:center; gap:8px; height:60px">
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#1a7f4b">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="m8 12 3 3 5-6"/></svg>
+        <span style="font-size:14px">進件上傳</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#1a7f4b">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="m8 12 3 3 5-6"/></svg>
+        <span style="font-size:14px">擷取與解析</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#1a7f4b">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="m8 12 3 3 5-6"/></svg>
+        <span style="font-size:14px">程序審查 §77</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; border-radius:20px; background:#0b3d91; color:#ffffff">
+        <div style="width:20px; height:20px; border-radius:50%; background:#ffd400; color:#0b3d91; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">4</div>
+        <span style="font-size:14px; font-weight:700">法條與前例</span>
+      </div>
+      <div style="width:22px; height:1px; background:#e2e8f2"></div>
+      <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#6b7794">
+        <div style="width:20px; height:20px; border-radius:50%; border:1.5px solid #b9c6e0; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center">5</div>
+        <span style="font-size:14px">決定書草稿</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px; width:100%; margin:0 auto; padding:22px 20px 40px; display:grid; grid-template-columns:320px 1fr; gap:20px; align-items:start">
+
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px 20px">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; padding-bottom:9px; border-bottom:2px solid #e2e8f2; margin-bottom:12px">本件</div>
+        <div style="display:flex; flex-direction:column; gap:9px; font-size:13px">
+          <div style="display:flex; gap:10px"><span style="color:#6b7794; width:74px; flex:none">訴願人</span><span style="font-weight:500">胡○倫</span></div>
+          <div style="display:flex; gap:10px"><span style="color:#6b7794; width:74px; flex:none">原處分機關</span><span style="font-weight:500">新北市政府警察局新店分局</span></div>
+          <div style="display:flex; gap:10px"><span style="color:#6b7794; width:74px; flex:none">案件類型</span><span style="font-weight:500">違反洗錢防制法事件</span></div>
+          <div style="display:flex; gap:10px"><span style="color:#6b7794; width:74px; flex:none">爭點</span><span style="font-weight:500">帳戶交付他人使用是否有正當理由；答辯是否足以認定事實</span></div>
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:18px 20px; border-top:3px solid #ffd400">
+        <div style="font-size:15px; font-weight:700; color:#0b3d91; margin-bottom:4px">已勾選的依據</div>
+        <div style="font-size:12px; color:#6b7794; margin-bottom:14px">草稿只會引用這裡的東西。沒勾的一律不寫進去。</div>
+
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:13px">
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef4ff; border-radius:8px; padding:9px 12px">
+            <span style="font-weight:700; color:#0b3d91">法條</span><span style="font-weight:900; color:#0b3d91">4</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef4ff; border-radius:8px; padding:9px 12px">
+            <span style="font-weight:700; color:#0b3d91">函釋／判解</span><span style="font-weight:900; color:#0b3d91">1</span>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:space-between; background:#eef4ff; border-radius:8px; padding:9px 12px">
+            <span style="font-weight:700; color:#0b3d91">歷史前例</span><span style="font-weight:900; color:#0b3d91">2</span>
+          </div>
+        </div>
+
+        <div style="background:#0b3d91; color:#ffffff; border-radius:8px; padding:13px; font-size:15px; font-weight:700; text-align:center; margin-top:16px">產生決定書草稿</div>
+        <div style="font-size:11px; color:#6b7794; text-align:center; margin-top:9px">草稿的理由欄會依三段論組織：<br>大前提（勾選的法條）→ 小前提（擷取的事實）→ 結論</div>
+      </div>
+
+      <div style="background:#fff8e1; border-left:4px solid #ffd400; border-radius:8px; padding:14px 16px; font-size:12px; color:#7a5c00; line-height:1.9">
+        推薦分數只表示「檢索認為相關」，不表示「法律上應適用」。哪一條該引，由你決定。
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <div style="background:#fdecea; border-left:4px solid #c0392b; border-radius:10px; padding:16px 20px">
+        <div style="display:flex; align-items:center; gap:9px; margin-bottom:7px">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#c0392b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.6 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.6a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          <div style="font-size:15px; font-weight:700; color:#8a2318">從新從輕　行政罰法第 5 條</div>
+        </div>
+        <div style="font-size:13px; color:#8a2318; line-height:1.9">
+          行為時適用洗錢防制法第 15 條之 2 第 1 項；該法於 113 年 7 月 31 日修正公布，本條移列為第 22 條第 1 項。原處分作成於修正後，請確認裁處書引用之條次，並比較新舊法從輕適用。
+        </div>
+        <div style="font-size:11px; color:#8a2318; opacity:.85; margin-top:8px">
+          判定方式：比對原處分書日期與法規修正日期表，屬中繼資料關聯，不經語言模型。這個事實沒有寫在任何一份文件裡，所以檢索找不到，只能用規則算。
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px 22px">
+        <div class="hd"><span>法條推薦</span><span style="font-size:12px; color:#6b7794; font-weight:400">混合檢索　·　BM25 關鍵字 ＋ 向量語意，分數為兩者加權</span></div>
+
+        <div style="display:flex; flex-direction:column; gap:9px">
+
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div class="nm" style="color:#0b3d91">洗錢防制法　第 22 條第 1 項　<span style="font-size:11px; font-weight:700; background:#ffd400; color:#0b3d91; padding:1px 8px; border-radius:10px">113/07/31 修正後</span></div>
+              <div class="tx">「任何人不得將自己或他人向金融機構申請開立之帳戶、向提供虛擬資產服務或第三方支付服務之事業或人員申請之帳號交付、提供予他人使用。但符合一般商業、金融交易習慣，或基於親友間信賴關係或其他正當理由者，不在此限。」</div>
+            </div>
+            <div class="sc">0.912</div>
+          </div>
+
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div class="nm" style="color:#0b3d91">洗錢防制法　第 15 條之 2 第 1 項　<span style="font-size:11px; font-weight:700; background:#f4f7fc; color:#6b7794; padding:1px 8px; border-radius:10px">行為時法</span></div>
+              <div class="tx">「任何人不得將自己或他人向金融機構申請開立之帳戶、向虛擬通貨平台及交易業務之事業或第三方支付服務業申請之帳號交付、提供予他人使用。但符合一般商業、金融交易習慣，或基於親友間信賴關係或其他正當理由者，不在此限。」</div>
+            </div>
+            <div class="sc">0.887</div>
+          </div>
+
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div class="nm" style="color:#0b3d91">行政罰法　第 5 條</div>
+              <div class="tx">「行為後法律或自治條例有變更者，適用裁處時之法律或自治條例。但裁處前之法律或自治條例有利於受處罰者，適用最有利於受處罰者之規定。」</div>
+            </div>
+            <div class="sc">0.854</div>
+          </div>
+
+          <div class="item" style="background:#fff8e1; border-color:#ffd400">
+            <div class="cb" style="border-color:#ffd400; background:#ffffff"></div>
+            <div>
+              <div class="nm" style="color:#7a5c00">訴願法　第 81 條</div>
+              <div class="tx" style="color:#7a5c00">
+                <strong>知識庫缺原文，不可勾選。</strong>索引裡有條號，但內容欄是空的，所以無法附原文出處。依零幻覺原則，寧可留白也不讓模型補寫。
+                <div style="margin-top:5px">修復方式：重跑 <code>python -m src.build_kb</code>，確認 <code>src/parsers.py</code> 對這份 PDF 的條文切分。</div>
+              </div>
+            </div>
+            <div class="sc" style="color:#7a5c00">—</div>
+          </div>
+
+          <div class="item">
+            <div class="cb"></div>
+            <div>
+              <div class="nm">行政院及各級行政機關訴願審議委員會審議規則　第 26 條第 2 項</div>
+              <div class="tx">「原行政處分機關答辯欠詳或逾期不答辯，而事實未臻明確者，受理訴願機關得依職權調查事實逕為決定，或認訴願為有理由而逕行撤銷原行政處分，責令另為行政處分，以加重其責任。」</div>
+            </div>
+            <div class="sc">0.803</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px 22px">
+        <div class="hd"><span>函釋與判解</span><span style="font-size:12px; color:#6b7794; font-weight:400">點標題開新視窗看完整原文</span></div>
+        <div style="display:flex; flex-direction:column; gap:9px">
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div class="nm" style="color:#0b3d91">最高行政法院 106 年度判字第 151 號判決　<span style="font-size:11px; font-weight:700; background:#eef4ff; color:#1a56c4; padding:1px 8px; border-radius:10px">司法判解</span></div>
+              <div class="tx">行政罰法第 5 條從新從輕原則之適用範圍與比較方法。</div>
+            </div>
+            <div class="sc">0.871</div>
+          </div>
+          <div class="item">
+            <div class="cb"></div>
+            <div>
+              <div class="nm">法務部 103 年 10 月 27 日法律字第 10303512490 號函　<span style="font-size:11px; font-weight:700; background:#f4f7fc; color:#6b7794; padding:1px 8px; border-radius:10px">行政函釋</span></div>
+              <div class="tx">行政程序法第 36、39、42、43 條及行政罰法第 42 條之調查義務與陳述意見。</div>
+            </div>
+            <div class="sc">0.744</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:20px 22px">
+        <div class="hd"><span>歷史相似前例</span><span style="font-size:12px; color:#6b7794; font-weight:400">先用款別與案件類型硬過濾，桶內才比語意</span></div>
+
+        <div style="display:flex; gap:9px; margin-bottom:14px; flex-wrap:wrap">
+          <div style="background:#f4f7fc; border-radius:8px; padding:9px 16px; text-align:center; min-width:92px"><div style="font-size:20px; font-weight:900; color:#0b3d91">60%</div><div style="font-size:12px; color:#6b7794">撤銷另處　3 件</div></div>
+          <div style="background:#f4f7fc; border-radius:8px; padding:9px 16px; text-align:center; min-width:92px"><div style="font-size:20px; font-weight:900; color:#0b3d91">40%</div><div style="font-size:12px; color:#6b7794">訴願駁回　2 件</div></div>
+          <div style="align-self:center; font-size:12px; color:#6b7794; margin-left:4px">共 5 件　·　樣本為出題方均衡抽樣，不代表實際案量分布</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:9px">
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap">
+                <span class="nm" style="color:#0b3d91">113 年　違反洗錢防制法事件</span>
+                <span style="font-size:11px; font-weight:700; background:#eafaf1; color:#1a7f4b; padding:1px 9px; border-radius:11px">撤銷另處</span>
+                <span style="font-size:11px; color:#6b7794">案號 1137061268</span>
+              </div>
+              <div class="tx">原處分機關答辯未具體詳述違規事實過程，經二度函請補充答辯仍未提出，事實未臻明確，依審議規則 §26 II 撤銷原處分責令另為處分。</div>
+              <div style="margin-top:7px; display:flex; flex-wrap:wrap; gap:5px">
+                <span style="font-size:11px; background:#eafaf1; color:#1a7f4b; padding:2px 8px; border-radius:10px">共同：訴願法 §81</span>
+                <span style="font-size:11px; background:#eafaf1; color:#1a7f4b; padding:2px 8px; border-radius:10px">共同：審議規則 §26</span>
+              </div>
+            </div>
+            <div class="sc">0.94</div>
+          </div>
+
+          <div class="item on">
+            <div class="cbon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div>
+            <div>
+              <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap">
+                <span class="nm" style="color:#0b3d91">114 年　違反洗錢防制法事件</span>
+                <span style="font-size:11px; font-weight:700; background:#eafaf1; color:#1a7f4b; padding:1px 9px; border-radius:11px">撤銷另處</span>
+              </div>
+              <div class="tx">同屬帳戶交付案型，爭點在「正當理由」之認定與舉證責任分配。</div>
+              <div style="margin-top:7px; display:flex; flex-wrap:wrap; gap:5px">
+                <span style="font-size:11px; background:#eafaf1; color:#1a7f4b; padding:2px 8px; border-radius:10px">共同：洗錢防制法 §22</span>
+              </div>
+            </div>
+            <div class="sc">0.88</div>
+          </div>
+
+          <div class="item">
+            <div class="cb"></div>
+            <div>
+              <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap">
+                <span class="nm">113 年　違反洗錢防制法事件</span>
+                <span style="font-size:11px; font-weight:700; background:#fdecea; color:#c0392b; padding:1px 9px; border-radius:11px">訴願駁回</span>
+              </div>
+              <div class="tx">答辯完備、事證明確，訴願人所稱親友信賴關係未能舉證，駁回。</div>
+            </div>
+            <div class="sc">0.79</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

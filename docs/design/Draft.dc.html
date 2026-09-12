@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@400;600&display=swap">
+  <style>
+    body{margin:0;background:#f4f7fc;color:#1a2b4a;
+      font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+      line-height:1.6;font-size:15px;}
+    a{color:#1a56c4;text-decoration:none;} a:hover{color:#0b3d91;}
+    code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:11px;}
+    .sec{padding:14px 18px; border-radius:10px; position:relative}
+    .sh{font-family:"Noto Sans TC",sans-serif; font-size:12px; font-weight:700; color:#6b7794;
+        display:flex; align-items:center; gap:8px; margin-bottom:7px}
+    .sb{font-family:"Noto Serif TC","Songti TC",serif; font-size:15px; line-height:2.0; color:#1a2b4a}
+    .og{font-size:10px; font-weight:700; padding:1px 8px; border-radius:10px; letter-spacing:.3px}
+    .slot{background:#fff8e1; border-bottom:2px solid #ffd400; padding:0 2px}
+    .btn{border-radius:8px; padding:9px 16px; font-size:14px; font-weight:700; display:flex; align-items:center; gap:7px; white-space:nowrap}
+    .er{display:grid; grid-template-columns:58px 1fr; gap:10px; padding:10px 0; border-bottom:1px dashed #e2e8f2; align-items:start}
+  </style>
+</helmet>
+
+<div style="display:flex; flex-direction:column">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; background:linear-gradient(100deg,#0b3d91,#1a56c4); color:#ffffff; padding:14px 28px; box-shadow:0 2px 12px rgba(11,61,145,.08)">
+    <div style="display:flex; align-items:center; gap:16px">
+      <svg width="124" height="52" viewBox="0 0 200 84" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="BEDO logo">
+        <rect x="2" y="2" width="196" height="80" rx="12" fill="#0b3d91"/>
+        <ellipse cx="100" cy="42" rx="86" ry="30" fill="#ffd400"/>
+        <text x="100" y="42" text-anchor="middle" dominant-baseline="central" font-family="Arial Black, Helvetica, Arial, sans-serif" font-weight="900" font-size="34" fill="#0b3d91" letter-spacing="1">BEDO</text>
+      </svg>
+      <div>
+        <div style="font-size:20px; font-weight:800; letter-spacing:.5px">新北市政府訴願管理 AI 輔助系統</div>
+        <div style="font-size:12px; opacity:.85; margin-top:2px">案號 1121031094　·　違反空氣污染防制法事件　·　不受理（§77 第 2 款）</div>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px">
+      <div style="font-size:12px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:20px">草稿 v3　·　2 分鐘前自動儲存</div>
+      <div style="font-size:12px; background:rgba(255,255,255,.15); padding:6px 12px; border-radius:20px">承辦人　王○明</div>
+    </div>
+  </div>
+
+  <div style="background:#ffffff; border-bottom:1px solid #e2e8f2">
+    <div style="max-width:1280px; margin:0 auto; padding:0 20px; display:flex; align-items:center; justify-content:space-between; gap:16px; height:64px">
+      <div style="display:flex; align-items:center; gap:8px">
+        <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; color:#1a7f4b">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" stroke-width="1.6"/><path d="m8 12 3 3 5-6"/></svg>
+          <span style="font-size:14px">程序審查 §77</span>
+        </div>
+        <div style="width:22px; height:1px; background:#e2e8f2"></div>
+        <div style="display:flex; align-items:center; gap:9px; padding:6px 14px; border-radius:20px; background:#0b3d91; color:#ffffff">
+          <div style="width:20px; height:20px; border-radius:50%; background:#ffd400; color:#0b3d91; font-size:11px; font-weight:900; display:flex; align-items:center; justify-content:center">5</div>
+          <span style="font-size:14px; font-weight:700">決定書草稿</span>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:9px">
+        <div class="btn" style="background:#ffffff; color:#6b7794; border:1px solid #e2e8f2">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          重新生成
+        </div>
+        <div class="btn" style="background:#ffffff; color:#0b3d91; border:1.5px solid #0b3d91">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+          下載 Word
+        </div>
+        <div class="btn" style="background:#0b3d91; color:#ffffff">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          送陳核
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1280px; width:100%; margin:0 auto; padding:22px 20px 40px; display:grid; grid-template-columns:1fr 380px; gap:20px; align-items:start">
+
+    <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:30px 34px 34px">
+
+      <div style="text-align:center; padding-bottom:16px; border-bottom:3px solid #0b3d91; margin-bottom:6px">
+        <div style="font-family:'Noto Serif TC',serif; font-size:21px; font-weight:600; color:#0b3d91; letter-spacing:2px">新北市政府訴願決定書</div>
+        <div style="font-size:12px; color:#6b7794; margin-top:6px">案號 1121031094　·　訴願人　光○紙印花企業有限公司　·　原處分機關　新北市政府環境保護局</div>
+      </div>
+
+      <div class="sec" style="background:#fafcff; margin-top:14px">
+        <div class="sh">主文<span class="og" style="background:#f4f7fc; color:#6b7794">模板</span></div>
+        <div class="sb" style="font-weight:600">訴願不受理。</div>
+      </div>
+
+      <div class="sec">
+        <div class="sh">理由　一<span class="og" style="background:#f4f7fc; color:#6b7794">模板</span><span style="font-weight:400; color:#6b7794">art77_p2_premise</span></div>
+        <div class="sb">按訴願之提起，應自行政處分達到或公告期滿之次日起 30 日內為之，且以原行政處分機關或受理訴願機關收受訴願書之日期為準。提起訴願逾法定期間者，原處分即歸確定，如仍對之提起訴願，受理訴願機關應為不受理。此觀訴願法第 14 條第 1 項、第 3 項、第 77 條第 2 款之規定甚明。</div>
+      </div>
+
+      <div class="sec">
+        <div class="sh">理由　二<span class="og" style="background:#f4f7fc; color:#6b7794">模板</span><span style="font-weight:400; color:#6b7794">service_rules</span></div>
+        <div class="sb">次按「送達，於應受送達人之住居所、事務所或營業所為之。」、「於應送達處所不獲會晤應受送達人時，得將文書付與有辨別事理能力之同居人、受雇人或應送達處所之接收郵件人員。」，行政程序法第 72 條第 1 項前段、第 73 條第 1 項定有明文。</div>
+      </div>
+
+      <div class="sec" style="border:2px solid #1a56c4; background:#ffffff; box-shadow:0 2px 12px rgba(11,61,145,.08)">
+        <div style="position:absolute; top:-11px; left:16px; background:#1a56c4; color:#ffffff; font-size:11px; font-weight:700; padding:2px 10px; border-radius:10px">編輯中</div>
+        <div class="sh" style="margin-top:4px">理由　三<span class="og" style="background:#eef4ff; color:#0b3d91">系統填入</span><span style="font-weight:400; color:#6b7794">黃底為系統填入的槽位，改了右欄依據會跟著重算</span></div>
+        <div class="sb">本件訴願人不服原處分機關民國 <span class="slot">112 年 5 月 3 日</span> <span class="slot">新北環稽字第 1120829275 號函</span>併附同日裁處書所為之處分，依首揭規定，自應於行政處分達到之次日起 30 日內提起訴願。查系爭處分於 <span class="slot">112 年 5 月 5 日</span> 經向訴願人之聯絡地址為送達，並由訴願人之受雇人於送達證書簽名及蓋公司章以示簽收，已生送達之效力。核計其提起訴願之 30 日法定期間，應自 <span class="slot">112 年 5 月 6 日</span> 起算，因訴願人之廠區及聯絡地址係設於本市，無須扣除在途期間，其訴願期間原應至 <span class="slot">112 年 6 月 4 日</span> 屆滿，因該日適為星期日，依行政程序法第 48 條第 4 項規定，順延至 <span class="slot">112 年 6 月 5 日（星期一）</span> 屆滿。惟訴願人遲至 <span class="slot">112 年 9 月 5 日</span> 始提起訴願，是其訴願之提起已逾越 30 日之法定不變期間，原處分業已確定，訴願人逾法定期間提起訴願，自非法之所許。本件訴願為程序不合，自不應受理。</div>
+        <div style="display:flex; gap:8px; margin-top:12px; padding-top:12px; border-top:1px dashed #e2e8f2">
+          <div style="font-size:12px; font-weight:700; color:#0b3d91; border:1px solid #e2e8f2; border-radius:7px; padding:5px 12px">還原系統版本</div>
+          <div style="font-size:12px; font-weight:700; color:#0b3d91; border:1px solid #e2e8f2; border-radius:7px; padding:5px 12px">插入引註</div>
+          <div style="font-size:12px; color:#6b7794; align-self:center; margin-left:4px">你的修改會記進稽核鏈，不會覆蓋系統原稿</div>
+        </div>
+      </div>
+
+      <div class="sec">
+        <div class="sh">理由　四<span class="og" style="background:#f4f7fc; color:#6b7794">模板</span></div>
+        <div class="sb">綜上論結，本件訴願為程序不合，依訴願法第 77 條第 2 款規定，決定如主文。</div>
+      </div>
+
+      <div class="sec" style="background:#eafaf1">
+        <div class="sh">教示<span class="og" style="background:#eafaf1; color:#1a7f4b">規則</span><span style="font-weight:400; color:#1a7f4b">不受理 ＋ 決定年 ≥ 112 → 高等行政法院</span></div>
+        <div class="sb">如不服本決定，得於決定書送達之次日起 2 個月內向臺北高等行政法院（地址：臺北市士林區福國路 101 號）提起行政訴訟。</div>
+      </div>
+
+      <div style="background:#fff8e1; border-left:4px solid #ffd400; border-radius:8px; padding:13px 16px; margin-top:18px; font-size:12px; color:#7a5c00; line-height:1.9">
+        本草稿由系統依規則與模板組出，未經審議委員會審議，不具任何法律效力。所有段落均須承辦人逐段確認後始得陳核。
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:16px">
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); overflow:hidden">
+        <div style="display:flex; border-bottom:1px solid #e2e8f2">
+          <div style="flex:1; text-align:center; padding:12px; font-size:13px; font-weight:700; color:#0b3d91; border-bottom:2.5px solid #0b3d91">逐段依據</div>
+          <div style="flex:1; text-align:center; padding:12px; font-size:13px; color:#6b7794">八款檢核</div>
+          <div style="flex:1; text-align:center; padding:12px; font-size:13px; color:#6b7794">稽核紀錄</div>
+        </div>
+
+        <div style="padding:16px 18px">
+          <div class="er">
+            <div style="font-size:12px; font-weight:700; color:#6b7794">主文</div>
+            <div style="font-size:12px; color:#6b7794">固定文字，不引法條</div>
+          </div>
+          <div class="er">
+            <div style="font-size:12px; font-weight:700; color:#6b7794">理由一</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px">
+              <span style="font-size:11px; font-weight:700; background:#eef4ff; color:#0b3d91; padding:2px 8px; border-radius:10px">訴願法 §14 I</span>
+              <span style="font-size:11px; font-weight:700; background:#eef4ff; color:#0b3d91; padding:2px 8px; border-radius:10px">訴願法 §14 III</span>
+              <span style="font-size:11px; font-weight:700; background:#eef4ff; color:#0b3d91; padding:2px 8px; border-radius:10px">訴願法 §77(2)</span>
+            </div>
+          </div>
+          <div class="er">
+            <div style="font-size:12px; font-weight:700; color:#6b7794">理由二</div>
+            <div style="display:flex; flex-wrap:wrap; gap:5px">
+              <span style="font-size:11px; font-weight:700; background:#eef4ff; color:#0b3d91; padding:2px 8px; border-radius:10px">行政程序法 §72 I</span>
+              <span style="font-size:11px; font-weight:700; background:#eef4ff; color:#0b3d91; padding:2px 8px; border-radius:10px">行政程序法 §73 I</span>
+            </div>
+          </div>
+          <div class="er" style="background:#eef4ff; margin:0 -8px; padding:10px 8px; border-radius:8px">
+            <div style="font-size:12px; font-weight:700; color:#0b3d91">理由三</div>
+            <div>
+              <div style="display:flex; flex-wrap:wrap; gap:5px">
+                <span style="font-size:11px; font-weight:700; background:#ffffff; color:#0b3d91; padding:2px 8px; border-radius:10px">行政程序法 §48 IV</span>
+                <span style="font-size:11px; font-weight:700; background:#ffffff; color:#0b3d91; padding:2px 8px; border-radius:10px">行政程序法 §48 V</span>
+                <span style="font-size:11px; font-weight:700; background:#ffffff; color:#0b3d91; padding:2px 8px; border-radius:10px">訴願法 §16 I</span>
+              </div>
+              <div style="font-size:11px; color:#0b3d91; margin-top:7px; line-height:1.8">
+                7 個槽位全部來自擷取欄位，逐格可回溯到 PDF 頁行號。<br>
+                期間算式：112/5/6 起算 ＋ 30 日 → 6/4 星期日 → 順延 6/5 → 提起 9/5 → <strong>逾期 92 日</strong>
+              </div>
+            </div>
+          </div>
+          <div class="er" style="border-bottom:none">
+            <div style="font-size:12px; font-weight:700; color:#1a7f4b">教示</div>
+            <div style="font-size:12px; color:#1a7f4b; line-height:1.8">規則產生，非模型。112 年起不受理案之行政訴訟由高等行政法院管轄。</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:16px 18px">
+        <div style="font-size:14px; font-weight:700; color:#0b3d91; margin-bottom:12px">段落來源統計</div>
+        <div style="display:flex; flex-direction:column; gap:9px">
+          <div style="display:flex; align-items:center; gap:10px">
+            <span class="og" style="background:#f4f7fc; color:#6b7794; flex:none; width:62px; text-align:center">模板</span>
+            <div style="flex:1; height:7px; background:#f4f7fc; border-radius:4px; overflow:hidden"><div style="width:60%; height:100%; background:#6b7794"></div></div>
+            <span style="font-size:12px; color:#6b7794; width:26px; text-align:right">3 段</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px">
+            <span class="og" style="background:#eef4ff; color:#0b3d91; flex:none; width:62px; text-align:center">系統填入</span>
+            <div style="flex:1; height:7px; background:#f4f7fc; border-radius:4px; overflow:hidden"><div style="width:20%; height:100%; background:#0b3d91"></div></div>
+            <span style="font-size:12px; color:#6b7794; width:26px; text-align:right">1 段</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px">
+            <span class="og" style="background:#eafaf1; color:#1a7f4b; flex:none; width:62px; text-align:center">規則</span>
+            <div style="flex:1; height:7px; background:#f4f7fc; border-radius:4px; overflow:hidden"><div style="width:20%; height:100%; background:#1a7f4b"></div></div>
+            <span style="font-size:12px; color:#6b7794; width:26px; text-align:right">1 段</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px">
+            <span class="og" style="background:#fff8e1; color:#7a5c00; flex:none; width:62px; text-align:center">模型</span>
+            <div style="flex:1; height:7px; background:#f4f7fc; border-radius:4px; overflow:hidden"></div>
+            <span style="font-size:12px; color:#6b7794; width:26px; text-align:right">0 段</span>
+          </div>
+        </div>
+        <div style="font-size:12px; color:#6b7794; margin-top:12px; line-height:1.8">
+          程序不受理案的理由欄是模板加槽位，模型不寫一個字。實體案（駁回／撤銷）的理由欄才會出現黃色的「模型」段落，那些段落要逐段確認。
+        </div>
+      </div>
+
+      <div style="background:#ffffff; border-radius:12px; box-shadow:0 2px 12px rgba(11,61,145,.08); padding:16px 18px">
+        <div style="font-size:14px; font-weight:700; color:#0b3d91; margin-bottom:10px">匯出</div>
+        <div style="display:flex; flex-direction:column; gap:8px; font-size:13px; color:#6b7794">
+          <div style="display:flex; align-items:center; justify-content:space-between; border:1px solid #e2e8f2; border-radius:8px; padding:9px 12px"><span>決定書草稿　.docx</span><span style="font-weight:700; color:#0b3d91">下載</span></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; border:1px solid #e2e8f2; border-radius:8px; padding:9px 12px"><span>依據與稽核鏈　.pdf</span><span style="font-weight:700; color:#0b3d91">下載</span></div>
+          <div style="display:flex; align-items:center; justify-content:space-between; border:1px solid #e2e8f2; border-radius:8px; padding:9px 12px"><span>擷取欄位與出處　.json</span><span style="font-weight:700; color:#0b3d91">下載</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
