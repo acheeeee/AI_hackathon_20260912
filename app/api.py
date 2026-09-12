@@ -111,7 +111,8 @@ def _to_int(v):
 async def analyze(
     mode: str = Form("pdf"),                 # 'pdf' | 'manual' | 'text'
     use_llm: bool = Form(False),
-    pdf: Optional[UploadFile] = File(None),
+    pdf: Optional[UploadFile] = File(None),   # 訴願書
+    pdf2: Optional[UploadFile] = File(None),  # 原處分書（選填，會併入分析文本）
     text: str = Form(""),
     # 手動輸入欄位
     case_type: str = Form(""),
@@ -128,14 +129,23 @@ async def analyze(
     if mode == "pdf":
         if pdf is None:
             raise HTTPException(400, "未上傳 PDF")
-        data = await pdf.read()
-        with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
-            tmp.write(data)
-            tmp_path = tmp.name
-        try:
-            full_text, _ = extract_text(tmp_path)
-        finally:
-            os.unlink(tmp_path)
+        # 訴願書為必要，原處分書（pdf2）為選填；兩份都抽取後併入同一分析文本，
+        # 以標題分隔，讓 intake 能同時看到兩份文件的內容。
+        parts: list[str] = []
+        for label, upload in (("訴願書", pdf), ("原處分書", pdf2)):
+            if upload is None:
+                continue
+            data = await upload.read()
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp.write(data)
+                tmp_path = tmp.name
+            try:
+                doc_text, _ = extract_text(tmp_path)
+            finally:
+                os.unlink(tmp_path)
+            if doc_text and doc_text.strip():
+                parts.append(f"【{label}】\n{doc_text.strip()}")
+        full_text = "\n\n".join(parts)
 
     manual = None
     if mode == "manual":

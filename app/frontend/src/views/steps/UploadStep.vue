@@ -8,6 +8,8 @@ const caseStore = useCaseStore()
 
 const primaryFile = ref<File | null>(null)
 const primaryName = ref('')
+const dispositionFile = ref<File | null>(null)
+const dispositionName = ref('')
 const useLlm = ref(false)
 const selectedDemo = ref<DemoCase | null>(null)
 
@@ -22,16 +24,33 @@ function clearPrimary() {
   primaryName.value = ''
 }
 
+function onDispositionChange(f: UploadFile) {
+  dispositionFile.value = f.raw ?? null
+  dispositionName.value = f.name
+  selectedDemo.value = null
+}
+
+function clearDisposition() {
+  dispositionFile.value = null
+  dispositionName.value = ''
+}
+
 function pickDemo(demo: DemoCase) {
   selectedDemo.value = demo
   clearPrimary()
+  clearDisposition()
 }
 
 const canStart = computed(() => primaryFile.value !== null || selectedDemo.value !== null)
 
 function start() {
   if (primaryFile.value) {
-    caseStore.runAnalyze({ mode: 'pdf', useLlm: useLlm.value, pdf: primaryFile.value })
+    caseStore.runAnalyze({
+      mode: 'pdf',
+      useLlm: useLlm.value,
+      pdf: primaryFile.value,
+      pdf2: dispositionFile.value ?? undefined,
+    })
   } else if (selectedDemo.value) {
     caseStore.runAnalyze({ mode: 'text', useLlm: useLlm.value, text: selectedDemo.value.text })
   }
@@ -103,16 +122,44 @@ function start() {
             <div class="slot-head">
               <span class="idx blue">2</span>
               <span class="slot-name">原處分書</span>
-              <span class="req">必要</span>
+              <span class="opt">選填</span>
             </div>
-            <div class="slot-drop static">
+
+            <div v-if="dispositionName" class="doc-loaded">
+              <svg class="doc-icon" width="34" height="34" viewBox="0 0 24 24" fill="none"
+                stroke="#0b3d91" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" /><path d="M9 15h6" /><path d="M9 11h3" />
+              </svg>
+              <div class="doc-meta">
+                <div class="doc-name">{{ dispositionName }}</div>
+                <div class="doc-ok">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                  已選取，將併入分析文本
+                </div>
+              </div>
+              <button class="doc-x" @click="clearDisposition" aria-label="移除">✕</button>
+            </div>
+
+            <el-upload
+              v-else
+              drag
+              accept=".pdf"
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="onDispositionChange"
+              class="slot-drop"
+            >
               <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#b9c6e0"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                 <path d="M14 2v6h6" />
               </svg>
-              <div class="drop-hint muted-hint">目前後端以單一文件解析為主，原處分書內容請併入訴願書 PDF 或示範案例</div>
-            </div>
+              <div class="drop-hint">拖曳原處分書 PDF，或 <em>點擊選擇</em></div>
+            </el-upload>
           </div>
         </div>
 

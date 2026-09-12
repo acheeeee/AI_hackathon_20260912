@@ -34,6 +34,7 @@ export interface AnalyzeParams {
   mode: AnalyzeMode
   useLlm: boolean
   pdf?: File
+  pdf2?: File
   text?: string
   manual?: ManualIntakeFields
 }
@@ -44,6 +45,7 @@ export async function analyzeAppeal(params: AnalyzeParams): Promise<AnalyzeRespo
   form.set('use_llm', String(params.useLlm))
   if (params.text) form.set('text', params.text)
   if (params.pdf) form.set('pdf', params.pdf)
+  if (params.pdf2) form.set('pdf2', params.pdf2)
   if (params.manual) {
     for (const [key, value] of Object.entries(params.manual)) {
       form.set(key, value)
