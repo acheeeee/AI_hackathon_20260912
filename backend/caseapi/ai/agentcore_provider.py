@@ -23,6 +23,7 @@ from typing import Any
 
 from botocore.config import Config
 
+from caseapi.ai import draft_composition
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
@@ -71,7 +72,23 @@ class AgentCoreModelProvider:
             return self._verify(request, tools)
         if request.intent == 'explain':
             return self._explain(request, tools)
+        if request.intent == draft_composition.INTENT_DRAFT:
+            return self._draft(request, tools)
         raise ValueError(f'unsupported agentcore intent: {request.intent}')
+
+    def _draft(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
+        """AgentCore 只寫理由段落；事實與法規原文都由本機已驗證的內容組成。"""
+        if not draft_composition.selected_statutes(request):
+            return ModelResult(draft_composition.NO_STATUTE_ANSWER)
+        opened, evidence_ids = draft_composition.open_selected_statutes(request, tools)
+        reasoning = self._invoke(
+            request.content, draft_composition.prompt_context(request, opened)
+        )
+        return ModelResult(
+            draft_composition.summary_answer(opened),
+            evidence_ids,
+            draft_composition.build_blocks(request, opened, reasoning),
+        )
 
     def _verify(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
         search = tools.call(

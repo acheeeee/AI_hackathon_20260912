@@ -1,7 +1,9 @@
 """草稿端點。
 
-POST /drafts 是已記錄在 04 契約的階段 A 暫時入口；正式流程應改由抽文或
-generation run 建立，現階段保留以驗證版本與合併。
+POST /drafts 已退場為測試專用 fixture：正式流程改由
+`POST /draft-generations`（`routes_draft_generation.py`）的 run 建立草稿，
+前端不再呼叫這裡。保留是因為既有的版本／合併驗收測試靠它建初始草稿，
+所以在 OpenAPI 標成 deprecated，不是可用的產品入口。
 """
 
 import sqlite3
@@ -17,7 +19,12 @@ from caseapi.services import draft_service
 router = APIRouter(prefix='/api/v1/cases', tags=['drafts'])
 
 
-@router.post('/{case_id}/drafts', status_code=201)
+@router.post(
+    '/{case_id}/drafts',
+    status_code=201,
+    deprecated=True,
+    summary='（測試 fixture）直接建立草稿；正式流程請用 POST /draft-generations',
+)
 def create_draft(
     request: Request,
     case_id: str,

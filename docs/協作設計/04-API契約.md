@@ -65,7 +65,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | POST | `C/documents` | multipart 上傳，role=`appeal/disposition/evidence`；202 回抽文工作 ID |
 | GET | `C/resources/{resource_id}?revision=...` | 取得草稿／事實等指定版本，省略 revision 取目前 heads |
 | PATCH | `C/facts` | typed field_changes、理由、來源／human_asserted 標記；保存＋202 重算 job 或 200 無需重算 |
-| POST | `C/drafts` | **階段 A 暫時入口**：建立第一版草稿供版本／合併驗收；正式流程應由抽文或 generation run 建立 |
+| POST | `C/drafts` | **已退場為測試 fixture**（OpenAPI 標 `deprecated`）：正式流程改由 `C/draft-generations` 的 run 建立草稿，前端不再呼叫 |
 | PATCH | `C/drafts/{draft_id}` | 人工 block 編輯，版本與引用校驗；200 回新版本、stale 狀態 |
 | PATCH | `C/selections` | 依據 ID 清單＋KB 版本；保存新 selections revision |
 | POST | `C/annotations` | 建 TargetRef 註記；201，不直接改 case revision |
@@ -91,7 +91,8 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | POST | `C/chat-threads` | 建同案對話，201 |
 | GET | `C/chat-threads/{thread_id}/messages?cursor=...` | 讀歷史訊息與提案狀態 |
 | POST | `C/chat-threads/{thread_id}/messages` | 訊息、intent、target、指定註記 ID／revision；202 回 message ID、run ID |
-| POST | `C/drafts/{draft_id}/generation-runs` | 完整重生入口；202；內部仍產生同一 Proposal 物件 |
+| POST | `C/draft-generations` | **實作的完整生成／重生入口**；202 回 `run_id`／`draft_id`／`draft_resource_revision`；case 還沒有草稿時伺服器先建一份 `origin=program` 的空殼當 `replace_document` 目標；結果是同一個 Proposal 物件，不直接改正文 |
+| POST | `C/drafts/{draft_id}/generation-runs` | 設計時規劃的重生入口；未實作，實作用上一列的案件層入口（第一次生成時還沒有 `draft_id`） |
 | GET | `C/runs/{run_id}` | 查看結果、狀態、候選 IDs |
 | GET | `C/runs/{run_id}/events` | SSE；可依 Last-Event-ID 補送 |
 | POST | `C/runs/{run_id}/cancellations` | 取消尚未終止 run；已完成、失敗或取消的 run 回 409 |
@@ -143,7 +144,7 @@ AI 可提出 human review 的說明草案，但不能用 patch 更新 human_revi
 | 方法 | 路徑 | 行為 |
 |---|---|---|
 | GET | `C/proposals/{proposal_id}` | base、candidate、修改組與狀態 |
-| POST | `C/proposals` | **階段 A fixture 入口**：直接建立合成提案以驗證 merge/apply；接真 run 後限測試使用或移除 |
+| POST | `C/proposals` | **已退場為測試 fixture**（OpenAPI 標 `deprecated`）：正式提案由 `C/draft-generations` 的 run 產生；此入口只剩合併／採用測試在用 |
 | POST | `C/proposals/{proposal_id}/merge-previews` | expected current revision、選定組；回三方 diff、衝突與 preview hash |
 | POST | `C/proposals/{proposal_id}/merge-previews/{preview_id}/resolutions` | 使用者整合衝突後，建立新 immutable preview；不改舊 preview |
 | POST | `C/proposals/{proposal_id}/applications` | preview ID／hash、expected case revision；交易採用 |

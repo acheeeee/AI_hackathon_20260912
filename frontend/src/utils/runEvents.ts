@@ -24,6 +24,14 @@ export function formatRunEvents(events: RunEvent[]): ActivityLine[] {
     }
     if (event.event_type === 'tool.failed') {
       lines.push({ key: String(event.sequence), text: '⚠️ 一個工具呼叫失敗了' })
+      continue
+    }
+    if (event.event_type === 'proposal.ready') {
+      const groupIds = Array.isArray(event.payload.group_ids) ? event.payload.group_ids : []
+      lines.push({
+        key: String(event.sequence),
+        text: `🧩 產生草稿提案：${groupIds.length} 個修改組（尚未採用）`,
+      })
     }
   }
   return lines

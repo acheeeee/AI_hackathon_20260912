@@ -47,7 +47,7 @@ def execute_chat_run(
 ) -> None:
     started = False
     try:
-        _start_run(db_path, actor_id, case_id, run_id)
+        start_run(db_path, actor_id, case_id, run_id)
         started = True
         request = _load_request(
             db_path, actor_id, case_id, thread_id, message_id, run_id
@@ -62,14 +62,14 @@ def execute_chat_run(
         _save_result(db_path, actor_id, request, result)
     except Exception as exc:
         if started:
-            _fail_run(db_path, actor_id, case_id, run_id, exc)
+            fail_run(db_path, actor_id, case_id, run_id, exc)
 
 
 def build_repository(release_dir: Path, release_id: str) -> EvidenceRepository:
     return EvidenceRepository(release_dir, expected_release_id=release_id)
 
 
-def _start_run(db_path: Path, actor_id: str, case_id: str, run_id: str) -> None:
+def start_run(db_path: Path, actor_id: str, case_id: str, run_id: str) -> None:
     lease_until = (
         datetime.now(timezone.utc) + timedelta(minutes=5)
     ).isoformat(timespec='milliseconds').replace('+00:00', 'Z')
@@ -159,7 +159,7 @@ def _save_result(
         conn.close()
 
 
-def _fail_run(
+def fail_run(
     db_path: Path,
     actor_id: str,
     case_id: str,

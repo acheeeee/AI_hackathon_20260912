@@ -19,5 +19,24 @@ FACT_FIELD_ALLOWLIST = frozenset(
 )
 
 
+# 生成草稿時要把欄位寫成看得懂的中文。前端另有一份顯示用的同名對照
+# （frontend/src/utils/factLabels.ts），兩邊要一起改。
+FACT_FIELD_LABELS = {
+    'appellant.name': '訴願人',
+    'appellant.address': '訴願人住所',
+    'disposition.authority': '原處分機關',
+    'disposition.doc_no': '處分書文號',
+    'disposition.date': '處分日期',
+    'service.date': '送達日期',
+    'service.method': '送達方式',
+    'appeal.filed_date': '訴願提起日',
+    'appeal.received_date': '訴願收文日',
+}
+
+
 def is_allowed_field_path(field_path: str) -> bool:
     return field_path in FACT_FIELD_ALLOWLIST
+
+
+def fact_field_label(field_path: str) -> str:
+    return FACT_FIELD_LABELS.get(field_path, field_path)

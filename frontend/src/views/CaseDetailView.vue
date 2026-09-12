@@ -21,6 +21,7 @@ import {
 import ChatSidebar from '@/components/ChatSidebar.vue'
 import ProceduralReviewPanel from '@/components/ProceduralReviewPanel.vue'
 import StatuteSelectionPanel from '@/components/StatuteSelectionPanel.vue'
+import DraftGenerationPanel from '@/components/DraftGenerationPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -57,8 +58,10 @@ const activeDocument = computed(
   () => documents.value.find((d) => d.document_id === activeDocumentId.value) ?? null,
 )
 
-async function load() {
-  loading.value = true
+// 子面板發事件回來時不要再掀起整頁 spinner：那會把 v-else-if="detail" 整段
+// 換成 loading 區塊，子元件被卸載重建，剛生成好的草稿結果就消失了。
+async function load(showSpinner = true) {
+  loading.value = showSpinner
   loadError.value = ''
   try {
     const [d, f, docs] = await Promise.all([
@@ -77,8 +80,12 @@ async function load() {
   }
 }
 
-onMounted(load)
-watch(caseId, load)
+function refresh() {
+  return load(false)
+}
+
+onMounted(() => load())
+watch(caseId, () => load())
 
 function backToList() {
   router.push({ name: 'home' })
@@ -152,13 +159,19 @@ function backToList() {
       <ProceduralReviewPanel
         :case-id="caseId"
         :case-revision="detail.case_revision"
-        @facts-updated="load"
+        @facts-updated="refresh"
       />
 
       <StatuteSelectionPanel
         :case-id="caseId"
         :case-revision="detail.case_revision"
-        @selection-saved="load"
+        @selection-saved="refresh"
+      />
+
+      <DraftGenerationPanel
+        :case-id="caseId"
+        :case-revision="detail.case_revision"
+        @draft-generated="refresh"
       />
 
       <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />

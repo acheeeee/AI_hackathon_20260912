@@ -6,8 +6,13 @@ import sqlite3
 from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from fastapi.responses import JSONResponse
 
-from caseapi.ai.runner import build_repository, execute_chat_run
-from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key
+from caseapi.ai.runner import execute_chat_run
+from caseapi.api.deps import (
+    get_actor_id,
+    get_db,
+    get_evidence_repository,
+    get_idempotency_key,
+)
 from caseapi.api.mutation import execute_mutation
 from caseapi.envelope import success_response
 from caseapi.schemas.chat import ChatMessageCreateRequest, ChatThreadCreateRequest
@@ -68,9 +73,9 @@ def create_message(
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
     idempotency_key: str = Depends(get_idempotency_key),
+    repository: EvidenceRepositoryLike = Depends(get_evidence_repository),
 ) -> JSONResponse:
     provider = request.app.state.model_provider
-    repository = _evidence_repository(request)
     response = execute_mutation(
         request,
         conn,
@@ -106,14 +111,3 @@ def create_message(
             repository=repository,
         )
     return response
-
-
-def _evidence_repository(request: Request) -> EvidenceRepositoryLike:
-    repository = request.app.state.evidence_repository
-    if repository is None:
-        settings = request.app.state.settings
-        repository = build_repository(
-            settings.evidence_release_dir, settings.evidence_release_id
-        )
-        request.app.state.evidence_repository = repository
-    return repository

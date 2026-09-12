@@ -275,6 +275,7 @@ export interface RunDetail {
   case_id: string
   kind: string
   state: RunState
+  proposal_ids: string[]
   error: { code: string; type: string } | null
   created_at: string
   updated_at: string
@@ -363,6 +364,64 @@ export async function getStatuteSelection(caseId: string): Promise<SelectedStatu
     `/cases/${encodeURIComponent(caseId)}/statute-selection`,
   )
   return data.selected
+}
+
+// ---------- 草稿生成：POST 後背景跑 run，結果是提案不是正文 ----------
+// 舊的階段 A fixture `POST /cases/{id}/drafts` 已標成 deprecated，前端不呼叫。
+
+export interface DraftGenerationStarted {
+  run_id: string
+  state: RunState
+  draft_id: string
+  draft_resource_revision: string
+  case_revision: number
+}
+
+export async function startDraftGeneration(params: {
+  caseId: string
+  expectedCaseRevision: number
+  instruction?: string
+}): Promise<DraftGenerationStarted> {
+  return request<DraftGenerationStarted>(
+    `/cases/${encodeURIComponent(params.caseId)}/draft-generations`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({
+        expected_case_revision: params.expectedCaseRevision,
+        instruction: params.instruction ?? null,
+      }),
+    },
+  )
+}
+
+export interface ProposalBlock {
+  block_id: string
+  text: string
+  citations: string[]
+}
+
+export interface ProposalChangeGroup {
+  id: string
+  change_class: string
+  reason: string
+  evidence_ids: string[]
+  operations: Array<{ op: string; after_blocks?: ProposalBlock[] }>
+}
+
+export interface ProposalDetail {
+  proposal_id: string
+  origin: string
+  run_id: string | null
+  mode: string
+  state: string
+  change_groups: ProposalChangeGroup[]
+}
+
+export async function getProposal(caseId: string, proposalId: string): Promise<ProposalDetail> {
+  return request<ProposalDetail>(
+    `/cases/${encodeURIComponent(caseId)}/proposals/${encodeURIComponent(proposalId)}`,
+  )
 }
 
 export async function saveStatuteSelection(params: {

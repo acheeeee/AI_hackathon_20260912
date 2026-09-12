@@ -24,7 +24,12 @@ from caseapi.services import apply_service, merge_service, proposal_service
 router = APIRouter(prefix='/api/v1/cases', tags=['proposals'])
 
 
-@router.post('/{case_id}/proposals', status_code=201)
+@router.post(
+    '/{case_id}/proposals',
+    status_code=201,
+    deprecated=True,
+    summary='（測試 fixture）直接建立合成提案；正式提案由 run 產生',
+)
 def create_proposal(
     request: Request,
     case_id: str,

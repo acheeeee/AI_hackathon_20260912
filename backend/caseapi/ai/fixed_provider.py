@@ -1,7 +1,14 @@
 """Deterministic no-network provider used to prove orchestration contracts."""
 
+from caseapi.ai import draft_composition
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
+
+FIXED_REASONING = (
+    '理由：\n'
+    '固定模型只依上列事實與已核對原文的法規排版生成本草稿，未作任何法律判斷，'
+    '也未認定本件應否受理或有無理由；請人工覆核並改寫後再採用。'
+)
 
 
 class FixedModelProvider:
@@ -15,7 +22,20 @@ class FixedModelProvider:
             return self._verify(request, tools)
         if request.intent == 'explain':
             return self._explain(request, tools)
+        if request.intent == draft_composition.INTENT_DRAFT:
+            return self._draft(request, tools)
         raise ValueError(f'unsupported fixed intent: {request.intent}')
+
+    @staticmethod
+    def _draft(request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
+        if not draft_composition.selected_statutes(request):
+            return ModelResult(draft_composition.NO_STATUTE_ANSWER)
+        opened, evidence_ids = draft_composition.open_selected_statutes(request, tools)
+        return ModelResult(
+            draft_composition.summary_answer(opened),
+            evidence_ids,
+            draft_composition.build_blocks(request, opened, FIXED_REASONING),
+        )
 
     @staticmethod
     def _verify(request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:

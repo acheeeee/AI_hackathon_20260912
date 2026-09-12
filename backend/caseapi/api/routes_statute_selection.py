@@ -5,13 +5,17 @@ import sqlite3
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 
-from caseapi.ai.runner import build_repository
-from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key
+from caseapi.api.deps import (
+    get_actor_id,
+    get_db,
+    get_evidence_repository,
+    get_idempotency_key,
+)
 from caseapi.api.mutation import execute_mutation
 from caseapi.envelope import success_response
-from caseapi.evidence.repository import EvidenceRepository
 from caseapi.schemas.statute_selection import StatuteSelectionSaveRequest
 from caseapi.services import statute_selection_service
+from caseapi.services.statute_selection_service import StatuteRepositoryLike
 
 router = APIRouter(prefix='/api/v1/cases/{case_id}', tags=['cases'])
 
@@ -26,8 +30,8 @@ def search_statutes(
     top_k: int = Query(default=statute_selection_service.DEFAULT_TOP_K, ge=1, le=20),
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
+    repository: StatuteRepositoryLike = Depends(get_evidence_repository),
 ) -> JSONResponse:
-    repository = _evidence_repository(request)
     data = statute_selection_service.search_statutes(
         conn,
         case_id=case_id,
@@ -72,12 +76,3 @@ def save_statute_selection(
             db, case_id=case_id, actor_id=actor_id, request=body
         ),
     )
-
-
-def _evidence_repository(request: Request) -> EvidenceRepository:
-    repository = request.app.state.evidence_repository
-    if repository is None:
-        settings = request.app.state.settings
-        repository = build_repository(settings.evidence_release_dir, settings.evidence_release_id)
-        request.app.state.evidence_repository = repository
-    return repository
