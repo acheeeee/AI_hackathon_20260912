@@ -6,7 +6,7 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端，以及線上 AWS Bedrock AgentCore provider 都已完成；後端 104 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定與 AgentCore 兩個 provider 都經同一個 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run；已用真實 AWS 請求跑過一次完整端到端流程。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)，AgentCore 部署細節見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。使用者已決定前端最終全面改接新後端並刪除舊後端，但逐畫面推進，現有 Vue 目前仍走舊 API。
+2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端、線上 AWS Bedrock AgentCore provider，以及上傳建案／案件列表／原檔展開都已完成；後端 127 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定與 AgentCore 兩個 provider 都經同一個 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run；已用真實 AWS 請求跑過一次完整端到端流程。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)，AgentCore 部署細節見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。前端首頁已改接新後端（`frontend/src/views/HomeView.vue`／`CaseDetailView.vue`），拿掉了舊的「選 demo」入口；舊的五步驟精靈搬到 `/legacy-demo`，仍走舊後端，逐畫面推進、尚未刪除。
 
 ## 1. 判斷與工作邊界
 
@@ -14,7 +14,7 @@
 
 | 問題 | 盤點結論 |
 |---|---|
-| 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。使用者已決定最終全面改接新後端，逐畫面推進，見 06 §5–6。 |
+| 前端能不能跑？ | 能。新首頁（案件列表＋上傳＋原檔展開）已改接新後端，type check、eslint 通過，並用真人瀏覽器操作走完上傳→開啟案件→切換原始文件全流程。舊的五步驟精靈仍在 `/legacy-demo`，走舊後端，type check、build、lint 通過。沒有前端單元測試，未驗證所有畫面／邊界情況。使用者已決定最終全面改接新後端，逐畫面推進，見 06 §5–6。 |
 | `backend/` 能刪嗎？ | 現階段不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API，也是新後端上傳建案／程序審查兩個缺口要搬用的規則式抽取邏輯來源。使用者已決定等新後端補齊對應能力、前端全部改接完成後才刪除。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
 | 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化、Evidence adapter、固定模型端到端、線上 AWS Bedrock AgentCore provider、上傳建案與案件列表狀態都已有實作；下一步是程序審查（77 條）與草稿生成兩個後端缺口，讓前端能逐步改接。gold 評估排在整條 demo 流程能跑之後；向量仍須先有 BM25 評估不足的證據。 |

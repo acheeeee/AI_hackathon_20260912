@@ -18,6 +18,7 @@ from caseapi.ai.fixed_provider import FixedModelProvider
 from caseapi.api.routes_annotations import router as annotations_router
 from caseapi.api.routes_cases import router as cases_router
 from caseapi.api.routes_chat import router as chat_router
+from caseapi.api.routes_documents import router as documents_router
 from caseapi.api.routes_drafts import router as drafts_router
 from caseapi.api.routes_evidence import router as evidence_router
 from caseapi.api.routes_facts import router as facts_router
@@ -89,6 +90,7 @@ def create_app(
     for router in (
         cases_router,
         intake_router,
+        documents_router,
         facts_router,
         drafts_router,
         annotations_router,
