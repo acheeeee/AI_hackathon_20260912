@@ -321,3 +321,63 @@ export async function getEvidence(caseId: string, evidenceId: string): Promise<E
     `/cases/${encodeURIComponent(caseId)}/evidence/${encodeURIComponent(evidenceId)}`,
   )
 }
+
+// ---------- 選法規：對 r3 做 BM25 搜尋、保存人工挑選結果 ----------
+
+export interface StatuteHit {
+  chunk_id: string
+  document_id: string
+  section_id: string
+  statute_name: string | null
+  article_key: string | null
+  excerpt: string
+  score: number
+}
+
+export interface StatuteSearchResult {
+  query_used: string | null
+  hits: StatuteHit[]
+}
+
+export async function searchStatutes(
+  caseId: string,
+  query?: string,
+): Promise<StatuteSearchResult> {
+  const params = query ? `?${new URLSearchParams({ q: query }).toString()}` : ''
+  return request<StatuteSearchResult>(
+    `/cases/${encodeURIComponent(caseId)}/statute-search${params}`,
+  )
+}
+
+export interface SelectedStatute {
+  chunk_id: string
+  document_id: string
+  section_id: string
+  statute_name: string
+  article_key: string
+  excerpt: string
+}
+
+export async function getStatuteSelection(caseId: string): Promise<SelectedStatute[]> {
+  const data = await request<{ selected: SelectedStatute[] }>(
+    `/cases/${encodeURIComponent(caseId)}/statute-selection`,
+  )
+  return data.selected
+}
+
+export async function saveStatuteSelection(params: {
+  caseId: string
+  expectedCaseRevision: number
+  reason: string
+  selected: SelectedStatute[]
+}): Promise<{ case_revision: number; selected: SelectedStatute[] }> {
+  return request(`/cases/${encodeURIComponent(params.caseId)}/statute-selection`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+    body: JSON.stringify({
+      expected_case_revision: params.expectedCaseRevision,
+      reason: params.reason,
+      selected: params.selected,
+    }),
+  })
+}

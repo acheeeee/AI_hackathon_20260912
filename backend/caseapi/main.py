@@ -24,6 +24,7 @@ from caseapi.api.routes_evidence import router as evidence_router
 from caseapi.api.routes_facts import router as facts_router
 from caseapi.api.routes_intake import router as intake_router
 from caseapi.api.routes_procedural_review import router as procedural_review_router
+from caseapi.api.routes_statute_selection import router as statute_selection_router
 from caseapi.api.routes_proposals import router as proposals_router
 from caseapi.api.routes_resources import router as resources_router
 from caseapi.api.routes_runs import router as runs_router
@@ -94,6 +95,7 @@ def create_app(
         documents_router,
         facts_router,
         procedural_review_router,
+        statute_selection_router,
         drafts_router,
         annotations_router,
         proposals_router,

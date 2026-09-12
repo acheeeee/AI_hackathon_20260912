@@ -20,6 +20,7 @@ import {
 } from '@/utils/factLabels'
 import ChatSidebar from '@/components/ChatSidebar.vue'
 import ProceduralReviewPanel from '@/components/ProceduralReviewPanel.vue'
+import StatuteSelectionPanel from '@/components/StatuteSelectionPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -152,6 +153,12 @@ function backToList() {
         :case-id="caseId"
         :case-revision="detail.case_revision"
         @facts-updated="load"
+      />
+
+      <StatuteSelectionPanel
+        :case-id="caseId"
+        :case-revision="detail.case_revision"
+        @selection-saved="load"
       />
 
       <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />

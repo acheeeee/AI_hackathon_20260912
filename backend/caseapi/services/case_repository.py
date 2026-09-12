@@ -17,6 +17,7 @@ FRESHNESS_STALE = 'stale'
 KIND_FACTS = 'facts'
 KIND_DRAFT = 'draft'
 KIND_ANNOTATION = 'annotation'
+KIND_STATUTE_SELECTION = 'statute_selection'
 
 
 def require_case(conn: sqlite3.Connection, *, case_id: str, actor_id: str) -> sqlite3.Row:

@@ -107,6 +107,31 @@ def _extract_appeal_filed_date(text: str) -> str | None:
     return _first_roc_date(text[name_match.end():])
 
 
+_NARRATIVE_END_MARKERS = (r'檢附之證據或附件', r'此\s*致')
+
+
+def extract_case_narrative(text: str) -> str | None:
+    """事實／理由段落，供 選法規 拿去當 BM25 查詢字串用。
+
+    這段是全文裡唯一可能出現實體法規名稱與條號的地方；前面的表頭
+    （稱謂／姓名／…）與後面的結尾格式（檢附之證據或附件、此致、簽名）
+    只是樣板文字，混進查詢只會稀釋真正有意義的詞。抓不到「事實：」這個
+    標籤就回 None，不要拿整份文件頂替——那樣搜出來的法規會被表頭雜訊
+    帶偏。
+    """
+    start = re.search(r'事\s*實[：:]', text)
+    if start is None:
+        return None
+    tail = text[start.end():]
+    end_pos = len(tail)
+    for marker in _NARRATIVE_END_MARKERS:
+        end_match = re.search(marker, tail)
+        if end_match is not None:
+            end_pos = min(end_pos, end_match.start())
+    narrative = re.sub(r'\s+', '', tail[:end_pos])
+    return narrative or None
+
+
 def _isolate_block(text: str, start_label: str, end_label: str) -> str | None:
     match = re.search(f'{start_label}(.*?){end_label}', text, re.S)
     if match is None:
