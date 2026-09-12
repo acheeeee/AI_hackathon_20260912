@@ -61,8 +61,18 @@ export async function generateDraft(): Promise<DraftResult> {
   return res.json()
 }
 
-export async function downloadDraftDocx(): Promise<Blob> {
-  const res = await fetch(`${BASE}/draft/docx`, { method: 'POST' })
+export interface EditedDraft {
+  main: string
+  fact: string
+  reason: string
+}
+
+export async function downloadDraftDocx(edited?: EditedDraft): Promise<Blob> {
+  const res = await fetch(`${BASE}/draft/docx`, {
+    method: 'POST',
+    headers: edited ? { 'Content-Type': 'application/json' } : undefined,
+    body: edited ? JSON.stringify(edited) : undefined,
+  })
   if (!res.ok) throw new ApiError(await parseErrorDetail(res), res.status)
   return res.blob()
 }

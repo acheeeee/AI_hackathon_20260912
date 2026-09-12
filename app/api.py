@@ -21,7 +21,7 @@ from typing import Optional
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
@@ -194,8 +194,10 @@ def draft():
 
 
 @app.post("/api/draft/docx")
-def draft_docx():
-    if "draft" not in _last:
+def draft_docx(edited: Optional[dict] = Body(default=None)):
+    """匯出 Word。若帶入 edited（承辦人於前端修改後的 main/fact/reason），
+    則以修改後版本匯出，否則使用最近一次生成的草稿。"""
+    if "draft" not in _last and not edited:
         # 若尚未生成則即時生成
         draft()
     appeal = _last.get("appeal")
@@ -205,7 +207,12 @@ def draft_docx():
         "original_authority": getattr(appeal, "original_authority", None),
         "disposition_no": getattr(appeal, "disposition_no", None),
     }
-    content = build_docx(_last["draft"], meta)
+    base = dict(_last.get("draft") or {})
+    if edited:
+        for key in ("main", "fact", "reason"):
+            if isinstance(edited.get(key), str):
+                base[key] = edited[key]
+    content = build_docx(base, meta)
     headers = {"Content-Disposition": 'attachment; filename="appeal_draft.docx"'}
     return StreamingResponse(
         io.BytesIO(content),

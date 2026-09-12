@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue'
+import { onMounted, computed, ref, nextTick, watch } from 'vue'
+import { normalizeLegalText } from '@/utils/legalText'
 import { useCaseStore } from '@/stores/case'
 
 const caseStore = useCaseStore()
@@ -8,9 +9,45 @@ const draft = computed(() => caseStore.draft)
 const appeal = computed(() => caseStore.result?.appeal ?? null)
 const downloadError = ref('')
 
+const modeTag = computed(() =>
+  draft.value?.mode === 'llm'
+    ? { text: 'AI 生成', cls: 'og-amber' }
+    : { text: '模板', cls: 'og-muted' },
+)
+
 onMounted(() => {
   if (!caseStore.draft && !caseStore.draftGenerating) caseStore.runDraft()
 })
+
+// 依內容自動調整 textarea 高度，讓它看起來像文件而非輸入框。
+function autoGrow(el: HTMLTextAreaElement) {
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
+function growAll() {
+  document.querySelectorAll<HTMLTextAreaElement>('.editor').forEach(autoGrow)
+}
+
+watch(
+  () => draft.value,
+  () => nextTick(growAll),
+)
+
+function onEdit(e: Event) {
+  caseStore.markDirty()
+  autoGrow(e.target as HTMLTextAreaElement)
+}
+
+function restoreSystem() {
+  const d = caseStore.draft
+  if (!d) return
+  caseStore.editableMain = d.main
+  caseStore.editableFact = normalizeLegalText(d.fact)
+  caseStore.editableReason = normalizeLegalText(d.reason)
+  caseStore.draftDirty = false
+  nextTick(growAll)
+}
 
 function regenerate() {
   caseStore.runDraft()
@@ -95,23 +132,52 @@ const selectedStatuteList = computed(() => {
       </el-alert>
 
       <template v-else-if="draft">
+        <div class="edit-hint">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9" /><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+          </svg>
+          三段內容可直接點擊修改，斷句已自動整理。修改後按「下載 Word」即匯出你編輯的版本。
+          <span v-if="caseStore.draftDirty" class="dirty">· 已修改</span>
+        </div>
+
         <div class="sec fill-bg">
-          <div class="sh">主文<span class="og og-muted">模板</span></div>
-          <div class="sb strong">{{ draft.main }}</div>
+          <div class="sh">主文<span class="og" :class="modeTag.cls">{{ modeTag.text }}</span></div>
+          <textarea
+            v-model="caseStore.editableMain"
+            class="sb editor strong"
+            rows="1"
+            @input="onEdit"
+          />
         </div>
 
         <div class="sec editing">
-          <div class="edit-tag">理由</div>
+          <div class="edit-tag">編輯中</div>
           <div class="sh">
             理由<span class="og og-blue">系統填入</span>
-            <span class="og-note">黃底槽位由擷取欄位帶入，改右欄依據會重算</span>
+            <span class="og-note">可自由修改，匯出以你的版本為準</span>
           </div>
-          <div class="sb pre">{{ draft.reason }}</div>
+          <textarea
+            v-model="caseStore.editableReason"
+            class="sb editor"
+            rows="6"
+            @input="onEdit"
+          />
         </div>
 
         <div class="sec fill-bg">
-          <div class="sh">事實<span class="og og-muted">模板</span></div>
-          <div class="sb pre">{{ draft.fact }}</div>
+          <div class="sh">事實<span class="og" :class="modeTag.cls">{{ modeTag.text }}</span></div>
+          <textarea
+            v-model="caseStore.editableFact"
+            class="sb editor"
+            rows="3"
+            @input="onEdit"
+          />
+        </div>
+
+        <div class="doc-tools">
+          <button class="mini" @click="restoreSystem">還原系統版本</button>
+          <span class="mini-note">你的修改僅存在本機瀏覽器，重新生成或還原會覆蓋。</span>
         </div>
 
         <div class="note note-amber">
@@ -340,8 +406,80 @@ const selectedStatuteList = computed(() => {
   font-weight: 600;
 }
 
-.pre {
-  white-space: pre-wrap;
+.editor {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  resize: none;
+  overflow: hidden;
+  padding: 2px 0;
+  color: var(--ink);
+  font-family: var(--font-serif);
+  font-size: 15px;
+  line-height: 2;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.editor:hover {
+  background: rgba(11, 61, 145, 0.03);
+}
+
+.editor:focus {
+  outline: none;
+  background: var(--tint);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.edit-hint {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--blue-light);
+  background: var(--tint);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 12px;
+}
+
+.dirty {
+  color: var(--warn);
+  font-weight: 700;
+}
+
+.doc-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 4px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  flex-wrap: wrap;
+}
+
+.mini {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 5px 12px;
+  background: #ffffff;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.mini-note {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.og-amber {
+  background: var(--amber-bg);
+  color: var(--amber-ink);
 }
 
 .basis-tabs {

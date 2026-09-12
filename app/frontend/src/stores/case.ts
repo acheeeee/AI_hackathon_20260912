@@ -8,6 +8,7 @@ import {
   type AnalyzeParams,
 } from '@/api/client'
 import type { AnalyzeResponse, DraftResult, StatuteRecommendation, SimilarCase } from '@/types/appeal'
+import { normalizeLegalText } from '@/utils/legalText'
 
 // 五步驟流程（對應 docs/design 的六張稿）：
 //   1 upload  進件上傳       Main.dc.html
@@ -149,11 +150,31 @@ export const useCaseStore = defineStore('case', () => {
   const draftError = ref<string | null>(null)
   const draft = ref<DraftResult | null>(null)
 
+  // 承辦人可編輯的版本：以系統草稿為初值，理由／事實先做斷句正規化，
+  // 承辦人可直接於介面修改，匯出 Word 時送出修改後版本。
+  const editableMain = ref('')
+  const editableFact = ref('')
+  const editableReason = ref('')
+  const draftDirty = ref(false)
+
+  function seedEditable(d: DraftResult) {
+    editableMain.value = d.main
+    editableFact.value = normalizeLegalText(d.fact)
+    editableReason.value = normalizeLegalText(d.reason)
+    draftDirty.value = false
+  }
+
+  function markDirty() {
+    draftDirty.value = true
+  }
+
   async function runDraft() {
     draftGenerating.value = true
     draftError.value = null
     try {
-      draft.value = await generateDraft()
+      const d = await generateDraft()
+      draft.value = d
+      seedEditable(d)
     } catch (e) {
       draftError.value = e instanceof ApiError ? e.message : '草稿生成失敗，請稍後再試。'
       draft.value = null
@@ -163,7 +184,11 @@ export const useCaseStore = defineStore('case', () => {
   }
 
   async function downloadDocx() {
-    const blob = await downloadDraftDocx()
+    const blob = await downloadDraftDocx({
+      main: editableMain.value,
+      fact: editableFact.value,
+      reason: editableReason.value,
+    })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -178,6 +203,10 @@ export const useCaseStore = defineStore('case', () => {
     analyzeError.value = null
     draft.value = null
     draftError.value = null
+    editableMain.value = ''
+    editableFact.value = ''
+    editableReason.value = ''
+    draftDirty.value = false
     selectedStatutes.value = new Set()
     selectedRefs.value = new Set()
     selectedSimilar.value = new Set()
@@ -208,6 +237,11 @@ export const useCaseStore = defineStore('case', () => {
     draftGenerating,
     draftError,
     draft,
+    editableMain,
+    editableFact,
+    editableReason,
+    draftDirty,
+    markDirty,
     runDraft,
     downloadDocx,
     reset,
