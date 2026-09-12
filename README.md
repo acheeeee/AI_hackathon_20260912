@@ -1,1 +1,1 @@
-# AI_hackaton
+# AI_hackathon

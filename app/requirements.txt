@@ -1,0 +1,18 @@
+# 訴願管理 AI 系統 依賴
+pymupdf==1.24.9          # PDF 文字抽取
+pydantic==2.9.2          # 資料模型與驗證
+rank-bm25==0.2.2         # BM25 關鍵字檢索
+jieba==0.42.1            # 中文斷詞（BM25 用）
+numpy==1.26.4            # 向量運算
+scikit-learn==1.5.2      # cosine similarity 等
+streamlit==1.39.0        # Demo 介面
+
+# LLM 生成 + 向量 embedding：Google Gemini（一家搞定）
+#   LLM:        gemini-3.6-flash（實測可用；gemini-2.5-flash 已不對新用戶開放）
+#   embedding:  gemini-embedding-001（3072維，支援 task_type，實測可用）
+google-generativeai==0.8.3
+
+# 說明：
+# - BM25 關鍵字檢索本地執行（jieba），不耗額度
+# - 向量索引一次性建立後快取到 data/index/，查詢時不重算
+# - 比賽當天如換官方 API，只需改 src/providers.py
