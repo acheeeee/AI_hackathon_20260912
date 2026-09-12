@@ -112,6 +112,61 @@ export async function getFacts(caseId: string): Promise<Record<string, FactField
   return data.fields
 }
 
+export interface PatchFactsResult {
+  case_revision: number
+  fields: Record<string, FactFieldValue>
+}
+
+export async function patchFacts(params: {
+  caseId: string
+  expectedCaseRevision: number
+  reason: string
+  fieldPath: string
+  value: string
+}): Promise<PatchFactsResult> {
+  return request<PatchFactsResult>(`/cases/${encodeURIComponent(params.caseId)}/facts`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+    body: JSON.stringify({
+      expected_case_revision: params.expectedCaseRevision,
+      reason: params.reason,
+      field_changes: [
+        {
+          field_path: params.fieldPath,
+          value: params.value,
+          human_asserted: true,
+          reason: params.reason,
+        },
+      ],
+    }),
+  })
+}
+
+// ---------- 程序審查（訴願法第14條期間試算，未經法律覆核） ----------
+
+export type ProceduralReviewStatus =
+  | 'insufficient_data'
+  | 'deadline_known_filing_unknown'
+  | 'within_period'
+  | 'overdue'
+
+export interface ProceduralReview {
+  case_id: string
+  status: ProceduralReviewStatus
+  deadline_date: string | null
+  days_from_deadline: number | null
+  missing_fields: string[]
+  statute_basis: string
+  caveats: string[]
+  legal_review_status: string
+}
+
+export async function getProceduralReview(caseId: string): Promise<ProceduralReview> {
+  return request<ProceduralReview>(
+    `/cases/${encodeURIComponent(caseId)}/procedural-review`,
+  )
+}
+
 export interface CaseDocument {
   document_id: string
   document_role: 'appeal' | 'disposition'

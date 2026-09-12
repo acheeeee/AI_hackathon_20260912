@@ -14,10 +14,12 @@ import {
 } from '@/api/caseapi'
 import {
   factFieldLabel,
+  factOriginLabel,
   PROCESSING_STATUS_LABELS,
   PROCESSING_STATUS_TAG_TYPE,
 } from '@/utils/factLabels'
 import ChatSidebar from '@/components/ChatSidebar.vue'
+import ProceduralReviewPanel from '@/components/ProceduralReviewPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -113,7 +115,7 @@ function backToList() {
                 <td>
                   <span>{{ field.value ?? '（未填）' }}</span>
                   <el-tag size="small" class="origin-tag" effect="plain">
-                    {{ field.origin === 'program' ? '規則式抽取' : field.origin }}
+                    {{ factOriginLabel(field.origin) }}
                   </el-tag>
                   <button class="ask-ai" @click="askAboutField(path)">問 AI</button>
                 </td>
@@ -145,6 +147,12 @@ function backToList() {
           <p v-else class="empty-hint">沒有上傳的原始文件。</p>
         </div>
       </div>
+
+      <ProceduralReviewPanel
+        :case-id="caseId"
+        :case-revision="detail.case_revision"
+        @facts-updated="load"
+      />
 
       <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />
     </template>
