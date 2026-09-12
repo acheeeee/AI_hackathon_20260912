@@ -7,7 +7,7 @@ numpy==1.26.4            # 向量運算
 scikit-learn==1.5.2      # cosine similarity 等
 streamlit==1.39.0        # Demo 介面（app.py）
 
-# FastAPI 介面（api.py，供 app/frontend 的 Vue 前端呼叫）
+# FastAPI 介面（api.py，供根目錄 frontend/ 的 Vue 前端呼叫）
 fastapi==0.141.1
 uvicorn==0.52.4
 python-multipart==0.0.32  # File/Form 上傳

@@ -1,4 +1,46 @@
+# ---------- 機密 ----------
 .env
 .env.*
-!.env.example
 .DS_Store
+
+# ---------- Python（app/） ----------
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 索引快取（可重建，勿進版控）
+app/data/index/
+
+# ---------- 前端（frontend/） ----------
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+.eslintcache
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Vite
+*.timestamp-*-*.mjs
+
+# Vitest
+__screenshots__/
+
+# ---------- 編輯器 ----------
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

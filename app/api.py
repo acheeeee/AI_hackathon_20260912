@@ -38,7 +38,7 @@ from src.models import IncomingAppeal
 
 app = FastAPI(title="新北市訴願管理 AI 輔助系統")
 
-# 前端（Vue, app/frontend）開發時跑在獨立 port（Vite 預設 5173），屬跨來源請求。
+# 前端（Vue, 專案根目錄 frontend/）開發時跑在獨立 port（Vite 預設 5173），屬跨來源請求。
 # 正式環境若前後端分開部署，改用 CORS_ORIGINS 環境變數覆寫（逗號分隔）。
 _default_origins = "http://localhost:5173,http://127.0.0.1:5173"
 _cors_origins = os.environ.get("CORS_ORIGINS", _default_origins).split(",")

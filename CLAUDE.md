@@ -14,7 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 cd app
 pip install -r requirements.txt
 
-cp .env.example .env        # 填入 GEMINI_API_KEY（https://aistudio.google.com/apikey）
+# 建立 app/.env，內容 GEMINI_API_KEY=你的key（https://aistudio.google.com/apikey）
 
 # 建知識庫（PDF -> JSON，讀 repo 根目錄 data/，輸出到 app/data/kb/*.json）
 python -m src.build_kb
@@ -39,9 +39,9 @@ python -m src.demo_retrieval
 
 - `app/app.py`（Streamlit Demo）
 - `app/api.py`（FastAPI REST API）+ `app/web/`（舊的純手寫 HTML/JS/CSS 靜態頁，**已停止開發，保留但不再維護**）
-- `app/api.py` + `app/frontend/`（**現役**：Vue 3 + TypeScript + Vite + Pinia + Vue Router + Element Plus，正在取代 `app/web`）
+- `app/api.py` + `frontend/`（**現役**：Vue 3 + TypeScript + Vite + Pinia + Vue Router + Element Plus，正在取代 `app/web`）
 
-三者都呼叫同一套 `src/` pipeline，改 `src/` 會同時影響 Streamlit 與 FastAPI 兩條路徑。`app/frontend/` 開發時用 `npm run dev`（port 5173），`vite.config.ts` 設了 `/api` proxy 轉到 `localhost:8000`；`api.py` 也加了 `CORSMiddleware`（預設允許 `localhost:5173`，用 `CORS_ORIGINS` 環境變數覆寫），供前後端分開部署時使用。前端型別定義在 `app/frontend/src/types/appeal.ts`，對應 `src/models.py` 與 `api.py` 實際回傳的 JSON（注意 `draft.py` 的 `build_draft()` 回傳的是 `{fact, reason, main, mode}`，不是 `models.py` 裡定義但未被使用的 `DraftDecision`）。
+三者都呼叫同一套 `src/` pipeline，改 `src/` 會同時影響 Streamlit 與 FastAPI 兩條路徑。`frontend/` 開發時用 `npm run dev`（port 5173），`vite.config.ts` 設了 `/api` proxy 轉到 `localhost:8000`；`api.py` 也加了 `CORSMiddleware`（預設允許 `localhost:5173`，用 `CORS_ORIGINS` 環境變數覆寫），供前後端分開部署時使用。前端型別定義在 `frontend/src/types/appeal.ts`，對應 `src/models.py` 與 `api.py` 實際回傳的 JSON（注意 `draft.py` 的 `build_draft()` 回傳的是 `{fact, reason, main, mode}`，不是 `models.py` 裡定義但未被使用的 `DraftDecision`）。
 
 **已知但刻意不修的缺陷**：`api.py` 用模組層級全域 `dict _last` 在 `/api/analyze` 與 `/api/draft` 之間傳狀態，多分頁／多 worker／多人同時使用會互相覆蓋（錄錯案）。目前決定先把前端接起來，這個 session-scoping 問題之後再處理。
 
