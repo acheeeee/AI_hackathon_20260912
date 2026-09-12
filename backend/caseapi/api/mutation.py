@@ -43,10 +43,12 @@ def execute_mutation(
     )
     if stored is not None:
         stored_status, stored_payload = stored
+        headers = _headers(stored_payload, headers_from_data) or {}
+        headers['Idempotency-Replayed'] = 'true'
         return JSONResponse(
             stored_payload,
             status_code=stored_status,
-            headers=_headers(stored_payload, headers_from_data),
+            headers=headers,
         )
 
     with transaction(conn):
@@ -66,9 +68,9 @@ def execute_mutation(
             status_code=status_code,
             response=payload,
         )
-    return JSONResponse(
-        payload, status_code=status_code, headers=_headers(payload, headers_from_data)
-    )
+    headers = _headers(payload, headers_from_data) or {}
+    headers['Idempotency-Replayed'] = 'false'
+    return JSONResponse(payload, status_code=status_code, headers=headers)
 
 
 def _headers(

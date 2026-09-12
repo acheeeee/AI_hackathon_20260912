@@ -246,6 +246,49 @@ def complete_run(
     return get_run(conn, case_id=case_id, actor_id=actor_id, run_id=run_id)
 
 
+def fail_run(
+    conn: sqlite3.Connection,
+    *,
+    case_id: str,
+    actor_id: str,
+    run_id: str,
+    error_code: str,
+    error_type: str,
+) -> dict[str, Any]:
+    """Mark a run failed after the server execution layer catches an exception.
+
+    Only called from the runner's own exception handler, never from a
+    user-facing route. A concurrent cancellation may have already moved the
+    run to a terminal state while the provider was still executing; that is
+    an expected race, not an error, so this is a no-op rather than raising.
+    """
+    row = _require_run(conn, case_id=case_id, actor_id=actor_id, run_id=run_id)
+    if row['state'] in TERMINAL_STATES:
+        return get_run(conn, case_id=case_id, actor_id=actor_id, run_id=run_id)
+    timestamp = now_iso()
+    error = {'code': error_code, 'type': error_type}
+    conn.execute(
+        'UPDATE ai_runs SET state = ?, lease_until = NULL, error_json = ?, updated_at = ?'
+        ' WHERE id = ?',
+        ('failed', _json(error), timestamp, run_id),
+    )
+    conn.execute(
+        'UPDATE jobs SET state = ?, lease_until = NULL, error_json = ?, updated_at = ?'
+        ' WHERE run_id = ? AND state = ?',
+        ('failed', _json(error), timestamp, run_id, 'running'),
+    )
+    append_event(
+        conn,
+        case_id=case_id,
+        actor_id=actor_id,
+        run_id=run_id,
+        event_type='run.failed',
+        tool_call_id=None,
+        payload=error,
+    )
+    return get_run(conn, case_id=case_id, actor_id=actor_id, run_id=run_id)
+
+
 def cancel_run(
     conn: sqlite3.Connection,
     *,

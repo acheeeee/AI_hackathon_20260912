@@ -1,10 +1,11 @@
 """Run 狀態、已保存事件 JSON replay 與取消端點。"""
 
+import json
 import sqlite3
 from typing import Literal
 
-from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key
 from caseapi.api.mutation import execute_mutation
@@ -37,22 +38,38 @@ def get_run_events(
     run_id: str,
     after_sequence: int = Query(default=0, ge=0),
     limit: int = Query(default=100, ge=1, le=MAX_EVENT_PAGE_SIZE),
-    response_format: Literal['json'] = Query(default='json', alias='format'),
+    response_format: Literal['json', 'sse'] = Query(default='json', alias='format'),
+    last_event_id: int | None = Header(default=None, alias='Last-Event-ID', ge=0),
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
-) -> JSONResponse:
-    del response_format
+) -> Response:
+    replay_after = max(after_sequence, last_event_id or 0)
     events, next_sequence = run_service.list_events(
         conn,
         case_id=case_id,
         actor_id=actor_id,
         run_id=run_id,
-        after_sequence=after_sequence,
+        after_sequence=replay_after,
         limit=limit,
     )
+    if response_format == 'sse':
+        return StreamingResponse(
+            iter([_encode_sse(events)]),
+            media_type='text/event-stream',
+            headers={'Cache-Control': 'no-cache', 'X-Accel-Buffering': 'no'},
+        )
     return success_response(
         request,
         {'items': events, 'next_after_sequence': next_sequence},
+    )
+
+
+def _encode_sse(events: list[dict]) -> str:
+    return ''.join(
+        f'id: {event["sequence"]}\n'
+        f'event: {event["event_type"]}\n'
+        f'data: {json.dumps(event, ensure_ascii=False, separators=(",", ":"))}\n\n'
+        for event in events
     )
 
 

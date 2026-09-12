@@ -6,19 +6,19 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化與 B2 Evidence 工具 adapter 已完成；後端 83 項測試通過，`caseapi` 覆蓋率 94%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，adapter 能將實際搜尋／開啟活動寫入 run 事件，且只有開啟原文會產生 program-verified evidence。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。現有 Vue 仍未接新版 API。
+2026-09-12 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter 與 B3 固定模型端到端已完成；後端 92 項測試通過，`caseapi` 覆蓋率 95%。r3 release 通過 15／15 檢查；`EvidenceRepository` 已能做 hash-bound 離線 BM25，固定 provider 能經 adapter 把實際搜尋／開啟活動寫入 run 事件、把已驗證證據與 assistant 訊息存進同一個 run。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。使用者已決定前端最終全面改接新後端並刪除舊後端，但逐畫面推進，現有 Vue 目前仍走舊 API。
 
 ## 1. 判斷與工作邊界
 
-目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物、EvidenceRepository 與內部工具 adapter。**新證據層已能寫 run 事件與 `evidence_records`，但尚未有模型 runner、聊天 API 或前端來源卡；現有 Vue 仍走舊資料路徑。**
+目前有一套可執行的 Vue 前端與舊版 FastAPI／BM25／模板草稿流程；另有新版案件 API、r3 前處理產物、EvidenceRepository、內部工具 adapter 與固定模型聊天端到端。**新證據層已能寫 run 事件、`evidence_records`、assistant 訊息與冪等聊天 run，但還沒有線上模型、AI 生成草稿的提案鏈或前端側邊欄；現有 Vue 仍走舊資料路徑。**
 
 | 問題 | 盤點結論 |
 |---|---|
-| 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。 |
-| `backend/` 能刪嗎？ | 不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API。本次只刪除兩套已退役 demo UI。 |
+| 前端能不能跑？ | 能。type check、build、lint 通過；瀏覽器走完示範解析→程序頁→依據頁→草稿→Word API。沒有前端單元測試，未驗證所有畫面／邊界情況。使用者已決定最終全面改接新後端，逐畫面推進，見 06 §5–6。 |
+| `backend/` 能刪嗎？ | 現階段不能整包刪。它仍提供前端所需的分析、檢索、草稿及匯出 API，也是新後端上傳建案／程序審查兩個缺口要搬用的規則式抽取邏輯來源。使用者已決定等新後端補齊對應能力、前端全部改接完成後才刪除。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
-| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化與 Evidence adapter 已有實作；下一步是固定假模型端到端。線上模型已排入後續授權順序；向量仍須先有 BM25 評估不足的證據。 |
-| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1 與 B2；未新增線上 LLM、embedding、SSE、登入或前端整合。 |
+| 下一步只有 RAG、LLM、API 嗎？ | 案件 API、BM25 證據底座、run／事件持久化、Evidence adapter 與固定模型端到端已有實作；下一步是接 AWS Bedrock AgentCore 線上 provider，然後補上傳建案、案件列表、程序審查與草稿生成四個後端缺口讓前端能逐步改接。gold 評估排在整條 demo 流程能跑之後；向量仍須先有 BM25 評估不足的證據。 |
+| 這輪是否繼續開發？ | 已在使用者授權後完成階段 A、B0、B1、B2 與 B3（固定模型聊天端到端）；未新增線上 LLM、embedding、長連線 SSE、登入或前端整合。 |
 
 ## 2. 目前程式架構
 

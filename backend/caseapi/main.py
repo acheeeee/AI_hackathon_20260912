@@ -12,9 +12,13 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from caseapi.ai.contracts import ModelProvider
+from caseapi.ai.fixed_provider import FixedModelProvider
 from caseapi.api.routes_annotations import router as annotations_router
 from caseapi.api.routes_cases import router as cases_router
+from caseapi.api.routes_chat import router as chat_router
 from caseapi.api.routes_drafts import router as drafts_router
+from caseapi.api.routes_evidence import router as evidence_router
 from caseapi.api.routes_facts import router as facts_router
 from caseapi.api.routes_proposals import router as proposals_router
 from caseapi.api.routes_resources import router as resources_router
@@ -25,6 +29,7 @@ from caseapi.db.migrations import apply_migrations
 from caseapi.envelope import error_response
 from caseapi.errors import ApiError, database_busy, invalid_field, malformed_request
 from caseapi.ids import new_id
+from caseapi.tools.evidence_tools import EvidenceRepositoryLike
 
 API_TITLE = '訴願案件協作 API'
 API_VERSION = '1.0.0'
@@ -41,7 +46,12 @@ async def _lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
 
 
-def create_app(settings: Settings | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    *,
+    evidence_repository: EvidenceRepositoryLike | None = None,
+    model_provider: ModelProvider | None = None,
+) -> FastAPI:
     app = FastAPI(
         title=API_TITLE,
         version=API_VERSION,
@@ -50,6 +60,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         openapi_url='/api/v1/openapi.json',
     )
     app.state.settings = settings or load_settings()
+    app.state.evidence_repository = evidence_repository
+    app.state.model_provider = model_provider or FixedModelProvider()
 
     @app.middleware('http')
     async def attach_request_id(request: Request, call_next):
@@ -72,8 +84,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise exc
         return error_response(request, database_busy())
 
-    for router in (cases_router, facts_router, drafts_router, annotations_router,
-                   proposals_router, resources_router, runs_router):
+    for router in (
+        cases_router,
+        facts_router,
+        drafts_router,
+        annotations_router,
+        proposals_router,
+        resources_router,
+        runs_router,
+        chat_router,
+        evidence_router,
+    ):
         app.include_router(router)
     return app
 

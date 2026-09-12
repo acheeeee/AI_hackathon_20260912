@@ -1,13 +1,17 @@
 """Fixed-provider end-to-end chat, tools, evidence, messages and SSE replay."""
 
 import hashlib
+import json
 from dataclasses import replace
 
 from fastapi.testclient import TestClient
 
+from caseapi.ai.contracts import ModelResult
 from caseapi.ai.fixed_provider import FixedModelProvider
+from caseapi.db.connection import connect, transaction
 from caseapi.evidence.repository import OpenedSource, SearchHit
 from caseapi.main import create_app
+from caseapi.services import run_service
 
 from conftest import block_target, create_case, create_draft, mutate
 
@@ -48,17 +52,18 @@ class FakeEvidenceRepository:
         return [
             SearchHit(
                 release_id='r3',
-                chunk_id=self.opened.chunk_id,
+                chunk_id=f'chk_law_{article}',
                 document_id=self.opened.document_id,
-                section_id=self.opened.section_id,
+                section_id=f'sec_law_{article}',
                 document_type='statute',
                 case_family_id=None,
                 excerpt=self.opened.quote_text,
                 source_spans=self.opened.source_spans,
-                metadata=self.opened.metadata,
-                score=3.5,
+                metadata={'statute_name': '訴願法', 'article_key': article},
+                score=4.0 - index,
                 index_eligible=True,
             )
+            for index, article in enumerate(('14', '15', '16'))
         ]
 
     def open_source(self, chunk_id: str) -> OpenedSource:
@@ -73,6 +78,46 @@ def _fixed_client(settings) -> TestClient:
             model_provider=FixedModelProvider(),
         )
     )
+
+
+class FailingModelProvider:
+    prompt_version = 'failing-test-v1'
+
+    def descriptor(self) -> dict[str, str]:
+        return {'provider': 'fixed-test-failure', 'model': 'deterministic-failure'}
+
+    def execute(self, request, tools):
+        del request, tools
+        raise RuntimeError('provider exploded with private input')
+
+
+class CancellingModelProvider:
+    """Simulates a user cancelling a run while the provider is still executing."""
+
+    prompt_version = 'cancel-race-test-v1'
+
+    def __init__(self, db_path, actor_id: str) -> None:
+        self._db_path = db_path
+        self._actor_id = actor_id
+
+    def descriptor(self) -> dict[str, str]:
+        return {'provider': 'fixed-test-cancel-race', 'model': 'deterministic-cancel'}
+
+    def execute(self, request, tools):
+        del tools
+        conn = connect(self._db_path)
+        try:
+            with transaction(conn):
+                run_service.cancel_run(
+                    conn,
+                    case_id=request.case_id,
+                    actor_id=self._actor_id,
+                    run_id=request.run_id,
+                    reason='user cancelled mid-flight',
+                )
+        finally:
+            conn.close()
+        return ModelResult('answer generated after cancellation')
 
 
 def _create_thread(client: TestClient, case_id: str) -> str:
@@ -162,6 +207,14 @@ def test_fixed_verify_flow_persists_answer_evidence_and_ordered_events(settings)
             'answer.delta',
             'run.completed',
         ]
+        search_completed = next(
+            event
+            for event in events
+            if event['event_type'] == 'tool.completed'
+            and event['payload']['tool'] == 'search_knowledge'
+        )
+        assert search_completed['payload']['hit_count'] == 3
+        assert sum(event['event_type'] == 'source.opened' for event in events) == 1
         evidence_id = next(
             event['payload']['evidence_id']
             for event in events
@@ -278,7 +331,8 @@ def test_fixed_explain_reads_only_bounded_selection_context(settings) -> None:
             params={'format': 'json'},
         ).json()['data']['items']
         assert messages[-1]['content'] == (
-            '選取內容：「選取文字」。固定模型只確認上下文讀取鏈，未作法律判斷。'
+            '選取內容：「選取文字」。'
+            '固定模型只確認上下文讀取鏈，未作法律判斷。'
         )
         assert [event['event_type'] for event in events] == [
             'run.started',
@@ -321,3 +375,169 @@ def test_sse_replays_only_events_after_last_event_id_without_rerun(settings) -> 
             params={'format': 'json'},
         ).json()['data']['items']
         assert len(events) == 8
+
+
+def test_runner_failure_is_persisted_without_leaking_exception_text(settings) -> None:
+    with TestClient(
+        create_app(
+            settings,
+            evidence_repository=FakeEvidenceRepository(),
+            model_provider=FailingModelProvider(),
+        )
+    ) as client:
+        case_id = create_case(client)
+        thread_id = _create_thread(client, case_id)
+
+        response = _send_message(
+            client,
+            case_id,
+            thread_id,
+            content='私人案件內容',
+            intent='verify',
+            expected_case_revision=1,
+        )
+
+        run_id = response.json()['data']['run_id']
+        run = client.get(f'/api/v1/cases/{case_id}/runs/{run_id}').json()['data']
+        assert run['state'] == 'failed'
+        assert run['error'] == {
+            'code': 'MODEL_RUN_FAILED',
+            'type': 'RuntimeError',
+        }
+        events = client.get(
+            f'/api/v1/cases/{case_id}/runs/{run_id}/events',
+            params={'format': 'json'},
+        ).json()['data']['items']
+        assert [event['event_type'] for event in events] == [
+            'run.started',
+            'run.failed',
+        ]
+        conn = connect(settings.db_path)
+        try:
+            job = conn.execute(
+                'SELECT state, error_json FROM jobs WHERE run_id = ?',
+                (run_id,),
+            ).fetchone()
+        finally:
+            conn.close()
+        assert job['state'] == 'failed'
+        assert 'private input' not in json.dumps(run['error'])
+        assert 'private input' not in job['error_json']
+        assert create_draft(client, case_id)['resource_revision']
+
+
+def test_cancelling_a_running_run_survives_a_provider_that_finishes_late(
+    settings,
+) -> None:
+    with TestClient(
+        create_app(
+            settings,
+            evidence_repository=FakeEvidenceRepository(),
+            model_provider=CancellingModelProvider(
+                settings.db_path, settings.actor_id
+            ),
+        )
+    ) as client:
+        case_id = create_case(client)
+        thread_id = _create_thread(client, case_id)
+
+        response = _send_message(
+            client,
+            case_id,
+            thread_id,
+            content='私人案件內容',
+            intent='verify',
+            expected_case_revision=1,
+        )
+
+        run_id = response.json()['data']['run_id']
+        run = client.get(f'/api/v1/cases/{case_id}/runs/{run_id}').json()['data']
+        assert run['state'] == 'cancelled'
+        events = client.get(
+            f'/api/v1/cases/{case_id}/runs/{run_id}/events',
+            params={'format': 'json'},
+        ).json()['data']['items']
+        assert [event['event_type'] for event in events] == [
+            'run.started',
+            'run.cancelled',
+        ]
+        messages = client.get(
+            f'/api/v1/cases/{case_id}/chat-threads/{thread_id}/messages'
+        ).json()['data']['items']
+        assert [message['role'] for message in messages] == ['user']
+
+
+def test_chat_and_evidence_reads_do_not_cross_case_boundaries(settings) -> None:
+    with _fixed_client(settings) as client:
+        first_case = create_case(client, '案件一')
+        second_case = create_case(client, '案件二')
+        thread_id = _create_thread(client, first_case)
+        response = _send_message(
+            client,
+            first_case,
+            thread_id,
+            content='訴願期限是多少？',
+            intent='verify',
+            expected_case_revision=1,
+        )
+        run_id = response.json()['data']['run_id']
+        events = client.get(
+            f'/api/v1/cases/{first_case}/runs/{run_id}/events',
+            params={'format': 'json'},
+        ).json()['data']['items']
+        evidence_id = next(
+            event['payload']['evidence_id']
+            for event in events
+            if event['event_type'] == 'source.opened'
+        )
+
+        wrong_thread = client.get(
+            f'/api/v1/cases/{second_case}/chat-threads/{thread_id}/messages'
+        )
+        wrong_evidence = client.get(
+            f'/api/v1/cases/{second_case}/evidence/{evidence_id}'
+        )
+
+        assert wrong_thread.status_code == 404
+        assert wrong_evidence.status_code == 404
+        assert wrong_thread.json()['error']['code'] == 'RESOURCE_NOT_FOUND'
+        assert wrong_evidence.json()['error']['code'] == 'RESOURCE_NOT_FOUND'
+
+
+def test_default_fixed_model_opens_program_verified_source_from_real_r3(settings) -> None:
+    with TestClient(create_app(settings)) as client:
+        case_id = create_case(client)
+        thread_id = _create_thread(client, case_id)
+
+        response = _send_message(
+            client,
+            case_id,
+            thread_id,
+            content='訴願應自行政處分達到次日起三十日內提起',
+            intent='verify',
+            expected_case_revision=1,
+        )
+
+        run_id = response.json()['data']['run_id']
+        run = client.get(f'/api/v1/cases/{case_id}/runs/{run_id}').json()['data']
+        events = client.get(
+            f'/api/v1/cases/{case_id}/runs/{run_id}/events',
+            params={'format': 'json'},
+        ).json()['data']['items']
+        messages = client.get(
+            f'/api/v1/cases/{case_id}/chat-threads/{thread_id}/messages'
+        ).json()['data']['items']
+        evidence_id = next(
+            event['payload']['evidence_id']
+            for event in events
+            if event['event_type'] == 'source.opened'
+        )
+        evidence = client.get(
+            f'/api/v1/cases/{case_id}/evidence/{evidence_id}'
+        ).json()['data']
+
+        assert run['state'] == 'completed'
+        assert messages[-1]['content'].startswith('已查閱 r3 原文：')
+        assert evidence['source_exists'] is True
+        assert evidence['quote_matches'] is True
+        assert evidence['source_ref']['kb_release_id'] == 'r3'

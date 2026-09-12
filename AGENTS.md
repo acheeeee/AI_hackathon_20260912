@@ -59,7 +59,7 @@ Python: four spaces, PEP 8, `snake_case` functions/modules, `PascalCase` models,
 
 Vue/TypeScript: two spaces, single quotes, no semicolons, 100-column target; `PascalCase.vue` components and `camelCase` variables/functions.
 
-Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. After B2, the backend suite has 83 passing tests with 94% aggregate `caseapi` coverage; `EvidenceToolAdapter` has 93% and `EvidenceRepository` 87%. The preprocessing release validator passes 15/15 for r3 and the four-document layout regression passes 4/4. Legal-logic changes require source-based regression cases; passing transport/data-contract tests or showing a legal label is not evidence of legal correctness.
+Vitest is configured but no tests are committed. Future frontend tests go under `src/**/__tests__/*.spec.ts`. After the fixed-model B3 flow (including the cancel-race fix), the backend suite has 92 passing tests with 95% aggregate `caseapi` coverage; the fixed runner is covered at 98%, `EvidenceToolAdapter` at 93%, and `EvidenceRepository` at 87%. The preprocessing release validator passes 15/15 for r3 and the four-document layout regression passes 4/4. Legal-logic changes require source-based regression cases; passing transport/data-contract tests or showing a legal label is not evidence of legal correctness.
 
 ## Git and Configuration
 

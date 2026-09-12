@@ -1,6 +1,6 @@
 # 案件、AI 協作與修改提案 API 契約
 
-日期：2026-09-12｜v1.0 設計｜階段 A、B1 run／JSON replay 與 B2 內部工具已實作；SSE／聊天端點尚未實作，偏離見 05 §6
+日期：2026-09-12｜v1.0 設計｜階段 A 與 B1／B2／B3 固定模型 E2E 已實作；線上 provider、長連線 SSE 與前端尚未實作
 
 ## 1. 共通規約
 
@@ -168,7 +168,7 @@ apply 請求：
 
 ## 6. SSE 事件
 
-> **B1 實作狀態：** `ai_runs`／`jobs`／`run_events` 與 `GET run`、`GET events?format=json&after_sequence=...`、`POST cancellations` 已完成。真正 SSE response 與 Last-Event-ID header replay 留到固定假模型端到端階段；目前不得把 JSON replay 說成 S01 通過。
+> **B3 實作狀態：** `GET events?format=sse` 已回傳已保存事件，並依 `Last-Event-ID` 只補送後續 sequence；測試確認重連不重跑 fixed provider。目前 response 回傳快照後結束，沒有等待新事件的長連線與 heartbeat。
 
 事件型別：`run.started/tool.started/tool.completed/tool.failed/source.opened/answer.delta/proposal.ready/run.completed/run.failed/run.cancelled/run.needs_input`。事件 `id` 為該 run 單調遞增整數；data 含 `run_id, sequence, timestamp, payload`。屬文字串流的 answer.delta 不單獨成為正式消息版本。
 

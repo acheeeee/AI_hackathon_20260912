@@ -1,6 +1,6 @@
 # 後端案件管理、SQLite 與版本合併
 
-日期：2026-09-12｜v1.0 工程方案｜階段 A、B1 run／事件與 B2 evidence 寫入已實作；未完成項見 05 §6
+日期：2026-09-12｜v1.0 工程方案｜階段 A 與 B1／B2／B3 已實作；未完成項見 05 §6
 
 ## 1. 架構與責任
 
@@ -45,7 +45,7 @@ Vue 工作畫面／AI 側邊欄
 | `case_documents` | `id, case_id, source_file, source_sha256, document_role, extraction_version`；原件與工作副本分開 |
 | `analyses` | `id, case_id, input_heads_json, input_hash, ruleset_version, outputs_json, created_at`；結果不可改寫 |
 | `annotations` | `id, case_id, target_json, current_revision, status`；每次編修內容存 resource version |
-| `chat_threads/messages` | `case_id, thread_id, message_id, role, content, target_json, run_id, created_at`；訊息以新增保存，更正有關聯 |
+| `chat_threads/messages` | `case_id, thread_id, message_id, role, content, target_json, run_id, created_at`；B3 已實作 user／assistant 不可變訊息，每個 assistant 訊息連回一個 run |
 | `ai_runs` | `id, case_id, state, context_manifest_json, prompt_version, provider_config_json, lease_until, error_code` |
 | `jobs` | `id, case_id, run_id, kind, input_refs_json, state, attempt, lease_until`；抽文／規則／AI 工作排程，輸入凍結，重試保留紀錄 |
 | `run_events` | `run_id, sequence, event_type, tool_call_id, payload_json, created_at`；序號唯一，用於串流補送 |
