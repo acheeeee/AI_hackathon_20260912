@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import AnalyzeView from '@/views/AnalyzeView.vue'
+import WizardView from '@/views/WizardView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'analyze',
-      component: AnalyzeView,
+      name: 'wizard',
+      component: WizardView,
     },
   ],
 })

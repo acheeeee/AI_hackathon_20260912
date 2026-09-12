@@ -2,8 +2,159 @@
 
 #app {
   width: 100%;
-  max-width: 1400px;
+  min-height: 100vh;
+}
+
+/* ---------- 共用版面 ---------- */
+.page {
+  max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 24px 40px;
-  font-weight: normal;
+  padding: 22px 20px 48px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 20px 22px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--blue);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--line);
+  margin-bottom: 14px;
+}
+
+/* ---------- 提示條 ---------- */
+.note {
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.note-amber {
+  background: var(--amber-bg);
+  border-left: 4px solid var(--yellow);
+  color: var(--amber-ink);
+}
+
+.note-blue {
+  background: var(--tint);
+  border-left: 4px solid var(--blue-light);
+  color: #26406b;
+}
+
+.note-red {
+  background: var(--warn-bg);
+  border-left: 4px solid var(--warn);
+  color: var(--warn-ink);
+}
+
+/* ---------- 標籤膠囊 ---------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+.pill-ok {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.pill-warn {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.pill-amber {
+  background: var(--amber-bg);
+  color: var(--amber-ink);
+}
+
+.pill-muted {
+  background: var(--bg);
+  color: var(--muted);
+}
+
+.pill-blue {
+  background: var(--tint);
+  color: var(--blue);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* ---------- 主要按鈕 ---------- */
+.btn {
+  border: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition:
+    filter 0.15s,
+    background 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: #ffffff;
+  padding: 13px 24px;
+}
+
+.btn-primary:not(:disabled):hover {
+  filter: brightness(1.1);
+}
+
+.btn-ghost {
+  background: #ffffff;
+  color: var(--blue);
+  border: 1.5px solid var(--blue);
+  padding: 11px 20px;
+}
+
+.btn-line {
+  background: #ffffff;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  padding: 11px 20px;
+  font-weight: 500;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* Element Plus 全域字型對齊 */
+.el-button,
+.el-input,
+.el-textarea,
+.el-select {
+  font-family: var(--font-sans);
 }
