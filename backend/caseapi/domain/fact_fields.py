@@ -4,6 +4,9 @@
 不在這裡：依 01 的規則，那要走試算或人工覆核，不能當成可直接改的字串。
 """
 
+from caseapi.domain.procedural_fields import PROCEDURAL_FIELD_BY_PATH
+
+
 FACT_FIELD_ALLOWLIST = frozenset(
     {
         'appellant.name',
@@ -19,7 +22,7 @@ FACT_FIELD_ALLOWLIST = frozenset(
         'analysis.statute_query',
         'disposition.summary',
     }
-)
+) | frozenset(PROCEDURAL_FIELD_BY_PATH)
 
 
 # These fields are shown and edited in the intake-analysis panel. Keep the
@@ -48,6 +51,7 @@ FACT_FIELD_LABELS = {
     'analysis.statute_query': '建議法規查詢關鍵字',
     'disposition.summary': '行政處分函摘要',
 }
+FACT_FIELD_LABELS.update({path: item['label'] for path, item in PROCEDURAL_FIELD_BY_PATH.items()})
 
 
 def is_allowed_field_path(field_path: str) -> bool:

@@ -5,6 +5,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from caseapi.domain.fact_fields import ANALYSIS_FIELD_VALUE_MAX_LENGTHS, is_allowed_field_path
+from caseapi.domain.procedural_fields import validate_procedural_field_value
 
 MAX_REASON_LENGTH = 1000
 
@@ -27,6 +28,7 @@ class FactFieldChange(BaseModel):
 
     @model_validator(mode='after')
     def check_field_specific_value_limit(self) -> 'FactFieldChange':
+        validate_procedural_field_value(self.field_path, self.value)
         limit = ANALYSIS_FIELD_VALUE_MAX_LENGTHS.get(self.field_path)
         if self.value is not None and limit is not None and len(self.value) > limit:
             raise ValueError(f'{self.field_path} 不得超過 {limit} 字')

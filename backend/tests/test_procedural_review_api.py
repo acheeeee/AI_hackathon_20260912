@@ -17,18 +17,6 @@ ARTICLE_77_OUTCOMES = {
     'NEEDS_HUMAN',
 }
 
-EXPECTED_EVALUATION_MODES = {
-    1: 'mock',
-    2: 'rule',
-    3: 'manual_review',
-    4: 'mock',
-    5: 'mock',
-    6: 'mock',
-    7: 'mock',
-    8: 'manual_review',
-}
-
-
 def _patch_fact(client: TestClient, case_id: str, expected_revision: int, field_path: str, value: str):
     return mutate(
         client,
@@ -65,7 +53,7 @@ def test_review_with_no_facts_reports_missing_service_date(client: TestClient) -
 def test_review_exposes_one_explicit_assessment_contract_for_each_article_77_clause(
     client: TestClient,
 ) -> None:
-    """八款都要說明系統用了什麼規則；mock 不能冒充法律結論。"""
+    """八款均依事實判斷，空案只缺其當前分支需要的資料。"""
     case_id = create_case(client)
 
     response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
@@ -97,12 +85,9 @@ def test_review_exposes_one_explicit_assessment_contract_for_each_article_77_cla
         assert 'mock' not in user_copy.lower()
         assert 'demo' not in user_copy.lower()
         assert '示範' not in user_copy
-        assert assessment['evaluation_mode'] == EXPECTED_EVALUATION_MODES[clause_no]
-
-        if assessment['evaluation_mode'] == 'mock':
-            assert assessment['status'] == 'INSUFFICIENT_EVIDENCE'
-        elif assessment['evaluation_mode'] == 'manual_review':
-            assert assessment['status'] == 'NEEDS_HUMAN'
+        assert assessment['evaluation_mode'] == 'rule'
+        assert assessment['status'] == 'INSUFFICIENT_EVIDENCE'
+        assert assessment['missing_fields']
 
 
 def test_review_with_only_service_date_gives_a_deadline_without_a_verdict(
@@ -128,6 +113,7 @@ def test_review_with_both_dates_computes_overdue(client: TestClient) -> None:
     case_id = create_case(client)
     _patch_fact(client, case_id, 1, 'service.date', '2025-07-01')
     _patch_fact(client, case_id, 2, 'appeal.filed_date', '2025-08-15')
+    _patch_fact(client, case_id, 3, 'appeal.initial_submission_method', 'written')
 
     response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
 
@@ -144,6 +130,7 @@ def test_article_77_clause_2_reuses_the_existing_deadline_calculation(
     case_id = create_case(client)
     _patch_fact(client, case_id, 1, 'service.date', '2025-07-01')
     _patch_fact(client, case_id, 2, 'appeal.filed_date', '2025-08-15')
+    _patch_fact(client, case_id, 3, 'appeal.initial_submission_method', 'written')
 
     response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
 
@@ -163,7 +150,7 @@ def test_article_77_clause_2_reuses_the_existing_deadline_calculation(
     assert '15' in clause_2['reason']
 
 
-def test_article_77_clause_2_keeps_article_57_branch_unresolved_when_filing_is_timely(
+def test_article_77_clause_2_requests_method_instead_of_assuming_article_57(
     client: TestClient,
 ) -> None:
     case_id = create_case(client)
@@ -180,9 +167,9 @@ def test_article_77_clause_2_keeps_article_57_branch_unresolved_when_filing_is_t
     assert data['status'] == 'within_period'
     assert data['days_from_deadline'] == -21
     assert clause_2['status'] == 'INSUFFICIENT_EVIDENCE'
-    assert '21' in clause_2['reason']
     assert '第57條但書' in clause_2['rule_description']
     assert '補送訴願書' in clause_2['reason']
+    assert clause_2['missing_fields'] == ['appeal.initial_submission_method']
     assert 'appeal.written_submission_date' in clause_2['input']
 
 
@@ -204,3 +191,44 @@ def test_review_for_unknown_case_returns_404(client: TestClient) -> None:
     response = client.get('/api/v1/cases/case_missing/procedural-review')
 
     assert response.status_code == 404
+
+
+def test_human_confirmed_facts_recompute_all_eight_clauses_and_expose_origins(client: TestClient):
+    case_id = create_case(client)
+    facts = {
+        'appeal.form_defect': 'no', 'service.date': '2026-07-01',
+        'appeal.received_date': '2026-07-15', 'appeal.initial_submission_method': 'written',
+        'appellant.standing': 'recipient', 'appellant.capacity': 'capable',
+        'appellant.entity_type': 'legal_person', 'representative.name': '林明',
+        'representative.authority': 'yes', 'disposition.current_status': 'exists',
+        'case.prior_decision_record': 'no', 'case.prior_withdrawal_record': 'no',
+        'challenged_act.type': 'administrative_disposition',
+        'challenged_act.within_appeal_scope': 'yes',
+    }
+    response = mutate(client, 'PATCH', f'/api/v1/cases/{case_id}/facts', {
+        'expected_case_revision': 1, 'reason': '逐項核對原始證據',
+        'field_changes': [
+            {'field_path': path, 'value': value, 'human_asserted': True,
+             'reason': '已由承辦人確認'} for path, value in facts.items()
+        ],
+    })
+    assert response.status_code == 200
+    data = client.get(f'/api/v1/cases/{case_id}/procedural-review').json()['data']
+    assert data['case_revision'] == 2
+    assert len(data['field_definitions']) >= len(facts)
+    assert all(item['status'] == 'NOT_TRIGGERED' for item in data['clause_assessments'])
+    assert all(item['missing_fields'] == [] for item in data['clause_assessments'])
+    assert data['clause_assessments'][2]['input_sources']['appellant.standing']['origin'] == 'human'
+    _patch_fact(client, case_id, 2, 'case.prior_withdrawal_record', 'yes')
+    updated = client.get(f'/api/v1/cases/{case_id}/procedural-review').json()['data']
+    assert updated['clause_assessments'][6]['status'] == 'TRIGGERED'
+    assert updated['clause_assessments'][0]['status'] == 'NOT_TRIGGERED'
+
+
+def test_invalid_procedural_fact_patch_does_not_modify_case(client: TestClient):
+    case_id = create_case(client)
+    response = _patch_fact(client, case_id, 1, 'appeal.form_defect', 'false')
+    assert response.status_code == 422
+    data = client.get(f'/api/v1/cases/{case_id}/procedural-review').json()['data']
+    assert data['case_revision'] == 1
+    assert data['clause_assessments'][0]['input']['appeal.form_defect'] is None

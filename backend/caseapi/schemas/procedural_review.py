@@ -1,6 +1,6 @@
 """程序審查讀取回應的邊界模型。"""
 
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -29,10 +29,27 @@ class Article77ClauseAssessment(BaseModel):
     rule_description: str = Field(min_length=1)
     reason: str = Field(min_length=1)
     evaluation_mode: Article77EvaluationMode
+    missing_fields: list[str] = Field(default_factory=list)
+    input_sources: dict[str, Any] = Field(default_factory=dict)
+
+
+class ProceduralFieldOption(BaseModel):
+    value: str
+    label: str
+
+
+class ProceduralFieldDefinition(BaseModel):
+    field_path: str
+    label: str
+    input_type: Literal['select', 'date', 'text']
+    options: list[ProceduralFieldOption] = Field(default_factory=list)
+    help_text: str = ''
 
 
 class ProceduralReviewResponse(BaseModel):
     case_id: str
+    case_revision: int = Field(default=1, ge=1)
+    field_definitions: list[ProceduralFieldDefinition] = Field(default_factory=list)
     status: DeadlineStatus
     deadline_date: str | None
     days_from_deadline: int | None
