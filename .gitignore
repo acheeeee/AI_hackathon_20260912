@@ -2,3 +2,8 @@
 .env.*
 !.env.example
 .DS_Store
+
+# Local dependencies and generated Python files
+node_modules/
+__pycache__/
+*.pyc
