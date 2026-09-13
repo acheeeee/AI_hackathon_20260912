@@ -35,6 +35,18 @@ interface DisplayMessage {
   proposal?: ProposalDetail
   proposalPhase?: ProposalPhase
   conflictText?: string
+  provider?: string
+}
+
+// 後端沒載入 .env 時會默默退回 `fixed`，回答就變成佔位字串。標出來，讓
+// 「降級」看得見，不要讓使用者以為 AI 壞了（見協作設計 07 的設計意圖）。
+const PROVIDER_LABELS: Record<string, string> = {
+  fixed: '固定模型（離線佔位，不是真實 AI 回答）',
+  agentcore: 'AgentCore 線上模型',
+}
+
+function providerLabel(provider?: string): string {
+  return provider ? (PROVIDER_LABELS[provider] ?? `模型：${provider}`) : ''
 }
 
 const open = ref(false)
@@ -79,6 +91,7 @@ async function pollRun(runId: string, assistantMsg: DisplayMessage) {
       assistantMsg.activity = formatRunEvents(events).map((line) => line.text)
       const assistant = [...msgs].reverse().find((m) => m.role === 'assistant' && m.run_id === runId)
       assistantMsg.content = assistant?.content ?? '（沒有取得回覆）'
+      assistantMsg.provider = run.provider_config?.provider
       const [proposalId] = run.proposal_ids
       if (proposalId) {
         assistantMsg.proposal = await getProposal(props.caseId, proposalId)
@@ -271,6 +284,13 @@ defineExpose({ askAboutField, explainSelection, attachSelectionForRevision, open
             {{ msg.content }}
           </template>
         </div>
+        <p
+          v-if="msg.role === 'assistant' && msg.provider"
+          class="provider-tag"
+          :class="{ offline: msg.provider === 'fixed' }"
+        >
+          {{ providerLabel(msg.provider) }}
+        </p>
         <ul v-if="msg.activity.length" class="activity">
           <li v-for="line in msg.activity" :key="line">{{ line }}</li>
         </ul>
@@ -466,6 +486,17 @@ defineExpose({ askAboutField, explainSelection, attachSelectionForRevision, open
   border: 1px solid #eef1f6;
   border-radius: 6px;
   padding: 4px 8px;
+}
+
+.provider-tag {
+  margin: 0;
+  font-size: 11px;
+  color: #1a7f4b;
+}
+
+.provider-tag.offline {
+  color: #b56a00;
+  font-weight: 700;
 }
 
 .err {

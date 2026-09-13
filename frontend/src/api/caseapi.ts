@@ -283,12 +283,22 @@ export async function sendMessage(params: {
   )
 }
 
+export interface ProviderConfig {
+  provider: string
+  model?: string
+  region?: string
+}
+
 export interface RunDetail {
   run_id: string
   case_id: string
   kind: string
   state: RunState
   proposal_ids: string[]
+  // 後端 run_service._serialize_run 一直有回傳這個（provider／model／region，
+  // 不含憑證）。前端要顯示「這個答案是哪個模型給的」，否則後端退回固定假模型
+  // 時畫面上看不出來，使用者只會以為 AI 壞了。
+  provider_config?: ProviderConfig
   error: { code: string; type: string } | null
   created_at: string
   updated_at: string

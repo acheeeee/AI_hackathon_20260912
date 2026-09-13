@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from caseapi.domain.fact_fields import fact_field_label
+
 
 def selection_text_from_context(context: dict[str, Any]) -> str:
     target = context['writable_target']
@@ -23,5 +25,7 @@ def selection_text_from_context(context: dict[str, Any]) -> str:
         field = context.get('context', {}).get('field')
         if field is None or field.get('value') is None:
             return ''
-        return f"{target['field_path']}：{field['value']}"
+        # 用中文標籤而不是 `appellant.name` 這種原始路徑：這段文字會原樣送進
+        # 模型（也會被側邊欄回顯），欄位代號只會讓模型多猜一次。
+        return f"{fact_field_label(target['field_path'])}：{field['value']}"
     return target.get('selected_text', '')
