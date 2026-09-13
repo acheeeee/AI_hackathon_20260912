@@ -122,8 +122,10 @@ def _apply_changes(
 ) -> dict[str, Any]:
     """回傳新的欄位字典；原本的內容不被就地修改。"""
     timestamp = now_iso()
-    updates = {
-        change.field_path: {
+    updates: dict[str, Any] = {}
+    for change in request.field_changes:
+        previous = current_fields.get(change.field_path) or {}
+        updated = {
             'value': change.value,
             'origin': resource_service.ORIGIN_HUMAN,
             'human_asserted': change.human_asserted,
@@ -132,6 +134,9 @@ def _apply_changes(
             'updated_by': actor_id,
             'updated_at': timestamp,
         }
-        for change in request.field_changes
-    }
+        # Editing wording is not a legal-review action.  Preserve the explicit
+        # review state until a separate, auditable review workflow changes it.
+        if 'legal_review_status' in previous:
+            updated['legal_review_status'] = previous['legal_review_status']
+        updates[change.field_path] = updated
     return {**current_fields, **updates}

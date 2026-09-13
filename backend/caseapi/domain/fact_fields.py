@@ -15,6 +15,9 @@ FACT_FIELD_ALLOWLIST = frozenset(
         'service.method',
         'appeal.filed_date',
         'appeal.received_date',
+        'analysis.keywords',
+        'analysis.statute_query',
+        'disposition.summary',
     }
 )
 
@@ -31,6 +34,9 @@ FACT_FIELD_LABELS = {
     'service.method': '送達方式',
     'appeal.filed_date': '訴願提起日',
     'appeal.received_date': '訴願收文日',
+    'analysis.keywords': '案件相關關鍵字',
+    'analysis.statute_query': '建議法規查詢關鍵字',
+    'disposition.summary': '行政處分函摘要',
 }
 
 

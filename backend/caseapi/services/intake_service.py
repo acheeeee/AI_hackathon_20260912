@@ -1,9 +1,8 @@
-"""上傳建案：接收訴願書（必要）與行政處分函（選填）PDF，建立案件並用規則式
-抽欄位種下第一版事實。
+"""Upload source PDFs, seed rule-extracted facts, and persist reviewable AI suggestions.
 
-行政處分函格式不固定，這裡只存原件供之後展開查看，不對它做欄位抽取——對一
-份沒有固定格式的文件做規則式抽取只會抽錯或抽不到，用模型抽也只是多一個
-幻覺來源；這件事留給人工編輯或之後另外授權的 AI 輔助抽取（見 06 §5.2）。
+The disposition has no stable form, so its summary is never promoted to a verified
+fact.  Keywords, summary, and statute query retain LLM provenance and an explicit
+``not_reviewed`` flag, including when the deterministic offline provider is used.
 """
 
 import hashlib
@@ -13,6 +12,8 @@ from typing import Any
 import fitz  # PyMuPDF
 
 from caseapi.audit import append_entry
+from caseapi.ai.contracts import ModelProvider
+from caseapi.ai.intake_analysis import IntakeAnalysis
 from caseapi.clock import now_iso
 from caseapi.domain.appeal_extraction import extract_appeal_fields
 from caseapi.ids import new_id
@@ -24,6 +25,11 @@ from caseapi.services.facts_service import FACTS_RESOURCE_ID
 ROLE_APPEAL = 'appeal'
 ROLE_DISPOSITION = 'disposition'
 INTAKE_REASON = '規則式抽取自上傳訴願書'
+# ``llm`` is the field-provenance category expected by the UI.  ``source.provider``
+# still distinguishes the deterministic fixed mock from the live AgentCore path.
+LLM_ANALYSIS_REASON = '自動產生的案件分析建議；尚未經法律覆核'
+LLM_FIELD_ORIGIN = 'llm'
+LEGAL_REVIEW_NOT_REVIEWED = 'not_reviewed'
 
 
 def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, int]:
@@ -45,6 +51,7 @@ def intake_case(
     appeal_bytes: bytes,
     disposition_filename: str | None = None,
     disposition_bytes: bytes | None = None,
+    analysis_provider: ModelProvider,
 ) -> dict[str, Any]:
     case = case_service.create_case(
         conn, actor_id=actor_id, request=CaseCreateRequest(title=title)
@@ -60,6 +67,7 @@ def intake_case(
         extracted_text=appeal_text,
         page_count=appeal_pages,
     )
+    disposition_text: str | None = None
     if disposition_bytes is not None:
         disposition_text, disposition_pages = extract_pdf_text(disposition_bytes)
         _save_document(
@@ -73,8 +81,17 @@ def intake_case(
             page_count=disposition_pages,
         )
     extracted_fields = extract_appeal_fields(appeal_text)
+    analysis = analysis_provider.analyze_intake(
+        appeal_text=appeal_text,
+        disposition_text=disposition_text,
+    )
     updated_case = _seed_facts(
-        conn, case_id=case.case_id, actor_id=actor_id, extracted_fields=extracted_fields
+        conn,
+        case_id=case.case_id,
+        actor_id=actor_id,
+        extracted_fields=extracted_fields,
+        analysis=analysis,
+        analysis_provider=analysis_provider.descriptor().get('provider', 'unknown'),
     )
     return {
         'case_id': updated_case.case_id,
@@ -119,16 +136,19 @@ def _seed_facts(
     case_id: str,
     actor_id: str,
     extracted_fields: dict[str, str | None],
+    analysis: IntakeAnalysis | None,
+    analysis_provider: str,
 ) -> CaseDetail:
-    """把非 None 的抽取欄位寫成 facts 第一版；抽不到的欄位留給人工編輯。"""
+    """Persist rule fields and clearly marked model suggestions in one facts version."""
     non_null = {path: value for path, value in extracted_fields.items() if value is not None}
-    if not non_null:
+    generated = _analysis_fields(analysis)
+    if not non_null and not generated:
         return case_service.get_case(conn, case_id=case_id, actor_id=actor_id)
 
     case_row = repo.require_case(conn, case_id=case_id, actor_id=actor_id)
     heads = repo.load_heads(case_row)
     timestamp = now_iso()
-    fields = {
+    rule_fields = {
         path: {
             'value': value,
             'origin': resource_service.ORIGIN_PROGRAM,
@@ -140,6 +160,20 @@ def _seed_facts(
         }
         for path, value in non_null.items()
     }
+    generated_fields = {
+        path: {
+            'value': value,
+            'origin': LLM_FIELD_ORIGIN,
+            'human_asserted': False,
+            'reason': LLM_ANALYSIS_REASON,
+            'source': {'provider': analysis_provider},
+            'legal_review_status': LEGAL_REVIEW_NOT_REVIEWED,
+            'updated_by': actor_id,
+            'updated_at': timestamp,
+        }
+        for path, value in generated.items()
+    }
+    fields = {**rule_fields, **generated_fields}
     version = resource_service.save_version(
         conn,
         case_id=case_id,
@@ -147,7 +181,11 @@ def _seed_facts(
         resource_kind=repo.KIND_FACTS,
         content={'fields': fields},
         parent_id=None,
-        origin=resource_service.ORIGIN_PROGRAM,
+        origin=(
+            resource_service.ORIGIN_AI
+            if generated_fields
+            else resource_service.ORIGIN_PROGRAM
+        ),
         actor_id=actor_id,
     )
     next_heads = repo.set_head(
@@ -179,3 +217,14 @@ def _seed_facts(
         reason=INTAKE_REASON,
     )
     return case_service.get_case(conn, case_id=case_id, actor_id=actor_id)
+
+
+def _analysis_fields(analysis: IntakeAnalysis | None) -> dict[str, str]:
+    if analysis is None:
+        return {}
+    fields = {
+        'analysis.keywords': analysis.keywords,
+        'analysis.statute_query': analysis.statute_query,
+        'disposition.summary': analysis.disposition_summary,
+    }
+    return {path: value for path, value in fields.items() if value is not None}

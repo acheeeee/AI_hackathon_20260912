@@ -109,6 +109,7 @@ def test_intake_generates_reviewable_case_keywords_and_disposition_summary(
         assert facts[path]['origin'] == 'llm'
         assert facts[path]['human_asserted'] is False
         assert facts[path]['legal_review_status'] == 'not_reviewed'
+        assert facts[path]['source']['provider'] == 'fixed'
 
     keywords = facts['analysis.keywords']['value']
     assert isinstance(keywords, str) and keywords.strip()
@@ -129,6 +130,39 @@ def test_intake_generates_reviewable_case_keywords_and_disposition_summary(
     assert len(statute_query) <= 80
     assert '洗錢防制' in statute_query
     assert '訴願人於' not in statute_query
+
+
+@pytest.mark.skipif(not REAL_APPEAL_PDF.exists(), reason='real sample corpus not present')
+def test_editing_generated_analysis_does_not_silently_mark_it_legally_reviewed(
+    client: TestClient,
+) -> None:
+    intake = _intake(
+        client,
+        appeal_bytes=REAL_APPEAL_PDF.read_bytes(),
+        key='intake-edit-generated-analysis',
+    ).json()['data']
+
+    response = client.patch(
+        f'/api/v1/cases/{intake["case_id"]}/facts',
+        json={
+            'expected_case_revision': intake['case_revision'],
+            'reason': '人工修正關鍵字文字',
+            'field_changes': [
+                {
+                    'field_path': 'analysis.keywords',
+                    'value': '洗錢防制登記、比例原則',
+                    'human_asserted': True,
+                    'reason': '刪除不相關關鍵字',
+                }
+            ],
+        },
+        headers={'Idempotency-Key': 'edit-generated-analysis'},
+    )
+
+    assert response.status_code == 200
+    field = response.json()['data']['fields']['analysis.keywords']
+    assert field['origin'] == 'human'
+    assert field['legal_review_status'] == 'not_reviewed'
 
 
 def test_intake_without_disposition_pdf_still_creates_the_case(client: TestClient) -> None:

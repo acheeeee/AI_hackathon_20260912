@@ -219,3 +219,43 @@ def test_descriptor_exposes_only_non_secret_identifiers() -> None:
     serialized = json.dumps(descriptor)
     for secret_marker in ('AKIA', 'aws_secret', 'session_token'):
         assert secret_marker not in serialized
+
+
+def test_agentcore_intake_analysis_uses_fixed_json_prompt_and_parses_response() -> None:
+    answer = json.dumps(
+        {
+            'keywords': '洗錢防制登記、虛擬資產服務、不予登記',
+            'disposition_summary': '主管機關以申請書件不完備且逾期未完成補正為由不予登記。',
+            'statute_query': '洗錢防制法第6條 洗錢防制登記 虛擬資產服務',
+        },
+        ensure_ascii=False,
+    )
+    client = FakeAgentCoreClient(answer=answer)
+    provider = AgentCoreModelProvider(
+        runtime_arn='arn:aws:...:runtime/demo', region='us-west-2', client=client
+    )
+
+    analysis = provider.analyze_intake(
+        appeal_text='訴願書案件事實與理由',
+        disposition_text='行政處分函主旨與說明',
+    )
+
+    assert analysis.keywords.startswith('洗錢防制登記')
+    assert analysis.disposition_summary.endswith('不予登記。')
+    assert analysis.statute_query.startswith('洗錢防制法第6條')
+    sent = json.loads(client.invocations[0]['payload'])
+    assert '只輸出一個 JSON' in sent['prompt']
+    assert '訴願書案件事實與理由' not in sent['prompt']
+    assert '訴願書案件事實與理由' in sent['context']
+    assert '行政處分函主旨與說明' in sent['context']
+
+
+def test_agentcore_intake_analysis_rejects_malformed_model_output() -> None:
+    provider = AgentCoreModelProvider(
+        runtime_arn='arn:aws:...:runtime/demo',
+        region='us-west-2',
+        client=FakeAgentCoreClient(answer='這不是 JSON'),
+    )
+
+    with pytest.raises(ValueError, match='intake analysis'):
+        provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')

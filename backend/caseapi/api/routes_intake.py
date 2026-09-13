@@ -6,7 +6,8 @@ import sqlite3
 from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
 from fastapi.responses import JSONResponse
 
-from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key
+from caseapi.ai.contracts import ModelProvider
+from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key, get_model_provider
 from caseapi.api.mutation import execute_mutation
 from caseapi.errors import invalid_field
 from caseapi.idempotency import GLOBAL_SCOPE
@@ -38,6 +39,7 @@ def intake_case(
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
     idempotency_key: str = Depends(get_idempotency_key),
+    model_provider: ModelProvider = Depends(get_model_provider),
 ) -> JSONResponse:
     appeal_bytes = _read_pdf(appeal_pdf, field_name='appeal_pdf')
     disposition_bytes = (
@@ -71,6 +73,7 @@ def intake_case(
             appeal_bytes=appeal_bytes,
             disposition_filename=disposition_pdf.filename if disposition_pdf else None,
             disposition_bytes=disposition_bytes,
+            analysis_provider=model_provider,
         ),
         headers_from_data=lambda data: {'Location': f'/api/v1/cases/{data["case_id"]}'},
     )

@@ -23,7 +23,7 @@ from typing import Any
 
 from botocore.config import Config
 
-from caseapi.ai import draft_composition, revise_selection
+from caseapi.ai import draft_composition, intake_analysis, revise_selection
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
@@ -66,6 +66,19 @@ class AgentCoreModelProvider:
 
     def descriptor(self) -> dict[str, str]:
         return {'provider': 'agentcore', 'model': self._runtime_arn, 'region': self._region}
+
+    def analyze_intake(
+        self, *, appeal_text: str, disposition_text: str | None
+    ) -> intake_analysis.IntakeAnalysis | None:
+        if not appeal_text.strip():
+            return None
+        response = self._invoke(
+            intake_analysis.AGENTCORE_INTAKE_PROMPT,
+            intake_analysis.model_context(
+                appeal_text=appeal_text, disposition_text=disposition_text
+            ),
+        )
+        return intake_analysis.parse_model_analysis(response)
 
     def execute(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
         if request.intent == 'verify':

@@ -9,6 +9,7 @@ from collections.abc import Iterator
 
 from fastapi import Header, Request
 
+from caseapi.ai.contracts import ModelProvider
 from caseapi.ai.runner import build_repository
 from caseapi.config import Settings
 from caseapi.db.connection import connect
@@ -30,6 +31,10 @@ def get_db(request: Request) -> Iterator[sqlite3.Connection]:
 
 def get_actor_id(request: Request) -> str:
     return get_settings(request).actor_id
+
+
+def get_model_provider(request: Request) -> ModelProvider:
+    return request.app.state.model_provider
 
 
 def get_idempotency_key(idempotency_key: str = Header(alias='Idempotency-Key')) -> str:

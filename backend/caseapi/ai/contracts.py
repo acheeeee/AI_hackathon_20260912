@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from caseapi.ai.intake_analysis import IntakeAnalysis
+
 
 @dataclass(frozen=True)
 class ModelRequest:
@@ -43,5 +45,9 @@ class ModelProvider(Protocol):
     prompt_version: str
 
     def descriptor(self) -> dict[str, str]: ...
+
+    def analyze_intake(
+        self, *, appeal_text: str, disposition_text: str | None
+    ) -> IntakeAnalysis | None: ...
 
     def execute(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult: ...

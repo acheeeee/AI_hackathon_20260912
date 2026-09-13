@@ -1,11 +1,10 @@
 """Deterministic no-network provider used to prove orchestration contracts."""
 
-from caseapi.ai import draft_composition, revise_selection
+from caseapi.ai import draft_composition, intake_analysis, revise_selection
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
 FIXED_REASONING = (
-    '理由：\n'
     '固定模型只依上列事實與已核對原文的法規排版生成本草稿，未作任何法律判斷，'
     '也未認定本件應否受理或有無理由；請人工覆核並改寫後再採用。'
 )
@@ -16,6 +15,13 @@ class FixedModelProvider:
 
     def descriptor(self) -> dict[str, str]:
         return {'provider': 'fixed', 'model': 'deterministic-v1'}
+
+    def analyze_intake(
+        self, *, appeal_text: str, disposition_text: str | None
+    ) -> intake_analysis.IntakeAnalysis | None:
+        return intake_analysis.fixed_intake_analysis(
+            appeal_text=appeal_text, disposition_text=disposition_text
+        )
 
     def execute(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
         if request.intent == 'verify':
