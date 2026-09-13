@@ -6,17 +6,24 @@ import {
   getRun,
   getRunEvents,
   listMessages,
+  getProposal,
+  createMergePreview,
+  applyProposal,
+  rejectProposal,
   CaseApiError,
   type ChatIntent,
   type FactFieldTarget,
   type DraftBlockTarget,
   type TargetRef,
+  type ProposalDetail,
 } from '@/api/caseapi'
 import { formatRunEvents } from '@/utils/runEvents'
 
 const props = defineProps<{ caseId: string; caseRevision: number }>()
+const emit = defineEmits<{ (e: 'draft-updated'): void }>()
 
 type AssistantState = 'thinking' | 'searching' | 'done' | 'failed' | 'cancelled'
+type ProposalPhase = 'idle' | 'busy' | 'accepted' | 'rejected'
 
 interface DisplayMessage {
   id: string
@@ -24,6 +31,10 @@ interface DisplayMessage {
   content: string
   activity: string[]
   state: AssistantState | 'done'
+  original?: string
+  proposal?: ProposalDetail
+  proposalPhase?: ProposalPhase
+  conflictText?: string
 }
 
 const open = ref(false)
@@ -33,6 +44,8 @@ const draft = ref('')
 const sending = ref(false)
 const errorText = ref('')
 const scrollEl = ref<HTMLElement | null>(null)
+const pendingTarget = ref<DraftBlockTarget | null>(null)
+const pendingLabel = ref('')
 
 const THINKING_LABEL: Record<AssistantState, string> = {
   thinking: '思考中…',
@@ -66,6 +79,11 @@ async function pollRun(runId: string, assistantMsg: DisplayMessage) {
       assistantMsg.activity = formatRunEvents(events).map((line) => line.text)
       const assistant = [...msgs].reverse().find((m) => m.role === 'assistant' && m.run_id === runId)
       assistantMsg.content = assistant?.content ?? '（沒有取得回覆）'
+      const [proposalId] = run.proposal_ids
+      if (proposalId) {
+        assistantMsg.proposal = await getProposal(props.caseId, proposalId)
+        assistantMsg.proposalPhase = 'idle'
+      }
       assistantMsg.state = 'done'
       return
     }
@@ -92,6 +110,7 @@ async function send(content: string, intent: ChatIntent, target?: TargetRef) {
   if (!trimmed || sending.value) return
   sending.value = true
   errorText.value = ''
+  const original = target && 'selected_text' in target ? target.selected_text : undefined
   const userMsg: DisplayMessage = {
     id: `local-${Date.now()}`,
     role: 'user',
@@ -105,6 +124,7 @@ async function send(content: string, intent: ChatIntent, target?: TargetRef) {
     content: '',
     activity: [],
     state: 'thinking',
+    original,
   }
   messages.value.push(userMsg, assistantMsg)
   await scrollToBottom()
@@ -131,6 +151,12 @@ async function send(content: string, intent: ChatIntent, target?: TargetRef) {
 function submit() {
   const content = draft.value
   draft.value = ''
+  if (pendingTarget.value) {
+    const target = pendingTarget.value
+    cancelPendingRevision()
+    void send(content, 'revise_selection', target)
+    return
+  }
   void send(content, 'verify')
 }
 
@@ -144,11 +170,80 @@ function explainSelection(label: string, target: DraftBlockTarget) {
   void send(`這段文字「${label}」是什麼意思？`, 'explain', target)
 }
 
+function attachSelectionForRevision(label: string, target: DraftBlockTarget) {
+  open.value = true
+  pendingLabel.value = label
+  pendingTarget.value = target
+}
+
+function cancelPendingRevision() {
+  pendingTarget.value = null
+  pendingLabel.value = ''
+}
+
+function candidateText(proposal?: ProposalDetail): string {
+  return proposal?.change_groups[0]?.operations[0]?.after_value ?? ''
+}
+
+async function acceptRevision(msg: DisplayMessage) {
+  if (!msg.proposal || msg.proposalPhase === 'busy' || msg.proposalPhase === 'accepted') return
+  msg.proposalPhase = 'busy'
+  msg.conflictText = ''
+  const selectedGroupIds = msg.proposal.change_groups.map((group) => group.id)
+  try {
+    const preview = await createMergePreview({
+      caseId: props.caseId,
+      proposalId: msg.proposal.proposal_id,
+      expectedCaseRevision: props.caseRevision,
+      selectedGroupIds,
+    })
+    if (!preview.can_apply) {
+      msg.conflictText = '目前正文已變動，無法直接套用；請重新確認選取範圍後再試一次。'
+      msg.proposalPhase = 'idle'
+      return
+    }
+    await applyProposal({
+      caseId: props.caseId,
+      proposalId: msg.proposal.proposal_id,
+      expectedCaseRevision: preview.current_case_revision,
+      previewId: preview.preview_id,
+      previewHash: preview.preview_hash,
+      acceptedGroupIds: selectedGroupIds,
+    })
+    msg.proposalPhase = 'accepted'
+    emit('draft-updated')
+  } catch (err) {
+    msg.proposalPhase = 'idle'
+    if (err instanceof CaseApiError && err.code === 'REVISION_CONFLICT') {
+      msg.conflictText = '案件已在其他操作中更新，請重新整理後再確認。'
+      emit('draft-updated')
+    } else {
+      msg.conflictText = err instanceof CaseApiError ? err.message : '採用失敗'
+    }
+  }
+}
+
+async function rejectRevision(msg: DisplayMessage) {
+  if (!msg.proposal || msg.proposalPhase === 'busy') return
+  msg.proposalPhase = 'busy'
+  try {
+    await rejectProposal({
+      caseId: props.caseId,
+      proposalId: msg.proposal.proposal_id,
+      reason: '人工拒絕此局部修改候選',
+    })
+    msg.proposalPhase = 'rejected'
+  } catch (err) {
+    msg.proposalPhase = 'idle'
+    msg.conflictText = err instanceof CaseApiError ? err.message : '拒絕失敗'
+  }
+}
+
 watch(open, (isOpen) => {
   if (isOpen) void scrollToBottom()
 })
 
-defineExpose({ askAboutField, explainSelection, open })
+defineExpose({ askAboutField, explainSelection, attachSelectionForRevision, open })
 </script>
 
 <template>
@@ -179,13 +274,48 @@ defineExpose({ askAboutField, explainSelection, open })
         <ul v-if="msg.activity.length" class="activity">
           <li v-for="line in msg.activity" :key="line">{{ line }}</li>
         </ul>
+        <div v-if="msg.proposal" class="revision-card">
+          <p class="revision-label">選取範圍的局部修改候選（未經法律覆核，尚未採用）</p>
+          <p class="revision-original"><s>{{ msg.original }}</s></p>
+          <p class="revision-candidate">{{ candidateText(msg.proposal) }}</p>
+          <p v-if="msg.conflictText" class="revision-conflict">{{ msg.conflictText }}</p>
+          <p v-if="msg.proposalPhase === 'accepted'" class="revision-done">已接受並採用到草稿正文。</p>
+          <p v-else-if="msg.proposalPhase === 'rejected'" class="revision-done">已拒絕，正文未變動。</p>
+          <div v-else class="revision-actions">
+            <button
+              type="button"
+              class="accept-revision"
+              :disabled="msg.proposalPhase === 'busy'"
+              @click="acceptRevision(msg)"
+            >
+              接受
+            </button>
+            <button
+              type="button"
+              class="reject-revision"
+              :disabled="msg.proposalPhase === 'busy'"
+              @click="rejectRevision(msg)"
+            >
+              拒絕
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
     <p v-if="errorText" class="err">{{ errorText }}</p>
 
+    <div v-if="pendingTarget" class="pending-chip">
+      <span>正在修改：「{{ pendingLabel }}」</span>
+      <button type="button" @click="cancelPendingRevision">取消</button>
+    </div>
+
     <form class="composer" @submit.prevent="submit">
-      <input v-model="draft" placeholder="輸入問題…" :disabled="sending" />
+      <input
+        v-model="draft"
+        :placeholder="pendingTarget ? '輸入修改指示…' : '輸入問題…'"
+        :disabled="sending"
+      />
       <button type="submit" :disabled="sending || !draft.trim()">送出</button>
     </form>
   </aside>
@@ -341,6 +471,104 @@ defineExpose({ askAboutField, explainSelection, open })
 .err {
   margin: 0 14px;
   color: #c0392b;
+  font-size: 12px;
+}
+
+.revision-card {
+  margin-top: 6px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid #e3e8f0;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.revision-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: #7a8699;
+}
+
+.revision-original,
+.revision-candidate {
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.revision-original {
+  color: #9aa6ba;
+}
+
+.revision-candidate {
+  color: #16233f;
+  background: #f3f6fc;
+  border-radius: 6px;
+  padding: 6px 8px;
+}
+
+.revision-conflict {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: #b56a00;
+}
+
+.revision-done {
+  margin: 0;
+  font-size: 12px;
+  color: #26734d;
+}
+
+.revision-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.revision-actions button {
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.accept-revision {
+  border: none;
+  background: #0b3d91;
+  color: #fff;
+}
+
+.reject-revision {
+  border: 1px solid #d6deed;
+  background: #fff;
+  color: #4a5568;
+}
+
+.revision-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pending-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 12px;
+  padding: 6px 10px;
+  background: #eef4ff;
+  border: 1px solid #c7d3e8;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #0b3d91;
+}
+
+.pending-chip button {
+  border: none;
+  background: none;
+  color: #0b3d91;
+  text-decoration: underline;
+  cursor: pointer;
   font-size: 12px;
 }
 

@@ -20,6 +20,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'draft-updated'): void
   (e: 'explain-selection', label: string, target: DraftBlockTarget): void
+  (e: 'revise-selection', label: string, target: DraftBlockTarget): void
 }>()
 
 const MAX_SELECTION_LABEL_LENGTH = 24
@@ -58,10 +59,10 @@ function selectionLabel(text: string): string {
     : text
 }
 
-async function explainSelected(block: ProposalBlock) {
+async function buildSelectedTarget(block: ProposalBlock): Promise<DraftBlockTarget | null> {
   const sel = selection.value
-  if (!sel || sel.blockId !== block.block_id) return
-  const target = await buildDraftBlockTarget({
+  if (!sel || sel.blockId !== block.block_id) return null
+  return buildDraftBlockTarget({
     resourceId: props.draftId,
     resourceRevision: currentResourceRevision.value,
     blockId: block.block_id,
@@ -69,7 +70,18 @@ async function explainSelected(block: ProposalBlock) {
     utf16Start: sel.start,
     utf16End: sel.end,
   })
+}
+
+async function explainSelected(block: ProposalBlock) {
+  const target = await buildSelectedTarget(block)
+  if (!target) return
   emit('explain-selection', selectionLabel(target.selected_text), target)
+}
+
+async function reviseSelected(block: ProposalBlock) {
+  const target = await buildSelectedTarget(block)
+  if (!target) return
+  emit('revise-selection', selectionLabel(target.selected_text), target)
 }
 
 const loading = ref(true)
@@ -218,6 +230,13 @@ async function saveBlock(block: ProposalBlock) {
             @click="explainSelected(block)"
           >
             請 AI 解釋
+          </button>
+          <button
+            type="button"
+            class="revise-selection"
+            @click="reviseSelected(block)"
+          >
+            請 AI 修改此段
           </button>
         </div>
         <p v-if="block.citations.length" class="citations">

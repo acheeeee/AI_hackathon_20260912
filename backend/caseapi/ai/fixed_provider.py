@@ -1,6 +1,6 @@
 """Deterministic no-network provider used to prove orchestration contracts."""
 
-from caseapi.ai import draft_composition
+from caseapi.ai import draft_composition, revise_selection
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
@@ -24,6 +24,8 @@ class FixedModelProvider:
             return self._explain(request, tools)
         if request.intent == draft_composition.INTENT_DRAFT:
             return self._draft(request, tools)
+        if request.intent == revise_selection.INTENT_REVISE:
+            return self._revise_selection(request, tools)
         raise ValueError(f'unsupported fixed intent: {request.intent}')
 
     @staticmethod
@@ -59,6 +61,22 @@ class FixedModelProvider:
             '此來源僅證明引文存在且一致，是否支持本案主張仍待判斷。'
         )
         return ModelResult(answer, (opened['evidence_id'],))
+
+    @staticmethod
+    def _revise_selection(request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
+        selection = revise_selection.read_selection(request, tools)
+        if isinstance(selection, ModelResult):
+            return selection
+        selected, block_id = selection
+        candidate = revise_selection.guard_candidate_text(
+            f'{selected}（固定模型收到指示「{request.content}」，'
+            '僅示範選取→候選→提案鏈路，未做實際文字修改）'
+        )
+        reasoning = (
+            '固定模型只證明選取內容可讀回並轉成候選提案，未作任何用語或法律判斷；'
+            '請人工覆核後再採用。'
+        )
+        return revise_selection.build_result(reasoning, candidate, block_id)
 
     @staticmethod
     def _explain(request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:

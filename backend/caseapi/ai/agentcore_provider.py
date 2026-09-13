@@ -23,7 +23,7 @@ from typing import Any
 
 from botocore.config import Config
 
-from caseapi.ai import draft_composition
+from caseapi.ai import draft_composition, revise_selection
 from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
@@ -74,6 +74,8 @@ class AgentCoreModelProvider:
             return self._explain(request, tools)
         if request.intent == draft_composition.INTENT_DRAFT:
             return self._draft(request, tools)
+        if request.intent == revise_selection.INTENT_REVISE:
+            return self._revise_selection(request, tools)
         raise ValueError(f'unsupported agentcore intent: {request.intent}')
 
     def _draft(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
@@ -107,6 +109,19 @@ class AgentCoreModelProvider:
         context = f'{search["release_id"]} 原文：「{opened["quote"]}」'
         answer = self._invoke(request.content, context)
         return ModelResult(answer, (opened['evidence_id'],))
+
+    def _revise_selection(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
+        selection = revise_selection.read_selection(request, tools)
+        if isinstance(selection, ModelResult):
+            return selection
+        selected, block_id = selection
+        candidate = revise_selection.guard_candidate_text(
+            self._invoke(
+                revise_selection.AGENTCORE_REVISE_PROMPT_PREFIX + request.content, selected
+            )
+        )
+        reasoning = 'AI 已依指示改寫選取範圍，內容尚未經法律覆核，請人工確認後再採用。'
+        return revise_selection.build_result(reasoning, candidate, block_id)
 
     def _explain(self, request: ModelRequest, tools: ToolGatewayLike) -> ModelResult:
         if request.target is None:

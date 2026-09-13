@@ -192,7 +192,7 @@ export function documentContentUrl(caseId: string, documentId: string): string {
 // intent 目前只有 verify（自由提問，走真的 BM25 檢索＋開原文）與
 // explain（解釋一個選取的目標，目前前端只支援 fact_field 目標）。
 
-export type ChatIntent = 'verify' | 'explain'
+export type ChatIntent = 'verify' | 'explain' | 'revise_selection'
 export type RunState =
   | 'queued'
   | 'running'
@@ -419,7 +419,7 @@ export interface ProposalChangeGroup {
   change_class: string
   reason: string
   evidence_ids: string[]
-  operations: Array<{ op: string; after_blocks?: ProposalBlock[] }>
+  operations: Array<{ op: string; after_blocks?: ProposalBlock[]; after_value?: string }>
 }
 
 export interface ProposalDetail {
@@ -507,6 +507,21 @@ export async function applyProposal(params: {
         preview_hash: params.previewHash,
         accepted_group_ids: params.acceptedGroupIds,
       }),
+    },
+  )
+}
+
+export async function rejectProposal(params: {
+  caseId: string
+  proposalId: string
+  reason: string
+}): Promise<ProposalDetail> {
+  return request<ProposalDetail>(
+    `/cases/${encodeURIComponent(params.caseId)}/proposals/${encodeURIComponent(params.proposalId)}/rejections`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({ reason: params.reason }),
     },
   )
 }

@@ -105,13 +105,25 @@ def summary_answer(opened: list[dict[str, Any]]) -> str:
     )
 
 
+def unsafe_reasoning_markers(text: str) -> bool:
+    """命中受理機關／決定主文／駁回等結論字樣就回真；空字串也算不安全。
+
+    抽成獨立函式讓 `revise_selection`（局部修改候選文字）能共用同一份危險
+    字樣清單，不用把「AI 建議理由」這個標籤前綴也套到候選正文上——那是
+    UI 標籤，不該混進會被寫進草稿的文字本身。
+    """
+    stripped = text.strip()
+    if not stripped:
+        return True
+    compact = ''.join(stripped.split())
+    return any(marker in compact for marker in _UNSAFE_REASON_MARKERS)
+
+
 def guard_model_reasoning(reasoning: str) -> str:
     """標示中性模型文字；遇到機關／決定結論則整段阻擋，不做局部刪詞。"""
-    stripped = reasoning.strip()
-    compact = ''.join(stripped.split())
-    if not stripped or any(marker in compact for marker in _UNSAFE_REASON_MARKERS):
+    if unsafe_reasoning_markers(reasoning):
         return BLOCKED_MODEL_REASON
-    return f'{MODEL_REASON_LABEL}：\n{stripped}'
+    return f'{MODEL_REASON_LABEL}：\n{reasoning.strip()}'
 
 
 def prompt_context(request: ModelRequest, opened: list[dict[str, Any]]) -> str:

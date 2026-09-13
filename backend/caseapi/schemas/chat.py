@@ -2,7 +2,7 @@
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from caseapi.schemas.target import TargetRef
 
@@ -25,6 +25,14 @@ class ChatMessageCreateRequest(BaseModel):
 
     expected_case_revision: int = Field(ge=1)
     content: str = Field(min_length=1, max_length=8000)
-    intent: Literal['explain', 'verify']
+    intent: Literal['explain', 'verify', 'revise_selection']
     target: TargetRef | None = None
     annotation_refs: list[AnnotationRef] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode='after')
+    def check_revise_selection_target(self) -> 'ChatMessageCreateRequest':
+        if self.intent == 'revise_selection' and (
+            self.target is None or self.target.kind != 'draft_block'
+        ):
+            raise ValueError('revise_selection 需要 draft_block 目標')
+        return self

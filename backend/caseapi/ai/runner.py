@@ -4,10 +4,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+from caseapi.ai import revise_selection
 from caseapi.ai.contracts import ModelProvider, ModelRequest, ModelResult
 from caseapi.db.connection import connect, transaction
 from caseapi.evidence.repository import EvidenceRepository
-from caseapi.services import chat_service, run_service
+from caseapi.schemas.target import DraftBlockTarget
+from caseapi.services import chat_service, revise_selection_service, run_service
 from caseapi.tools.evidence_tools import EvidenceRepositoryLike, EvidenceToolAdapter
 
 
@@ -144,12 +146,13 @@ def _save_result(
                 run_id=request.run_id,
                 content=result.answer,
             )
+            proposal_ids = _save_revision_proposal_if_any(conn, actor_id, request, result)
             run_service.complete_run(
                 conn,
                 case_id=request.case_id,
                 actor_id=actor_id,
                 run_id=request.run_id,
-                proposal_ids=[],
+                proposal_ids=proposal_ids,
                 payload={
                     'message_id': message['message_id'],
                     'evidence_ids': list(result.evidence_ids),
@@ -157,6 +160,37 @@ def _save_result(
             )
     finally:
         conn.close()
+
+
+def _save_revision_proposal_if_any(
+    conn, actor_id: str, request: ModelRequest, result: ModelResult
+) -> list[str]:
+    """`explain`／`verify` 維持只回聊天訊息；`revise_selection` 另外寫一筆提案。"""
+    if request.intent != revise_selection.INTENT_REVISE or not result.draft_blocks:
+        return []
+    target = DraftBlockTarget.model_validate(request.target)
+    proposal = revise_selection_service.save_revision_proposal(
+        conn,
+        case_id=request.case_id,
+        actor_id=actor_id,
+        run_id=request.run_id,
+        target=target,
+        result=result,
+    )
+    run_service.append_event(
+        conn,
+        case_id=request.case_id,
+        actor_id=actor_id,
+        run_id=request.run_id,
+        event_type='proposal.ready',
+        tool_call_id=None,
+        payload={
+            'proposal_id': proposal['proposal_id'],
+            'group_ids': [group['id'] for group in proposal['change_groups']],
+            'evidence_ids': list(result.evidence_ids),
+        },
+    )
+    return [proposal['proposal_id']]
 
 
 def fail_run(

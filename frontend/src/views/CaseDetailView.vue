@@ -63,6 +63,10 @@ function explainDraftSelection(label: string, target: DraftBlockTarget) {
   sidebar.value?.explainSelection(label, target)
 }
 
+function reviseDraftSelection(label: string, target: DraftBlockTarget) {
+  sidebar.value?.attachSelectionForRevision(label, target)
+}
+
 const documentRoleLabel: Record<string, string> = {
   appeal: '訴願書',
   disposition: '行政處分函',
@@ -198,9 +202,15 @@ function backToList() {
         :draft-head="draftEntry.head"
         @draft-updated="refresh"
         @explain-selection="explainDraftSelection"
+        @revise-selection="reviseDraftSelection"
       />
 
-      <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />
+      <ChatSidebar
+        ref="sidebar"
+        :case-id="caseId"
+        :case-revision="detail.case_revision"
+        @draft-updated="refresh"
+      />
     </template>
   </div>
 </template>
