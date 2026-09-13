@@ -3,7 +3,7 @@
 .env.*
 .DS_Store
 
-# ---------- Python（app/） ----------
+# ---------- Python（app/、scripts/） ----------
 __pycache__/
 *.pyc
 .venv/
@@ -13,7 +13,7 @@ venv/
 app/data/index/
 
 # ---------- 前端（frontend/） ----------
-node_modules
+node_modules/
 dist
 dist-ssr
 coverage
