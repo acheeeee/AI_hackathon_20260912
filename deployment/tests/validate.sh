@@ -74,9 +74,12 @@ require_text "${deployment_dir}/scripts/deploy.sh" 'BASE_URL='
 require_text "${deployment_dir}/scripts/smoke.sh" '/api/v1/cases?limit=1'
 require_text "${deployment_dir}/scripts/publish-bundle.sh" 'head-object'
 require_text "${deployment_dir}/scripts/publish-bundle.sh" '.sha256'
+require_text "${deployment_dir}/scripts/publish-bundle.sh" 'could not verify'
+require_text "${deployment_dir}/scripts/publish-bundle.sh" 'NoSuchKey'
 require_text "${deployment_dir}/scripts/publish-bundle.sh" 'refusing to publish a bundle from a dirty worktree'
 require_text "${deployment_dir}/scripts/publish-images.sh" 'refusing to publish images from a dirty worktree'
 require_text "${deployment_dir}/scripts/deploy.sh" 'immutable demo-vX.Y.Z tag in us-west-2 ECR'
+require_text "${deployment_dir}/scripts/build-images.sh" 'DOCKER_NO_CACHE'
 
 if grep -Eq '^[[:space:]]*(export[[:space:]]+)?AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)=' \
   "${deployment_dir}/config.example"; then

@@ -42,6 +42,13 @@ bash deployment/tests/validate.sh
 deployment/scripts/build-images.sh demo-v0.1.0
 ```
 
+release gate 若要排除舊 cache，使用 `DOCKER_NO_CACHE=1`；這會重新下載／建置全部依賴，
+時間較久，但仍沿用同一套 Dockerfile-specific ignore 規則：
+
+```bash
+DOCKER_NO_CACHE=1 deployment/scripts/build-images.sh demo-v0.1.0
+```
+
 前端目前既有的 oxlint plugin peer 版本不一致，乾淨 `npm ci` 會拒絕安裝；Dockerfile
 明確使用 lockfile 加 `--legacy-peer-deps` 進行 production build，不修改 Claude Code
 正在使用的 `package.json`／`package-lock.json`。這只處理建置工具的 peer 檢查，正式

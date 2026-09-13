@@ -42,9 +42,16 @@ fi
 printf '%s  %s\n' "${checksum}" 'deployment.tar.gz' >"${checksum_file}"
 
 key_prefix="releases/${version}"
+head_error="${temporary_dir}/head-object.error"
 for key in "${key_prefix}/deployment.tar.gz" "${key_prefix}/deployment.tar.gz.sha256"; do
-  if aws s3api head-object --bucket "${bucket}" --key "${key}" >/dev/null 2>&1; then
+  if aws s3api head-object --bucket "${bucket}" --key "${key}" \
+    >/dev/null 2>"${head_error}"; then
     echo "refusing to overwrite existing s3://${bucket}/${key}" >&2
+    exit 1
+  fi
+  if ! grep -Eq '(^|[^0-9])404([^0-9]|$)|Not Found|NoSuchKey' "${head_error}"; then
+    echo "could not verify that s3://${bucket}/${key} is absent; refusing upload" >&2
+    sed -n '1,5p' "${head_error}" >&2
     exit 1
   fi
 done
