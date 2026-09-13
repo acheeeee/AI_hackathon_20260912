@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from caseapi.db.connection import connect
-from caseapi.services.intake_service import extract_pdf_text
 from conftest import create_case, mutate, new_key
 
 
@@ -63,6 +62,19 @@ def test_contradictory_statements_remain_unresolved() -> None:
     fields = _extract('原處分目前仍然存在。原處分已撤銷。')
     assert fields['disposition.current_status']['value'] is None
     assert fields['disposition.current_status']['conflict'] is True
+
+
+@pytest.mark.parametrize('text', [
+    '代理人具有訴願能力。',
+    '訴願人不具有訴願能力。',
+    '本訴願並非自始以書面提出。',
+    '請求確認原處分已撤銷。',
+])
+def test_subject_negation_and_requested_findings_do_not_produce_positive_facts(text: str) -> None:
+    fields = _extract(text)
+    assert fields.get('appellant.capacity', {}).get('value') != 'capable'
+    assert fields.get('appeal.initial_submission_method', {}).get('value') != 'written'
+    assert fields.get('disposition.current_status', {}).get('value') != 'revoked'
 
 
 def test_new_demo_intake_seeds_source_backed_procedural_fields(client) -> None:
