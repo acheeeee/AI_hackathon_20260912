@@ -24,10 +24,17 @@ deployment/
 ├── config.example               # EC2 設定範本；不含 access key
 ├── docker/                       # 前後端 image
 ├── nginx/nginx.conf              # SPA 與兩套 API 反向代理
-└── scripts/                      # build、publish、backup、deploy、smoke
+├── scripts/                      # build、publish、backup、deploy、smoke
+└── tests/validate.sh             # 靜態安全邊界與 Compose 契約檢查
 ```
 
 ## 1. 本機驗證 image
+
+先跑不需要 AWS credential 或 Docker daemon 的部署契約檢查：
+
+```bash
+bash deployment/tests/validate.sh
+```
 
 正式 release 必須從乾淨且已提交的工作樹建置：
 
@@ -44,10 +51,10 @@ bundle 仍會執行專案原本的 type check 與 Vite build。
 ECR 當正式 Demo release：
 
 ```bash
-ALLOW_DIRTY_BUILD=1 deployment/scripts/build-images.sh local-check
+ALLOW_DIRTY_BUILD=1 deployment/scripts/build-images.sh demo-v0.0.0-local
 COMPOSE_PROJECT_NAME=ai-hackathon-local-check \
-BACKEND_IMAGE=ai-hackathon-backend:local-check \
-FRONTEND_IMAGE=ai-hackathon-frontend:local-check \
+BACKEND_IMAGE=ai-hackathon-backend:demo-v0.0.0-local \
+FRONTEND_IMAGE=ai-hackathon-frontend:demo-v0.0.0-local \
 CASEAPI_MODEL_PROVIDER=fixed \
 WEB_PORT=18080 \
   docker compose -f deployment/compose.yaml up -d --no-build --wait
@@ -64,6 +71,10 @@ AgentCore Runtime 維持獨立生命週期，不由這份 stack 重建。先複�
 的 Runtime ARN：
 
 ```bash
+aws sts get-caller-identity
+aws cloudformation validate-template \
+  --region us-west-2 \
+  --template-body file://deployment/aws/cloudformation.yaml
 cp deployment/aws/parameters.example.json /tmp/ai-hackathon-parameters.json
 # 編輯 /tmp/ai-hackathon-parameters.json，替換 ACCOUNT_ID 與 RUNTIME_ID
 aws cloudformation deploy \
@@ -83,6 +94,8 @@ Stack 會建立：
   deployment bundle S3 read
 - 兩個 ECR repository，immutable tag、push scan、只保留最新十版
 - 私有、加密、版本化的 deployment bundle S3 bucket
+- EC2 會在 Docker／Compose bootstrap 成功後用 `cfn-signal` 回報；bootstrap 失敗時 stack
+  不會誤顯示 `CREATE_COMPLETE`
 
 查詢輸出：
 
@@ -111,6 +124,9 @@ AWS_DEFAULT_REGION=us-west-2 \
 deployment/scripts/publish-bundle.sh DEPLOYMENT_BUCKET_NAME demo-v0.1.0
 ```
 
+release 名稱必須符合 `demo-vX.Y.Z`（可加 `-rc1` 等小寫 suffix）。bundle 會連同
+SHA-256 sidecar 上傳，而且拒絕覆寫同一個 release key。
+
 ## 4. 在 EC2 啟動
 
 用 stack 輸出的 `SsmSessionCommand` 進入主機，不需要 SSH key：
@@ -121,9 +137,15 @@ mkdir -p /opt/ai-hackathon/deployment
 aws s3 cp \
   s3://DEPLOYMENT_BUCKET_NAME/releases/demo-v0.1.0/deployment.tar.gz \
   /tmp/deployment.tar.gz
+aws s3 cp \
+  s3://DEPLOYMENT_BUCKET_NAME/releases/demo-v0.1.0/deployment.tar.gz.sha256 \
+  /tmp/deployment.tar.gz.sha256
+cd /tmp
+sha256sum --check deployment.tar.gz.sha256
 tar -xzf /tmp/deployment.tar.gz -C /opt/ai-hackathon/deployment
 cd /opt/ai-hackathon/deployment
 cp config.example .env
+chmod 0600 .env
 # 編輯 .env：填入兩個 ECR image URI 與 AgentCore Runtime ARN
 scripts/deploy.sh
 ```
@@ -154,11 +176,14 @@ scripts/deploy.sh
 ```
 
 `deploy.sh` 會先用 SQLite online backup 建立一致備份，再 pull、重啟與 smoke test。更新期間
-會短暫中斷；請在上台前完成，不做多機 blue/green。
+會短暫中斷；請在上台前完成，不做多機 blue/green。若啟動或 smoke 失敗，而且主機上有
+前一版容器，腳本會自動以舊 image 重新啟動並再跑 smoke；`.env` 仍會保留新版設定，確認
+原因並修正後才能重試。
 
 如果新版本失敗，把 `.env` 的兩個 image URI 改回上一版後再執行 `scripts/deploy.sh`。
 若新版包含不可逆資料庫 migration，單純切回舊 image 不夠，還要先還原更新前的 SQLite
-備份。mock Demo 可以選擇重建資料，但不能假裝 image rollback 等於 database rollback。
+備份。自動回復只處理 image，不自動覆寫資料庫；mock Demo 可以選擇重建資料，但不能
+假裝 image rollback 等於 database rollback。
 
 ## 6. AgentCore 更新與離線備援
 
@@ -188,6 +213,8 @@ EC2 只需要 `bedrock-agentcore:InvokeAgentRuntime`，IAM policy 限定到設�
 - Docker log 有 10 MB × 3 檔輪替；不要在應用 log 寫入 PDF 內容或憑證。
 - 實際 AWS 建立、ECR push、AgentCore invoke 與大會 IP 外部連線都必須另外留下實跑證據；
   本文件與 template 本身不等於已部署。
+- `smoke.sh` 會驗 Vue 入口、legacy health、caseapi OpenAPI，並讀取一次案件列表以確認
+  SQLite migration／volume 可用；它不取代從允許 IP 上傳 mock PDF 的完整瀏覽器驗收。
 
 ## 8. Demo 後清理
 

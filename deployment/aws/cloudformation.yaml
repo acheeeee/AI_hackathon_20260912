@@ -224,7 +224,14 @@ Resources:
 
   DemoInstance:
     Type: AWS::EC2::Instance
-    DependsOn: DemoVpcGatewayAttachment
+    DependsOn:
+      - DemoVpcGatewayAttachment
+      - DemoDefaultRoute
+      - DemoPublicSubnetRouteAssociation
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT20M
     Properties:
       ImageId: !Ref LatestAmiId
       InstanceType: !Ref InstanceType
@@ -251,11 +258,28 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           set -euxo pipefail
+
+          signal_exit() {
+            exit_code=$?
+            trap - EXIT
+            /opt/aws/bin/cfn-signal \
+              --exit-code "$exit_code" \
+              --stack '${AWS::StackName}' \
+              --resource DemoInstance \
+              --region '${AWS::Region}'
+            exit "$exit_code"
+          }
+          trap signal_exit EXIT
+
           dnf update -y
-          dnf install -y docker awscli-2 curl tar
+          dnf install -y aws-cfn-bootstrap awscli-2 curl docker tar
           systemctl enable --now docker
+          systemctl is-active --quiet docker
+          systemctl enable --now amazon-ssm-agent
+          systemctl is-active --quiet amazon-ssm-agent
           usermod -aG docker ec2-user
           mkdir -p /usr/local/lib/docker/cli-plugins /opt/ai-hackathon/deployment
+          chown -R ec2-user:ec2-user /opt/ai-hackathon
           curl --fail --location --silent --show-error \
             https://github.com/docker/compose/releases/download/v5.5.0/docker-compose-linux-x86_64 \
             --output /usr/local/lib/docker/cli-plugins/docker-compose

@@ -11,6 +11,11 @@ if [[ -z "${version}" ]]; then
   exit 2
 fi
 
+if [[ ! "${version}" =~ ^demo-v[0-9]+\.[0-9]+\.[0-9]+([.-][a-z0-9]+)*$ ]]; then
+  echo "version must look like demo-v0.2.0 or demo-v0.2.0-rc1" >&2
+  exit 2
+fi
+
 if [[ "${ALLOW_DIRTY_BUILD:-0}" != "1" ]] \
   && [[ -n "$(git -C "${repo_root}" status --porcelain --untracked-files=normal)" ]]; then
   echo "refusing to publish an ambiguous build from a dirty worktree" >&2
