@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Mapping
@@ -236,6 +237,21 @@ class EvidenceRepository:
             metadata=dict(section.get('metadata', {})),
         )
 
+    def open_section_text(self, section_id: str) -> str:
+        """Rebuild and return the complete section, not a single search chunk."""
+        section = self._sections.get(section_id)
+        if section is None:
+            raise KeyError(f'unknown section_id: {section_id}')
+        document_id = section['document_id']
+        check = self.verify_quote(
+            document_id,
+            section.get('source_spans', []),
+            section.get('quote_text', ''),
+        )
+        if not check.source_exists or not check.quote_matches or check.source_text is None:
+            raise ReleaseIntegrityError(f'{section_id} source span does not rebuild quote')
+        return _normalize_section_for_display(check.source_text)
+
     def search(
         self,
         query: str,
@@ -308,3 +324,26 @@ class EvidenceRepository:
             score=score,
             index_eligible=True,
         )
+
+
+_SECTION_LINE_BOUNDARY = re.compile(
+    r'^(?:第\s*\d+(?:-\d+)?\s*條$|\d+(?:\s+|$)|[一二三四五六七八九十百]+、|'
+    r'（[一二三四五六七八九十百]+）)'
+)
+_SECTION_STANDALONE_BOUNDARY = re.compile(r'^(?:第\s*\d+(?:-\d+)?\s*條|\d+)$')
+
+
+def _normalize_section_for_display(text: str) -> str:
+    """Remove PDF visual wraps while retaining article/paragraph/list boundaries."""
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    if not lines:
+        return ''
+    output = [lines[0]]
+    previous = lines[0]
+    for line in lines[1:]:
+        if _SECTION_LINE_BOUNDARY.match(line) or _SECTION_STANDALONE_BOUNDARY.match(previous):
+            output.extend(('\n', line))
+        else:
+            output.append(line)
+        previous = line
+    return ''.join(output)

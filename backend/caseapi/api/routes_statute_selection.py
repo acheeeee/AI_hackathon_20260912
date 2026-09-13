@@ -26,7 +26,7 @@ SAVE_SELECTION_ENDPOINT = 'PUT /api/v1/cases/{case_id}/statute-selection'
 def search_statutes(
     request: Request,
     case_id: str,
-    q: str | None = Query(default=None),
+    q: str | None = Query(default=None, max_length=80),
     top_k: int = Query(default=statute_selection_service.DEFAULT_TOP_K, ge=1, le=20),
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
