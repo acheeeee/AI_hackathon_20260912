@@ -6,19 +6,19 @@
 
 2026-09-12：舊後端目錄由 `app/` 更名為 `backend/`，內容未變；`verification/*.json` 保留更名前的路徑作為證據。
 
-2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 固定模型端到端、線上 AWS Bedrock AgentCore provider、上傳建案／案件列表／原檔展開、側邊欄 AI 對話、訴願法第77條八款程序審查、可編輯的進件衍生分析、法規 BM25 搜尋／完整條文／官方連結、正式草稿骨架、全文提案採用、手動編輯與選取叫 AI 都已完成；後端 199 項測試通過，`caseapi` aggregate 覆蓋率 95%，前端 41 項測試通過，type check／build／oxlint／eslint PASS。r3 release 仍是通過 15／15 檢查的機械證據基線；線上模型先前已有 verify／explain 真實 AWS 請求證據，但本批真實案件 intake／draft 沒有新的敏感內容外送授權，維持 NOT RUN。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。PDF 匯出與 AWS 重新部署正在平行處理，尚未納入本段完成清單。
+2026-09-13 後續：使用者授權實作協作設計，新後端在 `backend/caseapi/`，與舊 `backend/api.py` 並存。階段 A、B0 證據底座、B1 run／事件持久化、B2 Evidence 工具 adapter、B3 provider 端到端、上傳建案／案件列表／原檔展開、側邊欄 AI 對話、訴願法第77條八款程序審查、可編輯進件衍生分析、法規 BM25 搜尋／完整條文／官方連結、正式草稿骨架、全文提案採用、逐段編輯、選取叫 AI 與 PDF 匯出均已完成。最終本機驗證為後端 **230 passed／`caseapi` aggregate coverage 95%**、前端 **70 passed**，type check／production build／oxlint／eslint PASS。r3 release 仍是通過 15／15 檢查的機械證據基線；保存法規選擇時，伺服器會用 r3 `chunk_id` 重開來源並重建 canonical metadata，客戶端不能把真來源配上假法規名稱或條號。AgentCore 進件分析改為每次上傳都要明確勾選，預設只做本機分析；線上失敗仍保存案件並回退本機，且外部呼叫不持有 SQLite 寫入交易。草稿採用後只顯示一份正式正文，每段可直接編輯／儲存並叫 AI；PDF 匯出會排除檢索標頭並正規化法規項次。AWS 固定入口為 `http://54.186.135.15`；發布狀態仍以同一 EIP 的實機 smoke 為準。逐案狀態與未完成項見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)；接手實作先讀 [協作設計 06 交接](../docs/協作設計/06-交接與下一步.md)。
 
 ## 1. 判斷與工作邊界
 
-目前有一套仍保留於 `/legacy-demo` 的舊版 FastAPI／BM25／模板流程，也有已成為首頁主流程的新版案件 API、r3 EvidenceRepository、固定／AgentCore provider、五步驟 Vue 介面、草稿 proposal／採用／編輯鏈。**新流程已能把進件、程序審查、法規選擇、草稿生成與人工編輯綁在同一 `case_id`／revision 上；mock、機械規則、模型建議與人工修改仍以 provenance 區分，不代表法律覆核完成。**
+目前有一套仍保留於 `/legacy-demo` 的舊版 FastAPI／BM25／模板流程，也有已成為首頁主流程的新版案件 API、r3 EvidenceRepository、本機／AgentCore provider、五步驟 Vue 介面、草稿 proposal／採用／編輯／PDF 匯出鏈。**新流程已能把進件、程序審查、法規選擇、草稿生成、人工編輯與下載綁在同一 `case_id`／revision 上；規則、模型建議與人工修改仍以 provenance 區分，不代表法律覆核完成。一般使用者介面已改用產品語彙，技術模式仍保留在 API／資料與測試層供稽核。**
 
 | 問題 | 盤點結論 |
 |---|---|
-| 前端能不能跑？ | 能。新首頁已是新後端五步驟流程；41 項 Vitest、type check、build、oxlint、eslint 都通過。較早的瀏覽器證據覆蓋上傳、對話、選法規與草稿採用／編輯；本批新增畫面的完整瀏覽器最終流程仍待驗證。舊流程仍保留在 `/legacy-demo`。 |
-| `backend/` 能刪嗎？ | 不能整包刪。舊 `backend/api.py`／`backend/src/` 仍承擔 legacy demo 與 Word 匯出；本輪另要求 PDF 下載，但相關平行工作尚未在此文件完成驗收。先完成匯出需求與引用掃描，再依 06 §7.5 刪除。 |
+| 前端能不能跑？ | 能。新首頁已是新後端五步驟流程；70 項 Vitest、type check、production build、oxlint、eslint 都通過。純 HTTP 缺少 `crypto.randomUUID()` 與 `crypto.subtle` 的相容路徑均有回歸。舊流程仍保留在 `/legacy-demo`。 |
+| `backend/` 能刪嗎？ | 不能整包刪。新版 PDF 匯出已完成，但舊 `backend/api.py`／`backend/src/` 仍承擔 `/legacy-demo` 與 Word 匯出；DOCX 是否保留尚未決定。先確認需求與引用掃描，再依 06 §7.5 刪除。 |
 | r1 是不是做完？ | r1 是可重現但未簽收的歷史產物；r2 修了多項契約缺口；r3 再修正法規閱讀順序，可供機械證據層使用。三者都不是法律覆核收據，評估 gold 仍未完成。見 §3.3a／§3.3b。 |
-| 下一步只有 RAG、LLM、API 嗎？ | 不是。草稿生成、人工採用／修改、八款審查、進件分析與可展開法規結果都已有實作；目前直接交付點是格式正確的 PDF 下載與 AWS 重新部署／實機驗收，兩者仍在平行工作。gold 評估其後再量 BM25；沒有證據前不加向量。 |
-| 這輪是否繼續開發？ | 本批內容完善已完成並通過自動測試；PDF 匯出與 AWS 重新部署仍在平行處理。未新增 embedding、長連線 SSE 或登入。 |
+| 下一步只有 RAG、LLM、API 嗎？ | 不是。草稿生成、人工採用／修改、八款審查、進件分析、可展開法規結果與 PDF 下載都已有實作；AWS v0.2.3 也已在相同 EIP 通過實機 health／upload／UI／PDF smoke。gold 評估其後再量 BM25；沒有證據前不加向量。 |
+| 這輪是否繼續開發？ | 本機產品收尾已完成並通過 230／70 測試；AWS 發布仍以實機 smoke 為最後 gate。未新增 embedding、長連線 SSE、TLS 或登入。 |
 
 ## 2. 目前程式架構
 
@@ -29,12 +29,16 @@ flowchart TD
   P --> NEWAPI[backend/caseapi：案件 API]
   NEWAPI --> DB[SQLite：case／versions／runs／proposals]
   NEWAPI --> I[規則式欄位＋provider 衍生分析]
+  I --> CONSENT{本次是否同意線上分析}
+  CONSENT -- 否 --> LOCAL[本機分析]
+  CONSENT -- 是 --> MODEL
   NEWAPI --> G[第77條八款程序審查]
   NEWAPI --> ER[EvidenceRepository：r3 BM25／完整 section]
   ER --> TOOL[Evidence tools：open_source／evidence_records]
   TOOL --> MODEL[Fixed 或 AgentCore provider]
   MODEL --> PROP[正式草稿 proposal]
   PROP --> HUMAN[人工 preview／採用／編輯]
+  HUMAN --> PDF[目前已保存草稿 PDF]
   RAW[data/raw：原始 PDF] --> PRE[scripts/preprocess]
   PRE --> R1[data/processed/releases/r1／r2：歷史]
   PRE --> R3[data/processed/releases/r3]
@@ -60,8 +64,10 @@ flowchart TD
 
 新版 `/` 依序處理進件上傳、擷取與解析、程序審查、法條與前例、決定書草稿；案件、
 facts、法規選擇、草稿與提案全都走 `/api/v1` 並綁定同一 `case_id`／revision。擷取分析
-可就地修改；第77條八款會揭露 rule／mock／manual_review；法規候選可展開完整 r3
-條文並跳法務部官方頁；草稿必須經 proposal preview／人工採用才進正文。完整契約與
+可就地修改；線上分析必須在每次上傳時明確勾選，預設留在本機；第77條八款由規則輔助
+或人工覆核分流，第二款涵蓋第14條逾期與第57條但書未補送兩個分支。法規候選可展開完整 r3
+條文並跳法務部官方頁；保存時由伺服器重建 canonical metadata。草稿必須經 proposal
+preview／人工採用才進正文，保存後可下載 A4 PDF。完整契約與
 本批驗證界限見 [協作設計 05 §6](../docs/協作設計/05-實作順序與驗收.md)。
 
 ### 2.2 舊 API 與狀態
@@ -265,8 +271,8 @@ scripts/preprocess/README.md  前處理版本、重現限制與入口
 1. **資料與共同契約（部分完成）。** r3 已修復 raw 分類、精確 chunk spans、版本、案件家族與發布驗證；仍要補法律人工覆核、低文字頁處置及評估 inputs／gold。
 2. **最小案件狀態與 API（階段 A 完成）。** `case_id`、revision、EvidenceRef、TargetRef、Proposal、SQLite、衝突與採用鏈已有測試；前端主流程已整合。真登入、完整法律規則引擎與送審仍未完成。
 3. **可驗證檢索與 run 基底（B0/B1/B2 完成）。** r3 read／search／open、BM25、同案排除、run context、持久事件、JSON replay、取消與寫真實工具事件／`evidence_records` 的 adapter 都已完成。
-4. **固定假模型與線上模型（都已完成）。** 固定 provider 已驗證聊天、Last-Event-ID SSE replay、取消／重連與完整 run；線上 AWS Bedrock AgentCore provider 已部署並用真實請求跑過端到端流程，見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。
-5. **五步驟主流程與本批內容完善（已完成）。** `POST /cases/intake` 除規則式欄位外，會依 provider 產生可編輯的案件關鍵字、行政處分函摘要與精簡法規查詢詞；fixed 是明示 Mock，AgentCore 才是 LLM。`GET /cases/{id}/procedural-review` 回八款結果，只有第2款用日期規則，其餘是明示 mock 或人工覆核。法規搜尋以完整案情做伺服器內部 BM25，但只顯示精簡查詢，候選可展開完整 r3 section、閱讀相關性理由並跳法務部官方條文頁。草稿依生成指南組正式區塊，未核定欄位維持人工占位，且仍走 proposal／人工採用。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
-6. **匯出與部署（進行中，未驗收）。** 使用者要求從草稿正文下載格式正確的 PDF，並要求檢查 `deployment/` 後重新部署 AWS；兩項由平行工作處理。未完成 PDF 讀回／版面檢查與 AWS 實機 smoke 前，不得改寫成完成，也不得因此先刪 legacy。
+4. **本機與線上模型能力（已完成）。** 本機 provider 已驗證聊天、Last-Event-ID SSE replay、取消／重連與完整 run；AWS Bedrock AgentCore provider 已有真實請求證據，見 [07](../docs/協作設計/07-AgentCore部署與線上模型.md)。進件外送另受逐次同意 gate 控制：部署有 AgentCore 不等於每次上傳都可外送；未勾選只跑本機，線上失敗也回退本機並保存案件。
+5. **五步驟主流程與內容完善（已完成）。** `POST /cases/intake` 除規則式欄位外，會產生可編輯的案件關鍵字、行政處分函摘要與精簡法規查詢詞；API／資料層保留實際 provider 與未覆核狀態，前端只呈現產品語彙。`GET /cases/{id}/procedural-review` 回八款結果，第2款完整涵蓋第14條逾期與第57條但書未補送兩個分支，其餘依規則證據或人工覆核分流。法規搜尋以完整案情做伺服器內部 BM25，但只顯示精簡查詢；候選可展開完整 r3 section、閱讀相關性理由並跳法務部官方條文頁，保存時由伺服器用 `chunk_id` 重建 canonical metadata。草稿依生成指南組正式區塊，未核定欄位維持人工占位，且仍走 proposal／人工採用。不能把 3,103 chunks 無差別送去 embedding，目前只有 3,002 個准入，且加向量仍需評估證據。
+6. **PDF 匯出與 AWS v0.2.3（已驗收）。** 目前已保存的草稿可下載 A4、多頁、嵌入中文字型與頁碼的 PDF，且有文字抽取、文件結構、渲染與錯誤輸入回歸。v0.2.3 已在固定 EIP `http://54.186.135.15` 原地發布，並以虛構文件通過 AgentCore 進件、段落 AI 操作、逐段儲存與 PDF live smoke；stack／instance／EIP 未更換。公開端仍只有 HTTP、來源 IP allowlist、沒有登入。
 
 每階段完成狀態應回寫 [協作設計的驗收表](../docs/協作設計/05-實作順序與驗收.md)，並以真實執行結果更新 sysdoc。未經端到端實跑的 A05、A06、A07 維持 NOT RUN；A03、A04、A08、S01、S02 已有實跑證據（見 05 §3）。
