@@ -34,6 +34,7 @@ export interface AnalyzeParams {
   mode: AnalyzeMode
   useLlm: boolean
   pdf?: File
+  pdf2?: File
   text?: string
   manual?: ManualIntakeFields
 }
@@ -44,6 +45,7 @@ export async function analyzeAppeal(params: AnalyzeParams): Promise<AnalyzeRespo
   form.set('use_llm', String(params.useLlm))
   if (params.text) form.set('text', params.text)
   if (params.pdf) form.set('pdf', params.pdf)
+  if (params.pdf2) form.set('pdf2', params.pdf2)
   if (params.manual) {
     for (const [key, value] of Object.entries(params.manual)) {
       form.set(key, value)
@@ -61,8 +63,18 @@ export async function generateDraft(): Promise<DraftResult> {
   return res.json()
 }
 
-export async function downloadDraftDocx(): Promise<Blob> {
-  const res = await fetch(`${BASE}/draft/docx`, { method: 'POST' })
+export interface EditedDraft {
+  main: string
+  fact: string
+  reason: string
+}
+
+export async function downloadDraftDocx(edited?: EditedDraft): Promise<Blob> {
+  const res = await fetch(`${BASE}/draft/docx`, {
+    method: 'POST',
+    headers: edited ? { 'Content-Type': 'application/json' } : undefined,
+    body: edited ? JSON.stringify(edited) : undefined,
+  })
   if (!res.ok) throw new ApiError(await parseErrorDetail(res), res.status)
   return res.blob()
 }
