@@ -1,0 +1,300 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Minimal single-operator AI Hackathon demo in Oregon (us-west-2)
+
+Parameters:
+  AgentCoreRuntimeArn:
+    Type: String
+    Description: Existing Bedrock AgentCore Runtime ARN in us-west-2
+    AllowedPattern: '^arn:aws:bedrock-agentcore:us-west-2:[0-9]{12}:runtime/[A-Za-z0-9_-]+$'
+  InstanceType:
+    Type: String
+    Default: t3.medium
+    AllowedValues:
+      - t3.medium
+      - t3.large
+  RepositoryPrefix:
+    Type: String
+    Default: ai-hackathon-demo
+    AllowedPattern: '^[a-z0-9]+(?:[._-][a-z0-9]+)*$'
+  RootVolumeSize:
+    Type: Number
+    Default: 40
+    MinValue: 30
+    MaxValue: 100
+  LatestAmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+
+Resources:
+  DemoVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.42.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      Tags:
+        - Key: Name
+          Value: ai-hackathon-demo
+
+  DemoInternetGateway:
+    Type: AWS::EC2::InternetGateway
+
+  DemoVpcGatewayAttachment:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      InternetGatewayId: !Ref DemoInternetGateway
+      VpcId: !Ref DemoVpc
+
+  DemoPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: 10.42.1.0/24
+      MapPublicIpOnLaunch: true
+      VpcId: !Ref DemoVpc
+      Tags:
+        - Key: Name
+          Value: ai-hackathon-demo-public
+
+  DemoPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref DemoVpc
+
+  DemoDefaultRoute:
+    Type: AWS::EC2::Route
+    DependsOn: DemoVpcGatewayAttachment
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref DemoInternetGateway
+      RouteTableId: !Ref DemoPublicRouteTable
+
+  DemoPublicSubnetRouteAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref DemoPublicRouteTable
+      SubnetId: !Ref DemoPublicSubnet
+
+  DemoSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: HTTP only from the four competition egress IPv4 addresses
+      VpcId: !Ref DemoVpc
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 60.250.71.45/32
+          Description: Competition egress 1
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 61.222.117.53/32
+          Description: Competition egress 2
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 59.125.121.41/32
+          Description: Competition egress 3
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 60.250.71.43/32
+          Description: Competition egress 4
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  BackendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub '${RepositoryPrefix}-backend'
+      EmptyOnDelete: true
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep the ten newest release images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 10
+                },
+                "action": {"type": "expire"}
+              }
+            ]
+          }
+
+  FrontendRepository:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Sub '${RepositoryPrefix}-frontend'
+      EmptyOnDelete: true
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: AES256
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Keep the ten newest release images",
+                "selection": {
+                  "tagStatus": "any",
+                  "countType": "imageCountMoreThan",
+                  "countNumber": 10
+                },
+                "action": {"type": "expire"}
+              }
+            ]
+          }
+
+  DeploymentBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireDemoBundles
+            Status: Enabled
+            ExpirationInDays: 14
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 7
+
+  DemoInstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      Policies:
+        - PolicyName: InvokeDemoAgentCoreRuntime
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - bedrock-agentcore:InvokeAgentRuntime
+                Resource: !Ref AgentCoreRuntimeArn
+        - PolicyName: ReadDeploymentBundle
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: !Sub '${DeploymentBucket.Arn}/*'
+
+  DemoInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref DemoInstanceRole
+
+  DemoInstance:
+    Type: AWS::EC2::Instance
+    DependsOn: DemoVpcGatewayAttachment
+    Properties:
+      ImageId: !Ref LatestAmiId
+      InstanceType: !Ref InstanceType
+      IamInstanceProfile: !Ref DemoInstanceProfile
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+        HttpPutResponseHopLimit: 2
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeleteOnTermination: true
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref DemoSecurityGroup
+          SubnetId: !Ref DemoPublicSubnet
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            DeleteOnTermination: true
+            Encrypted: true
+            VolumeSize: !Ref RootVolumeSize
+            VolumeType: gp3
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euxo pipefail
+          dnf update -y
+          dnf install -y docker awscli-2 curl tar
+          systemctl enable --now docker
+          usermod -aG docker ec2-user
+          mkdir -p /usr/local/lib/docker/cli-plugins /opt/ai-hackathon/deployment
+          curl --fail --location --silent --show-error \
+            https://github.com/docker/compose/releases/download/v5.5.0/docker-compose-linux-x86_64 \
+            --output /usr/local/lib/docker/cli-plugins/docker-compose
+          curl --fail --location --silent --show-error \
+            https://github.com/docker/compose/releases/download/v5.5.0/checksums.txt \
+            --output /tmp/docker-compose-checksums.txt
+          grep 'docker-compose-linux-x86_64$' /tmp/docker-compose-checksums.txt \
+            | sed 's#docker-compose-linux-x86_64#/usr/local/lib/docker/cli-plugins/docker-compose#' \
+            | sha256sum --check --strict
+          chmod 0755 /usr/local/lib/docker/cli-plugins/docker-compose
+          docker compose version
+      Tags:
+        - Key: Name
+          Value: ai-hackathon-demo
+
+  DemoElasticIp:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+
+  DemoElasticIpAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt DemoElasticIp.AllocationId
+      InstanceId: !Ref DemoInstance
+
+Outputs:
+  WebUrl:
+    Description: Open this URL from an allowed competition computer
+    Value: !Sub 'http://${DemoElasticIp}'
+  ElasticIp:
+    Value: !Ref DemoElasticIp
+  InstanceId:
+    Value: !Ref DemoInstance
+  SsmSessionCommand:
+    Value: !Sub 'aws ssm start-session --target ${DemoInstance} --region ${AWS::Region}'
+  BackendRepositoryUri:
+    Value: !GetAtt BackendRepository.RepositoryUri
+  FrontendRepositoryUri:
+    Value: !GetAtt FrontendRepository.RepositoryUri
+  DeploymentBucketName:
+    Value: !Ref DeploymentBucket

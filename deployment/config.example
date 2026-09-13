@@ -1,0 +1,15 @@
+# Copy this file to deployment/.env on the EC2 instance and replace placeholders.
+# Do not put AWS access keys here. The containers use the EC2 instance role.
+
+COMPOSE_PROJECT_NAME=ai-hackathon-demo
+AWS_DEFAULT_REGION=us-west-2
+DOCKER_PLATFORM=linux/amd64
+WEB_PORT=80
+
+BACKEND_IMAGE=ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/ai-hackathon-demo-backend:demo-v0.1.0
+FRONTEND_IMAGE=ACCOUNT_ID.dkr.ecr.us-west-2.amazonaws.com/ai-hackathon-demo-frontend:demo-v0.1.0
+
+CASEAPI_MODEL_PROVIDER=agentcore
+CASEAPI_AGENTCORE_RUNTIME_ARN=arn:aws:bedrock-agentcore:us-west-2:ACCOUNT_ID:runtime/RUNTIME_ID
+CASEAPI_AGENTCORE_REGION=us-west-2
+CASEAPI_ACTOR_ID=actor_demo

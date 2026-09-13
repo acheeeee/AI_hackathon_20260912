@@ -13,10 +13,12 @@ venv/
 # 索引快取（可重建，勿進版控）
 backend/data/index/
 
-# 案件資料庫含案件、對話與人工身分，不進版控（設計 03 §8）
-backend/data/caseapi.db
-backend/data/caseapi.db-wal
-backend/data/caseapi.db-shm
+# 案件資料庫含案件、對話與人工身分，不進版控（設計 03 §8）。
+# 用萬用字元涵蓋所有變體（caseapi.db、caseapi_demo.db、之後任何新的），
+# 原本只列 caseapi.db，caseapi_demo.db 就漏在外面等著被 `git add .` 收走。
+backend/data/*.db
+backend/data/*.db-wal
+backend/data/*.db-shm
 .pytest_cache/
 .coverage
 htmlcov/

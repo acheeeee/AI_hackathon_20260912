@@ -1,0 +1,15 @@
+[
+  {
+    "ParameterKey": "AgentCoreRuntimeArn",
+    "ParameterValue": "arn:aws:bedrock-agentcore:us-west-2:ACCOUNT_ID:runtime/RUNTIME_ID"
+  },
+  {
+    "ParameterKey": "InstanceType",
+    "ParameterValue": "t3.medium"
+  },
+  {
+    "ParameterKey": "RepositoryPrefix",
+    "ParameterValue": "ai-hackathon-demo"
+  }
+]
+
