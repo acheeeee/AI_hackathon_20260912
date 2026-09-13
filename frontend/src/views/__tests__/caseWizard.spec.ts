@@ -87,6 +87,19 @@ const ANALYSIS_FACTS: Record<string, FactFieldValue> = {
   },
 }
 
+const statuteQueryFact: FactFieldValue = ANALYSIS_FACTS['analysis.statute_query']!
+
+const HUMAN_ANALYSIS_FACTS: Record<string, FactFieldValue> = {
+  ...ANALYSIS_FACTS,
+  'analysis.statute_query': {
+    ...statuteQueryFact,
+    origin: 'human',
+    human_asserted: true,
+    reason: '承辦人修正查詢詞',
+    legal_review_status: 'not_reviewed',
+  },
+}
+
 const DOCUMENTS: CaseDocument[] = [
   {
     document_id: 'doc_1',
@@ -188,6 +201,75 @@ describe('case detail wizard shell', () => {
       }),
     ).toBe(true)
     expect(api.listDocuments).toHaveBeenCalledWith('case_1')
+  })
+
+  it('labels human-edited analysis as human and retains its unreviewed legal status', async () => {
+    api.getCase.mockResolvedValue(caseDetail())
+    api.getFacts.mockResolvedValue(HUMAN_ANALYSIS_FACTS)
+    api.listDocuments.mockResolvedValue(DOCUMENTS)
+    api.getStatuteSelection.mockResolvedValue([])
+
+    const wrapper = mount(CaseDetailView, {
+      global: {
+        plugins: [ElementPlus],
+        stubs: {
+          ProceduralReviewPanel: true,
+          StatuteSelectionPanel: true,
+          DraftGenerationPanel: true,
+          DraftEditorPanel: true,
+          ChatSidebar: true,
+        },
+      },
+    })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('人工修改')
+    expect(wrapper.text()).toContain('法律覆核：未覆核')
+    expect(wrapper.text()).not.toContain('模型產生')
+  })
+
+  it('limits analysis fields in the UI and clamps an oversized statute query before saving', async () => {
+    api.getCase.mockResolvedValue(caseDetail())
+    api.getFacts.mockResolvedValue(ANALYSIS_FACTS)
+    api.listDocuments.mockResolvedValue(DOCUMENTS)
+    api.getStatuteSelection.mockResolvedValue([])
+    api.patchFacts.mockResolvedValue({ case_revision: 4, fields: ANALYSIS_FACTS })
+
+    const wrapper = mount(CaseDetailView, {
+      global: {
+        plugins: [ElementPlus],
+        stubs: {
+          ProceduralReviewPanel: true,
+          StatuteSelectionPanel: true,
+          DraftGenerationPanel: true,
+          DraftEditorPanel: true,
+          ChatSidebar: true,
+        },
+      },
+    })
+    await flushPromises()
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '修改')!
+      .trigger('click')
+
+    expect(wrapper.get('[aria-label="案件相關關鍵字"]').attributes('maxlength')).toBe('120')
+    expect(wrapper.get('[aria-label="行政處分函摘要"]').attributes('maxlength')).toBe('800')
+    expect(wrapper.get('[aria-label="建議法規查詢詞"]').attributes('maxlength')).toBe('80')
+
+    await wrapper.get('[aria-label="建議法規查詢詞"]').setValue('甲'.repeat(81))
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '儲存')!
+      .trigger('click')
+    await flushPromises()
+
+    expect(api.patchFacts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fieldPath: 'analysis.statute_query',
+        value: '甲'.repeat(80),
+      }),
+    )
   })
 
   it('starts on the first not-yet-completed step and shows only that step', async () => {

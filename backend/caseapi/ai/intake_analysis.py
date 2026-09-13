@@ -12,6 +12,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
+from caseapi.ai.outcome_guard import contains_final_outcome
 from caseapi.domain.appeal_extraction import extract_case_narrative
 
 MAX_KEYWORDS_CHARS = 120
@@ -63,14 +64,6 @@ _KNOWN_STATUTE_NAMES = (
     '民法',
     '憲法',
 )
-_UNSAFE_APPEAL_OUTCOMES = (
-    '本訴願駁回',
-    '訴願不受理',
-    '原處分應予撤銷',
-    '維持原處分',
-)
-
-
 @dataclass(frozen=True)
 class IntakeAnalysis:
     keywords: str
@@ -125,7 +118,7 @@ def validate_analysis(payload: object) -> IntakeAnalysis:
     summary = _optional_string(payload, 'disposition_summary', MAX_SUMMARY_CHARS)
     if '訴願人於' in query:
         raise ValueError('invalid intake analysis: statute_query is a narrative')
-    if summary and any(outcome in summary for outcome in _UNSAFE_APPEAL_OUTCOMES):
+    if summary and contains_final_outcome(summary):
         raise ValueError('invalid intake analysis: disposition summary contains an appeal outcome')
     return IntakeAnalysis(
         keywords=keywords,

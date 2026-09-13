@@ -134,6 +134,38 @@ def test_field_path_outside_the_allowlist_is_rejected(client: TestClient) -> Non
     assert response.json()['error']['code'] == 'INVALID_FIELD'
 
 
+@pytest.mark.parametrize(
+    ('field_path', 'limit'),
+    [
+        ('analysis.statute_query', 80),
+        ('analysis.keywords', 120),
+        ('disposition.summary', 800),
+    ],
+)
+def test_analysis_field_value_limits_are_enforced_at_the_patch_boundary(
+    client: TestClient, field_path: str, limit: int
+) -> None:
+    """Clients must not persist oversized analysis values by bypassing the UI."""
+    case_id = create_case(client)
+
+    response = patch_facts(
+        client,
+        case_id,
+        expected_revision=1,
+        field_changes=[
+            {
+                'field_path': field_path,
+                'value': '甲' * (limit + 1),
+                'human_asserted': True,
+                'reason': '測試欄位長度限制',
+            }
+        ],
+    )
+
+    assert response.status_code == 422
+    assert response.json()['error']['code'] == 'INVALID_FIELD'
+
+
 def test_human_asserted_values_are_labelled_as_such(client: TestClient) -> None:
     # Arrange
     case_id = create_case(client)

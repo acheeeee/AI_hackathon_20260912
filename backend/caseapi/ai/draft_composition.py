@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import Any
 
 from caseapi.ai.contracts import GeneratedBlock, ModelRequest, ToolGatewayLike
+from caseapi.ai.outcome_guard import contains_final_outcome
 from caseapi.domain.fact_fields import fact_field_label
 
 INTENT_DRAFT = 'draft'
@@ -61,19 +62,6 @@ BLOCKED_MODEL_REASON = (
 _UNSAFE_REASON_MARKERS = (
     '受理訴願機關',
     '決定主文',
-    '本訴願駁回',
-    '本件訴願駁回',
-    '訴願應予駁回',
-    '本訴願為有理由',
-    '本件訴願為有理由',
-    '本訴願為無理由',
-    '本件訴願為無理由',
-    '原處分應予撤銷',
-    '撤銷原處分',
-    '維持原處分',
-    '訴願不受理',
-    '不受理決定',
-    '應不受理',
 )
 
 
@@ -161,7 +149,9 @@ def unsafe_reasoning_markers(text: str) -> bool:
     if not stripped:
         return True
     compact = ''.join(stripped.split())
-    return any(marker in compact for marker in _UNSAFE_REASON_MARKERS)
+    return any(marker in compact for marker in _UNSAFE_REASON_MARKERS) or contains_final_outcome(
+        compact
+    )
 
 
 def guard_model_reasoning(reasoning: str) -> str:

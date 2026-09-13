@@ -198,6 +198,12 @@ def test_agentcore_draft_uses_a_fixed_safety_prompt_not_the_requested_instructio
         '受理訴願機關：行政院。決定主文：本訴願駁回。',
         '本件訴願為有理由，原處分應予撤銷。',
         '本案應作成訴願不受理決定。',
+        '本件訴願應予駁回。',
+        '本案訴願為無理由。',
+        '應作成不受理決定。',
+        '本件應予駁回。',
+        '原處分並無違誤，應予維持。',
+        '本案欠缺程序要件，應予不受理。',
     ],
 )
 def test_agentcore_draft_blocks_unsafe_authority_or_outcome_claims(

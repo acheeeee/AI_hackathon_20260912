@@ -2,9 +2,9 @@
 
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from caseapi.domain.fact_fields import is_allowed_field_path
+from caseapi.domain.fact_fields import ANALYSIS_FIELD_VALUE_MAX_LENGTHS, is_allowed_field_path
 
 MAX_REASON_LENGTH = 1000
 
@@ -24,6 +24,13 @@ class FactFieldChange(BaseModel):
         if not is_allowed_field_path(value):
             raise ValueError(f'field_path 不在允許清單內：{value}')
         return value
+
+    @model_validator(mode='after')
+    def check_field_specific_value_limit(self) -> 'FactFieldChange':
+        limit = ANALYSIS_FIELD_VALUE_MAX_LENGTHS.get(self.field_path)
+        if self.value is not None and limit is not None and len(self.value) > limit:
+            raise ValueError(f'{self.field_path} 不得超過 {limit} 字')
+        return self
 
 
 class FactsPatchRequest(BaseModel):

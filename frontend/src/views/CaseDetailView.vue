@@ -59,6 +59,12 @@ const analysisDraft = reactive<Record<AnalysisFieldPath, string>>({
   'analysis.statute_query': '',
 })
 
+const ANALYSIS_FIELD_MAX_LENGTHS: Record<AnalysisFieldPath, number> = {
+  'analysis.keywords': 120,
+  'disposition.summary': 800,
+  'analysis.statute_query': 80,
+}
+
 const extractedFacts = computed(() =>
   Object.fromEntries(
     Object.entries(facts.value).filter(
@@ -79,10 +85,12 @@ const statuteQueryTerms = computed(() =>
 )
 
 const analysisSourceLabel = computed(() => {
+  const origins = new Set<string>()
   const providers = new Set<string>()
   for (const path of ANALYSIS_FIELD_PATHS) {
     const field = facts.value[path]
     if (!field?.value) continue
+    origins.add(field.origin)
     const source = field.source
     const provider =
       source && typeof source === 'object' && 'provider' in source
@@ -90,10 +98,18 @@ const analysisSourceLabel = computed(() => {
         : null
     providers.add(typeof provider === 'string' ? provider : 'unknown')
   }
+  if (origins.size === 1 && origins.has('human')) return '人工'
+  if (origins.has('human')) return '人工與模型混合'
   if (providers.size === 1 && providers.has('fixed')) return '固定 Mock 產生'
   if (providers.size === 1 && providers.has('agentcore')) return 'LLM 產生'
   return '模型產生'
 })
+
+const analysisLegalReviewLabel = computed(() =>
+  ANALYSIS_FIELD_PATHS.some((path) => facts.value[path]?.legal_review_status === 'not_reviewed')
+    ? '法律覆核：未覆核'
+    : '',
+)
 
 const STEPS: WizardStep[] = [
   { key: 'upload', label: '進件上傳' },
@@ -167,6 +183,16 @@ function splitKeywords(value: string): string[] {
     .filter(Boolean)
 }
 
+function analysisFieldOriginLabel(path: AnalysisFieldPath): string {
+  return facts.value[path]?.origin === 'human'
+    ? '人工'
+    : factOriginLabel(facts.value[path]?.origin ?? '')
+}
+
+function clampAnalysisValue(path: AnalysisFieldPath): string {
+  return analysisDraft[path].trim().slice(0, ANALYSIS_FIELD_MAX_LENGTHS[path])
+}
+
 function beginAnalysisEdit() {
   for (const path of ANALYSIS_FIELD_PATHS) {
     analysisDraft[path] = analysisValues.value[path]
@@ -192,7 +218,7 @@ async function saveAnalysis() {
   try {
     for (const path of changes) {
       if (expectedRevision === undefined) throw new Error('案件版本不存在')
-      const value = analysisDraft[path].trim()
+      const value = clampAnalysisValue(path)
       const reason = `人工修改：${factFieldLabel(path)}`
       const result = await patchFacts({
         caseId: caseId.value,
@@ -215,6 +241,8 @@ async function saveAnalysis() {
           source: returnedField?.source ?? previousField?.source ?? null,
           updated_by: returnedField?.updated_by ?? previousField?.updated_by ?? 'human',
           updated_at: returnedField?.updated_at ?? new Date().toISOString(),
+          legal_review_status:
+            returnedField?.legal_review_status ?? previousField?.legal_review_status,
         },
       }
       if (detail.value) {
@@ -396,6 +424,9 @@ function backToList() {
                 <span class="analysis-source">{{ analysisSourceLabel }}</span>
                 的衍生內容；人工修改會明確標記，不會冒充原始文件擷取。
               </p>
+              <p v-if="analysisLegalReviewLabel" class="analysis-review-status">
+                {{ analysisLegalReviewLabel }}
+              </p>
             </div>
             <button
               v-if="!analysisEditing"
@@ -413,6 +444,7 @@ function backToList() {
               <el-input
                 v-model="analysisDraft['analysis.keywords']"
                 aria-label="案件相關關鍵字"
+                :maxlength="ANALYSIS_FIELD_MAX_LENGTHS['analysis.keywords']"
                 placeholder="以頓號分隔，例如：洗錢防制、登記申請"
               />
             </label>
@@ -423,6 +455,7 @@ function backToList() {
                 aria-label="行政處分函摘要"
                 type="textarea"
                 :rows="4"
+                :maxlength="ANALYSIS_FIELD_MAX_LENGTHS['disposition.summary']"
                 placeholder="摘要行政處分的機關、理由與結果"
               />
             </label>
@@ -431,6 +464,7 @@ function backToList() {
               <el-input
                 v-model="analysisDraft['analysis.statute_query']"
                 aria-label="建議法規查詢詞"
+                :maxlength="ANALYSIS_FIELD_MAX_LENGTHS['analysis.statute_query']"
                 placeholder="以簡短關鍵字描述法規爭點"
               />
             </label>
@@ -451,7 +485,12 @@ function backToList() {
 
           <div v-else class="analysis-content">
             <section>
-              <h3>案件相關關鍵字</h3>
+              <h3>
+                案件相關關鍵字
+                <el-tag size="small" effect="plain">{{
+                  analysisFieldOriginLabel('analysis.keywords')
+                }}</el-tag>
+              </h3>
               <div v-if="analysisKeywords.length" class="analysis-chips">
                 <span v-for="keyword in analysisKeywords" :key="keyword" class="analysis-chip">
                   {{ keyword }}
@@ -460,13 +499,23 @@ function backToList() {
               <p v-else class="empty-hint">尚未產生案件關鍵字。</p>
             </section>
             <section>
-              <h3>行政處分函摘要</h3>
+              <h3>
+                行政處分函摘要
+                <el-tag size="small" effect="plain">{{
+                  analysisFieldOriginLabel('disposition.summary')
+                }}</el-tag>
+              </h3>
               <p class="analysis-summary">
                 {{ analysisValues['disposition.summary'] || '尚未產生行政處分函摘要。' }}
               </p>
             </section>
             <section>
-              <h3>建議法規查詢詞</h3>
+              <h3>
+                建議法規查詢詞
+                <el-tag size="small" effect="plain">{{
+                  analysisFieldOriginLabel('analysis.statute_query')
+                }}</el-tag>
+              </h3>
               <div v-if="statuteQueryTerms.length" class="analysis-chips query-chips">
                 <span
                   v-for="term in statuteQueryTerms"

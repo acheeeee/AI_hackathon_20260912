@@ -22,6 +22,16 @@ FACT_FIELD_ALLOWLIST = frozenset(
 )
 
 
+# These fields are shown and edited in the intake-analysis panel. Keep the
+# write boundary in one place so a direct API caller cannot bypass the UI's
+# maxlength attribute.
+ANALYSIS_FIELD_VALUE_MAX_LENGTHS = {
+    'analysis.statute_query': 80,
+    'analysis.keywords': 120,
+    'disposition.summary': 800,
+}
+
+
 # 生成草稿時要把欄位寫成看得懂的中文。前端另有一份顯示用的同名對照
 # （frontend/src/utils/factLabels.ts），兩邊要一起改。
 FACT_FIELD_LABELS = {

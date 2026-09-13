@@ -259,3 +259,35 @@ def test_agentcore_intake_analysis_rejects_malformed_model_output() -> None:
 
     with pytest.raises(ValueError, match='intake analysis'):
         provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')
+
+
+@pytest.mark.parametrize(
+    'outcome_paraphrase',
+    [
+        '本件訴願應予駁回。',
+        '本案訴願為無理由。',
+        '應作成不受理決定。',
+        '本件應予駁回。',
+        '原處分並無違誤，應予維持。',
+        '本案欠缺程序要件，應予不受理。',
+    ],
+)
+def test_agentcore_intake_analysis_blocks_final_outcome_paraphrases(
+    outcome_paraphrase: str,
+) -> None:
+    answer = json.dumps(
+        {
+            'keywords': '洗錢防制登記、虛擬資產服務、不予登記',
+            'disposition_summary': outcome_paraphrase,
+            'statute_query': '洗錢防制法第6條 洗錢防制登記',
+        },
+        ensure_ascii=False,
+    )
+    provider = AgentCoreModelProvider(
+        runtime_arn='arn:aws:...:runtime/demo',
+        region='us-west-2',
+        client=FakeAgentCoreClient(answer=answer),
+    )
+
+    with pytest.raises(ValueError, match='appeal outcome'):
+        provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')

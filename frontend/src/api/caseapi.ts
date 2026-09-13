@@ -113,6 +113,7 @@ export interface FactFieldValue {
   source: unknown
   updated_by: string
   updated_at: string
+  legal_review_status?: 'not_reviewed'
 }
 
 export async function getFacts(caseId: string): Promise<Record<string, FactFieldValue>> {
