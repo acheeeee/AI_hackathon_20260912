@@ -21,9 +21,9 @@ export const ARTICLE_77_CLAUSES: Article77Clause[] = [
   },
   {
     no: 2,
-    title: '提起訴願逾法定期間',
+    title: '提起訴願逾法定期間，或未於第 57 條但書所定期間內補送訴願書',
     hasRule: true,
-    manualCheckHint: '',
+    manualCheckHint: '日期規則只試算第 14 條期間；第 57 條但書的補送分支仍需補齊提出方式與補送日期。',
   },
   {
     no: 3,

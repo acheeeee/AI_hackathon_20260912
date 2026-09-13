@@ -33,6 +33,10 @@ function review(overrides: Partial<ProceduralReview> = {}): ProceduralReview {
 }
 
 describe('ProceduralReviewPanel: full article 77 disclosure', () => {
+  it('shows the complete second-clause text, including the Article 57 written-appeal branch', () => {
+    expect(ARTICLE_77_CLAUSES[1]?.title).toContain('未於第 57 條但書所定期間內補送訴願書')
+  })
+
   it('shows an automatic rule, outcome, and case-specific reason for every clause', async () => {
     const clauseAssessments = ARTICLE_77_CLAUSES.map((clause) => {
       const needsLegalJudgment = clause.no === 3 || clause.no === 8

@@ -211,13 +211,20 @@ def _deadline_assessment(
         input={
             'service.date': facts.get('service.date'),
             'appeal.filed_date': facts.get('appeal.filed_date'),
+            'appeal.initial_submission_method': facts.get(
+                'appeal.initial_submission_method'
+            ),
+            'appeal.written_submission_date': facts.get(
+                'appeal.written_submission_date'
+            ),
             'computed.deadline_date': review.deadline_date,
             'computed.days_from_deadline': review.days_from_deadline,
         },
         status=status,
         rule_description=(
-            '比較行政處分送達日、三十日法定期間與訴願提起日；期限計算沿用既有'
-            '訴願法第14條試算。'
+            '先比較行政處分送達日、三十日法定期間與訴願提起日；期限計算沿用'
+            '訴願法第14條試算。第77條第2款另含未於第57條但書所定期間內補送'
+            '訴願書的分支；目前尚無足夠欄位自動排除該分支。'
         ),
         reason=reason,
         evaluation_mode=MODE_RULE,
@@ -241,10 +248,15 @@ def _deadline_outcome_and_reason(review: DeadlineReview) -> tuple[str, str]:
         )
     if review.status == STATUS_WITHIN_PERIOD:
         if review.days_from_deadline == 0:
-            reason = '訴願提起日為試算期限當日，規則未標記逾期。'
+            timing = '訴願提起日為試算期限當日，未標記逾第14條期間。'
         else:
-            reason = (
-                f'訴願提起日早於試算期限 {-review.days_from_deadline} 天，規則未標記逾期。'
+            timing = (
+                f'訴願提起日早於試算期限 {-review.days_from_deadline} 天，'
+                '未標記逾第14條期間。'
             )
-        return OUTCOME_NOT_TRIGGERED, reason
+        return (
+            OUTCOME_INSUFFICIENT,
+            f'{timing}但目前未擷取第57條但書的訴願提出方式與補送訴願書日期，'
+            '仍無法排除本款另一分支。',
+        )
     raise ValueError(f'unsupported deadline review status: {review.status}')

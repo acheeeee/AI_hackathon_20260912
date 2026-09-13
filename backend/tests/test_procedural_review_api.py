@@ -159,7 +159,7 @@ def test_article_77_clause_2_reuses_the_existing_deadline_calculation(
     assert '15' in clause_2['reason']
 
 
-def test_article_77_clause_2_maps_a_within_period_result_to_not_triggered(
+def test_article_77_clause_2_keeps_article_57_branch_unresolved_when_filing_is_timely(
     client: TestClient,
 ) -> None:
     case_id = create_case(client)
@@ -175,8 +175,11 @@ def test_article_77_clause_2_maps_a_within_period_result_to_not_triggered(
     )
     assert data['status'] == 'within_period'
     assert data['days_from_deadline'] == -21
-    assert clause_2['status'] == 'NOT_TRIGGERED'
+    assert clause_2['status'] == 'INSUFFICIENT_EVIDENCE'
     assert '21' in clause_2['reason']
+    assert '第57條但書' in clause_2['rule_description']
+    assert '補送訴願書' in clause_2['reason']
+    assert 'appeal.written_submission_date' in clause_2['input']
 
 
 def test_review_never_asserts_a_final_admissibility_decision(client: TestClient) -> None:
