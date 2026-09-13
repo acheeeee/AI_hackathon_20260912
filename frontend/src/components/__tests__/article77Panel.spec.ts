@@ -33,8 +33,37 @@ function review(overrides: Partial<ProceduralReview> = {}): ProceduralReview {
 }
 
 describe('ProceduralReviewPanel: full article 77 disclosure', () => {
-  it('lists all eight clauses with a stated reason each, not just clause 2', async () => {
-    api.getProceduralReview.mockResolvedValue(review())
+  it('shows an automatic rule, outcome, and case-specific reason for every clause', async () => {
+    const clauseAssessments = ARTICLE_77_CLAUSES.map((clause) => {
+      const needsLegalJudgment = clause.no === 3 || clause.no === 8
+      return {
+        clause_no: clause.no,
+        rule_id: `art77_para${clause.no}`,
+        input: { case_id: 'case_1' },
+        status:
+          clause.no === 2
+            ? 'TRIGGERED'
+            : needsLegalJudgment
+              ? 'NEEDS_HUMAN'
+              : 'INSUFFICIENT_EVIDENCE',
+        rule_description:
+          clause.no === 2
+            ? '比較行政處分送達日、法定期間與訴願收件日。'
+            : needsLegalJudgment
+              ? `第 ${clause.no} 款涉及實質法律判斷，規則固定轉交人工覆核。`
+              : `第 ${clause.no} 款 mock：依已擷取欄位提出初步訊號，再交由承辦人覆核。`,
+        reason:
+          clause.no === 2
+            ? '收件日晚於試算期限 92 天，規則標記為可能逾期。'
+            : `第 ${clause.no} 款目前缺少足以自動排除的資料，需人工覆核。`,
+        evaluation_mode:
+          clause.no === 2 ? 'rule' : needsLegalJudgment ? 'manual_review' : 'mock',
+      }
+    })
+    api.getProceduralReview.mockResolvedValue({
+      ...review(),
+      clause_assessments: clauseAssessments,
+    })
 
     const wrapper = mount(ProceduralReviewPanel, {
       props: { caseId: 'case_1', caseRevision: 3 },
@@ -42,11 +71,17 @@ describe('ProceduralReviewPanel: full article 77 disclosure', () => {
     })
     await flushPromises()
 
-    for (const clause of ARTICLE_77_CLAUSES) {
+    for (const [index, clause] of ARTICLE_77_CLAUSES.entries()) {
+      const assessment = clauseAssessments[index]!
       expect(wrapper.text()).toContain(clause.title)
+      expect(wrapper.text()).toContain(assessment.rule_description)
+      expect(wrapper.text()).toContain(assessment.reason)
     }
-    expect(wrapper.text()).toContain('尚無自動判定規則')
-    expect(wrapper.text()).toContain('待人工確認')
+    expect(wrapper.findAll('.clause-row')).toHaveLength(8)
+    expect(wrapper.text()).toContain('可能成立')
+    expect(wrapper.text()).toContain('需人工覆核')
+    expect(wrapper.text()).toContain('Mock 規則')
+    expect(wrapper.text()).not.toContain('尚無自動判定規則')
   })
 
   it('never asserts a final inadmissibility decision even when clause 2 is overdue', async () => {
