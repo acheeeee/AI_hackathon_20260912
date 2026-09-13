@@ -232,3 +232,11 @@ def test_invalid_procedural_fact_patch_does_not_modify_case(client: TestClient):
     data = client.get(f'/api/v1/cases/{case_id}/procedural-review').json()['data']
     assert data['case_revision'] == 1
     assert data['clause_assessments'][0]['input']['appeal.form_defect'] is None
+
+
+def test_extreme_but_valid_date_keeps_procedural_endpoint_available(client: TestClient):
+    case_id = create_case(client)
+    assert _patch_fact(client, case_id, 1, 'service.date', '9999-12-31').status_code == 200
+    response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
+    assert response.status_code == 200
+    assert response.json()['data']['status'] == 'insufficient_data'

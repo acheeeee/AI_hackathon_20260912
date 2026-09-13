@@ -162,3 +162,16 @@ def test_fact_boundary_rejects_invalid_procedural_data(field, value):
 ])
 def test_fact_boundary_accepts_supported_values_and_explicit_clearing(field, value):
     assert FactFieldChange(field_path=field, value=value, reason='人工確認').value == value
+
+
+def test_extreme_valid_service_date_does_not_overflow_the_period_calculator():
+    review = review_appeal_deadline(service_date='9999-12-31', filed_date=None)
+    assert review.status == 'insufficient_data'
+    assert '日期超出' in str(review.caveats)
+
+
+def test_extreme_objection_date_does_not_overflow_the_computed_field():
+    result = assess(2, {'appeal.initial_submission_method': 'objection',
+                        'appeal.objection_date': '9999-12-31'}, today=date.max)
+    assert result.status == 'NEEDS_HUMAN'
+    assert result.input.get('computed.written_submission_deadline') is None
