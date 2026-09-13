@@ -206,7 +206,9 @@ Resources:
               - Effect: Allow
                 Action:
                   - bedrock-agentcore:InvokeAgentRuntime
-                Resource: !Ref AgentCoreRuntimeArn
+                Resource:
+                  - !Ref AgentCoreRuntimeArn
+                  - !Sub '${AgentCoreRuntimeArn}/runtime-endpoint/*'
         - PolicyName: ReadDeploymentBundle
           PolicyDocument:
             Version: '2012-10-17'
