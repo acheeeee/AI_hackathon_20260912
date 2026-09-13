@@ -78,6 +78,23 @@ const statuteQueryTerms = computed(() =>
   splitKeywords(analysisValues.value['analysis.statute_query']),
 )
 
+const analysisSourceLabel = computed(() => {
+  const providers = new Set<string>()
+  for (const path of ANALYSIS_FIELD_PATHS) {
+    const field = facts.value[path]
+    if (!field?.value) continue
+    const source = field.source
+    const provider =
+      source && typeof source === 'object' && 'provider' in source
+        ? (source as { provider?: unknown }).provider
+        : null
+    providers.add(typeof provider === 'string' ? provider : 'unknown')
+  }
+  if (providers.size === 1 && providers.has('fixed')) return '固定 Mock 產生'
+  if (providers.size === 1 && providers.has('agentcore')) return 'LLM 產生'
+  return '模型產生'
+})
+
 const STEPS: WizardStep[] = [
   { key: 'upload', label: '進件上傳' },
   { key: 'extract', label: '擷取與解析' },
@@ -375,7 +392,10 @@ function backToList() {
           <div class="analysis-head">
             <div>
               <h2>案件擷取與解析</h2>
-              <p>由 LLM 產生的衍生內容；人工修改會明確標記，不會冒充原始文件擷取。</p>
+              <p>
+                <span class="analysis-source">{{ analysisSourceLabel }}</span>
+                的衍生內容；人工修改會明確標記，不會冒充原始文件擷取。
+              </p>
             </div>
             <button
               v-if="!analysisEditing"
@@ -643,6 +663,16 @@ function backToList() {
   color: #7a8699;
   font-size: 12px;
   line-height: 1.6;
+}
+
+.analysis-source {
+  display: inline-block;
+  margin-right: 4px;
+  border-radius: 999px;
+  padding: 1px 7px;
+  background: #eef1f6;
+  color: #4a5568;
+  font-weight: 700;
 }
 
 .analysis-edit,

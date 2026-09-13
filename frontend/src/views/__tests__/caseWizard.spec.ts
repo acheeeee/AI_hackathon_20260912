@@ -63,7 +63,7 @@ const ANALYSIS_FACTS: Record<string, FactFieldValue> = {
     origin: 'llm',
     human_asserted: false,
     reason: 'LLM 依案件內容產生',
-    source: null,
+    source: { provider: 'fixed' },
     updated_by: 'system',
     updated_at: '2026-09-13T00:00:00Z',
   },
@@ -72,7 +72,7 @@ const ANALYSIS_FACTS: Record<string, FactFieldValue> = {
     origin: 'llm',
     human_asserted: false,
     reason: 'LLM 摘要行政處分函',
-    source: null,
+    source: { provider: 'fixed' },
     updated_by: 'system',
     updated_at: '2026-09-13T00:00:00Z',
   },
@@ -81,7 +81,7 @@ const ANALYSIS_FACTS: Record<string, FactFieldValue> = {
     origin: 'llm',
     human_asserted: false,
     reason: 'LLM 建議法規檢索詞',
-    source: null,
+    source: { provider: 'fixed' },
     updated_by: 'system',
     updated_at: '2026-09-13T00:00:00Z',
   },
@@ -138,6 +138,8 @@ describe('case detail wizard shell', () => {
     expect(wrapper.text()).toContain('金管會以申請書件及營運準備未完成為由')
     expect(wrapper.text()).toContain('建議法規查詢詞')
     expect(wrapper.text()).toContain('登記申請要件')
+    expect(wrapper.text()).toContain('固定 Mock 產生')
+    expect(wrapper.text()).not.toContain('由 LLM 產生')
   })
 
   it('lets the reviewer edit and save extraction analysis without changing the document source', async () => {
