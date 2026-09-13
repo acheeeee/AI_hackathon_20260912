@@ -76,6 +76,8 @@ def render_current_draft_head(
 def render_draft_pdf(blocks: list[dict[str, Any]]) -> bytes:
     """Render persisted block text in order without deriving legal content."""
     normalized = _presentation_blocks(blocks)
+    if not normalized:
+        raise invalid_field('草稿沒有可匯出的正式正文區塊')
     if sum(len(text) for _, text in normalized) > MAX_EXPORT_CHARS:
         raise invalid_field('草稿正文過長，無法匯出 PDF')
 
@@ -131,6 +133,13 @@ def _presentation_blocks(blocks: list[dict[str, Any]]) -> list[tuple[str, str]]:
         text = block.get('text')
         if not isinstance(block_id, str) or not isinstance(text, str):
             raise invalid_field('草稿正文區塊缺少 block_id 或 text')
+        # ``index-header-1`` is the search/database index shown beside a saved
+        # decision.  It repeats the title and introduces labels such as 全文,
+        # but it is not part of the formal decision body that a user downloads.
+        # Keep it persisted for the UI and provenance contract; omit it only at
+        # the presentation boundary so the PDF has one canonical document.
+        if block_id == 'index-header-1':
+            continue
         presentation.append((block_id, _sanitize_text(text)))
     return presentation
 

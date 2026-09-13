@@ -12,6 +12,7 @@ citations 放哪些 evidence id，兩邊必須一模一樣，否則換 provider 
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from caseapi.ai.contracts import GeneratedBlock, ModelRequest, ToolGatewayLike
@@ -193,8 +194,64 @@ def _fact_block_text(request: ModelRequest) -> str:
 
 
 def _statute_block_text(opened: list[dict[str, Any]]) -> str:
-    lines = [f'{_statute_title(item)}：「{item["quote"]}」' for item in opened]
-    return '依據：\n' + '\n'.join(lines)
+    lines: list[str] = []
+    for index, item in enumerate(opened, start=1):
+        prefix = _chinese_list_marker(index) if len(opened) > 1 else ''
+        lines.append(f'{prefix}{_statute_title(item)}')
+        lines.extend(
+            _format_statute_quote(
+                item['quote'],
+                article_key=item.get('article_key'),
+            )
+        )
+    return '\n'.join(lines)
+
+
+def _format_statute_quote(quote: str, *, article_key: object) -> list[str]:
+    """Turn visually extracted statute text into readable legal paragraphs.
+
+    The r3 source preserves article text, but PDF extraction represents each
+    paragraph number as a bare line (``1``, ``2``...) and wraps the paragraph
+    body at visual line boundaries.  Reflowing those lines is presentation
+    normalization only: the substantive wording is retained while bare Arabic
+    paragraph markers become explicit ``第 N 項`` labels; the article heading
+    is already supplied by :func:`_statute_title`.
+    """
+    source_lines = [
+        line.strip()
+        for line in quote.replace('\r\n', '\n').replace('\r', '\n').split('\n')
+        if line.strip()
+    ]
+    if source_lines and _is_repeated_article_heading(source_lines[0], article_key):
+        source_lines.pop(0)
+
+    paragraphs: list[str] = []
+    current = ''
+    for line in source_lines:
+        if re.fullmatch(r'\d{1,2}', line):
+            if current:
+                paragraphs.append(current)
+            current = f'第 {line} 項　'
+            continue
+        current += line
+    if current:
+        paragraphs.append(current)
+    return paragraphs
+
+
+def _is_repeated_article_heading(line: str, article_key: object) -> bool:
+    if not isinstance(article_key, str) or not article_key.strip():
+        return False
+    compact_line = re.sub(r'\s+', '', line)
+    compact_key = re.sub(r'\s+', '', article_key)
+    return compact_line == f'第{compact_key}條'
+
+
+def _chinese_list_marker(index: int) -> str:
+    markers = '一二三四五六七八九十'
+    if 1 <= index <= len(markers):
+        return f'（{markers[index - 1]}）'
+    return f'（{index}）'
 
 
 def _statute_title(statute: dict[str, Any]) -> str:

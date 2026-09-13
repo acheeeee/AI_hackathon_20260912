@@ -132,6 +132,44 @@ def test_substantive_path_adds_facts_between_main_and_reasons() -> None:
     assert '\n緣' in fact.text
 
 
+def test_selected_statute_items_are_formatted_as_readable_paragraphs() -> None:
+    """PDF/UI正文不得照抄抽取器的孤立項次數字與重複條號標頭。"""
+    context = {
+        **CONTEXT,
+        'statutes': [
+            {
+                **CONTEXT['statutes'][0],
+                'statute_name': '洗錢防制法',
+                'article_key': '6',
+            }
+        ],
+    }
+    tools = FakeToolGateway(
+        {
+            'open_source': {
+                'evidence_id': 'evid_6',
+                'quote': (
+                    '第 6 條\n'
+                    '1\n提供虛擬資產服務之事業應完成登記。\n'
+                    '2\n申請條件及程序之辦法，由主管機關定之。\n'
+                    '3\n違反登記義務者，依本法處理。'
+                ),
+            }
+        }
+    )
+
+    result = FixedModelProvider().execute(_draft_request(context), tools)
+
+    reason = next(block.text for block in result.draft_blocks if block.block_id == 'reason-1')
+    assert reason.count('洗錢防制法第6條') == 1
+    assert '第 1 項　提供虛擬資產服務之事業應完成登記。' in reason
+    assert '第 2 項　申請條件及程序之辦法，由主管機關定之。' in reason
+    assert '第 3 項　違反登記義務者，依本法處理。' in reason
+    assert '\n1\n' not in reason
+    assert '\n2\n' not in reason
+    assert '\n3\n' not in reason
+
+
 def test_fixed_draft_without_selected_statutes_returns_no_blocks() -> None:
     tools = FakeToolGateway({})
     provider = FixedModelProvider()

@@ -95,6 +95,26 @@ def test_export_returns_a4_pdf_with_formal_headings_and_embedded_chinese_font(
         assert max(embedded_font_lengths) > 0
 
 
+def test_export_uses_only_the_formal_body_not_the_search_index_header(
+    client: TestClient,
+) -> None:
+    """The persisted index block is UI metadata, not a second document body."""
+    case_id = create_case(client)
+    draft = create_draft(client, case_id, blocks=_formal_blocks())
+
+    response = client.get(f'/api/v1/cases/{case_id}/drafts/{draft["draft_id"]}/pdf')
+
+    assert response.status_code == 200
+    with _open_pdf(response) as document:
+        text = ''.join(page.get_text() for page in document)
+    assert text.count('訴願決定書') == 1
+    assert '新北市政府訴願決定書' in text
+    assert '要旨：' not in text
+    assert '發文日期：' not in text
+    assert '發文字號：' not in text
+    assert '全文：' not in text
+
+
 def test_export_reads_only_the_current_persisted_draft_head(client: TestClient) -> None:
     case_id = create_case(client)
     draft = create_draft(
