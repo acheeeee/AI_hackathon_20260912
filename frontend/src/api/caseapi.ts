@@ -618,6 +618,58 @@ export async function patchDraftBlock(params: {
   )
 }
 
+const DEFAULT_DRAFT_PDF_FILENAME = 'appeal-decision-draft.pdf'
+
+export async function downloadDraftPdf(params: {
+  caseId: string
+  draftId: string
+}): Promise<void> {
+  const response = await fetch(
+    `${BASE}/cases/${encodeURIComponent(params.caseId)}/drafts/${encodeURIComponent(params.draftId)}/pdf`,
+    { headers: { Accept: 'application/pdf' } },
+  )
+  if (!response.ok) {
+    let body: Envelope<never> | null = null
+    try {
+      body = (await response.json()) as Envelope<never>
+    } catch {
+      // A proxy or gateway may replace the normal API envelope.  Keep the
+      // fallback intentionally generic so response bodies never reach the UI.
+    }
+    throw new CaseApiError(
+      body?.error?.message ?? '無法產生草稿 PDF',
+      body?.error?.code ?? 'PDF_EXPORT_FAILED',
+      response.status,
+    )
+  }
+  const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? ''
+  if (!contentType.startsWith('application/pdf')) {
+    throw new CaseApiError('伺服器未回傳 PDF', 'PDF_EXPORT_FAILED', 502)
+  }
+
+  const blob = await response.blob()
+  const objectUrl = URL.createObjectURL(blob)
+  const anchor = document.createElement('a')
+  anchor.href = objectUrl
+  anchor.download = _safePdfFilename(response.headers.get('Content-Disposition'))
+  anchor.hidden = true
+  document.body.append(anchor)
+  try {
+    anchor.click()
+  } finally {
+    anchor.remove()
+    URL.revokeObjectURL(objectUrl)
+  }
+}
+
+function _safePdfFilename(contentDisposition: string | null): string {
+  const candidate = contentDisposition?.match(/filename="([^"\r\n]+)"/i)?.[1]
+  if (!candidate || !/^[A-Za-z0-9._-]+\.pdf$/i.test(candidate) || candidate.includes('..')) {
+    return DEFAULT_DRAFT_PDF_FILENAME
+  }
+  return candidate
+}
+
 export async function saveStatuteSelection(params: {
   caseId: string
   expectedCaseRevision: number

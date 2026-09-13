@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   CaseApiError,
+  downloadDraftPdf,
   getDraftResource,
   patchDraftBlock,
   type DraftBlockTarget,
@@ -94,6 +95,7 @@ const freshness = ref(props.draftHead.freshness)
 const currentCaseRevision = ref(props.caseRevision)
 const currentResourceRevision = ref(props.draftHead.revision_id)
 const savingBlockId = ref<string | null>(null)
+const downloadingPdf = ref(false)
 
 const originLabel = computed(() => {
   const labels: Record<string, string> = {
@@ -108,6 +110,8 @@ const originLabel = computed(() => {
 const isPlaceholder = computed(
   () => blocks.value.length === 1 && blocks.value[0]?.text === '（尚未生成內容）',
 )
+
+const hasUnsavedChanges = computed(() => blocks.value.some((block) => isDirty(block)))
 
 function isDirty(block: ProposalBlock): boolean {
   const saved = savedBlocks.value.find((item) => item.block_id === block.block_id)
@@ -179,6 +183,19 @@ async function saveBlock(block: ProposalBlock) {
     savingBlockId.value = null
   }
 }
+
+async function downloadPdf() {
+  if (hasUnsavedChanges.value || downloadingPdf.value) return
+  downloadingPdf.value = true
+  try {
+    await downloadDraftPdf({ caseId: props.caseId, draftId: props.draftId })
+    ElMessage.success('PDF 已開始下載')
+  } catch (err) {
+    ElMessage.error(err instanceof CaseApiError ? err.message : '下載 PDF 失敗')
+  } finally {
+    downloadingPdf.value = false
+  }
+}
 </script>
 
 <template>
@@ -189,6 +206,16 @@ async function saveBlock(block: ProposalBlock) {
         <p v-if="title" class="draft-title">{{ title }}</p>
       </div>
       <div class="status-tags">
+        <el-button
+          size="small"
+          type="primary"
+          plain
+          :loading="downloadingPdf"
+          :disabled="loading || Boolean(loadError) || isPlaceholder || hasUnsavedChanges"
+          @click="downloadPdf"
+        >
+          下載 PDF
+        </el-button>
         <el-tag size="small" effect="plain">{{ originLabel }}</el-tag>
         <el-tag size="small" :type="freshness === 'current' ? 'success' : 'warning'">
           {{ freshness === 'current' ? '目前有效' : '內容待覆核' }}
@@ -260,6 +287,7 @@ async function saveBlock(block: ProposalBlock) {
     <p v-if="!loading && !loadError && !isPlaceholder" class="editing-note">
       人工編輯會建立新的不可變版本；若草稿原本已標示待覆核，文字修改不會自行解除。
     </p>
+    <p v-if="hasUnsavedChanges" class="download-warning">請先儲存修改再下載 PDF。</p>
   </section>
 </template>
 
@@ -368,6 +396,12 @@ async function saveBlock(block: ProposalBlock) {
 .unsaved {
   color: #b56a00;
   font-size: 12px;
+}
+
+.download-warning {
+  color: #b56a00;
+  font-size: 12px;
+  margin: 6px 0 0;
 }
 
 .editing-note {

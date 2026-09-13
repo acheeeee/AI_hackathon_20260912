@@ -9,14 +9,41 @@ POST /drafts 已退場為測試專用 fixture：正式流程改由
 import sqlite3
 
 from fastapi import APIRouter, Depends, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from caseapi.api.deps import get_actor_id, get_db, get_idempotency_key
 from caseapi.api.mutation import execute_mutation
 from caseapi.schemas.draft import DraftCreateRequest, DraftPatchRequest, DraftReviewRequest
 from caseapi.services import draft_service
+from caseapi.services import draft_pdf_service
 
 router = APIRouter(prefix='/api/v1/cases', tags=['drafts'])
+
+
+@router.get('/{case_id}/drafts/{draft_id}/pdf', response_class=Response)
+def download_draft_pdf(
+    case_id: str,
+    draft_id: str,
+    conn: sqlite3.Connection = Depends(get_db),
+    actor_id: str = Depends(get_actor_id),
+) -> Response:
+    pdf = draft_pdf_service.render_current_draft_head(
+        conn,
+        case_id=case_id,
+        actor_id=actor_id,
+        draft_id=draft_id,
+    )
+    return Response(
+        content=pdf,
+        media_type='application/pdf',
+        headers={
+            'Content-Disposition': (
+                f'attachment; filename="{draft_pdf_service.PDF_FILENAME}"'
+            ),
+            'Cache-Control': 'no-store',
+            'X-Content-Type-Options': 'nosniff',
+        },
+    )
 
 
 @router.post(
