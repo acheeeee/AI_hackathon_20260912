@@ -76,6 +76,19 @@ def test_partial_effect_and_other_subject_do_not_imply_a_complete_finding(text: 
 
 
 @pytest.mark.parametrize('text', [
+    '未見原處分已撤銷。',
+    '不能確認原處分已撤銷。',
+    '原處分已撤銷，是否屬實仍待確認。',
+    '別案原處分已撤銷。',
+    '原處分已撤銷，但僅撤銷罰鍰部分。',
+    '訴願人主張代理人已成年，具有訴願能力。',
+    '本登記申請並未撤回，亦未曾撤回後重行提起。',
+])
+def test_independent_review_uncertainty_scope_and_pronoun_counterexamples(text: str) -> None:
+    assert not _extract(text)
+
+
+@pytest.mark.parametrize('text', [
     '代理人具有訴願能力。',
     '訴願人不具有訴願能力。',
     '本訴願並非自始以書面提出。',
