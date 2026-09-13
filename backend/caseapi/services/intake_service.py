@@ -23,6 +23,7 @@ from caseapi.schemas.case import CaseCreateRequest, CaseDetail
 from caseapi.services import case_repository as repo
 from caseapi.services import case_service, resource_service
 from caseapi.services.facts_service import FACTS_RESOURCE_ID
+from caseapi.services.procedural_evidence import enrich_procedural_fields
 
 ROLE_APPEAL = 'appeal'
 ROLE_DISPOSITION = 'disposition'
@@ -264,7 +265,9 @@ def _seed_facts(
         }
         for path, value in generated.items()
     }
-    fields = {**rule_fields, **generated_fields}
+    fields = enrich_procedural_fields(
+        conn, case_id=case_id, fields={**rule_fields, **generated_fields},
+    )
     version = resource_service.save_version(
         conn,
         case_id=case_id,

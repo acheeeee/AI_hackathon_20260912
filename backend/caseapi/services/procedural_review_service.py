@@ -11,12 +11,14 @@ from typing import Any
 
 from caseapi.domain.appeal_deadline import review_appeal_deadline
 from caseapi.domain.article77 import review_article_77
+from caseapi.domain.procedural_fields import PROCEDURAL_FIELD_DEFINITIONS
 from caseapi.schemas.procedural_review import (
     Article77ClauseAssessment,
     ProceduralReviewResponse,
 )
 from caseapi.services import case_repository as repo
 from caseapi.services.facts_service import read_current_fields
+from caseapi.services.procedural_evidence import enrich_procedural_fields
 
 LEGAL_REVIEW_STATUS = 'not_reviewed'
 
@@ -27,11 +29,15 @@ def get_procedural_review(
     case_row = repo.require_case(conn, case_id=case_id, actor_id=actor_id)
     heads = repo.load_heads(case_row)
     fields = read_current_fields(conn, case_id=case_id, heads=heads)
+    fields = enrich_procedural_fields(conn, case_id=case_id, fields=fields)
     fact_values = {path: _field_value(fields, path) for path in fields}
 
+    filing_date = fact_values.get('appeal.received_date') or fact_values.get('appeal.filed_date')
+    if fact_values.get('appeal.initial_submission_method') == 'objection':
+        filing_date = fact_values.get('appeal.objection_date')
     review = review_appeal_deadline(
         service_date=fact_values.get('service.date'),
-        filed_date=fact_values.get('appeal.filed_date'),
+        filed_date=filing_date,
     )
     assessments = review_article_77(
         facts=fact_values,
@@ -39,6 +45,8 @@ def get_procedural_review(
     )
     return ProceduralReviewResponse(
         case_id=case_id,
+        case_revision=case_row['case_revision'],
+        field_definitions=list(PROCEDURAL_FIELD_DEFINITIONS),
         status=review.status,
         deadline_date=review.deadline_date,
         days_from_deadline=review.days_from_deadline,
@@ -55,6 +63,15 @@ def get_procedural_review(
                 rule_description=item.rule_description,
                 reason=item.reason,
                 evaluation_mode=item.evaluation_mode,
+                missing_fields=list(item.missing_fields),
+                input_sources={
+                    path: {
+                        'origin': fields[path].get('origin'),
+                        'reason': fields[path].get('reason'),
+                        'source': fields[path].get('source'),
+                    }
+                    for path in item.input if path in fields
+                },
             )
             for item in assessments
         ],

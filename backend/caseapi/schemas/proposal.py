@@ -6,7 +6,9 @@
 
 from typing import Annotated, Literal, Union
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from caseapi.domain.procedural_fields import validate_procedural_field_value
 
 from caseapi.schemas.draft import DraftBlock
 from caseapi.schemas.evidence import EvidenceInput
@@ -46,6 +48,11 @@ class ReplaceFactOperation(BaseModel):
     target: FactFieldTarget
     before_value: str | None
     after_value: str | None
+
+    @model_validator(mode='after')
+    def validate_procedural_value(self) -> 'ReplaceFactOperation':
+        validate_procedural_field_value(self.target.field_path, self.after_value)
+        return self
 
 
 class AddCitationOperation(BaseModel):
