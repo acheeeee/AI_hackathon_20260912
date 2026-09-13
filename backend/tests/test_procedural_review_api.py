@@ -9,6 +9,26 @@ from fastapi.testclient import TestClient
 from conftest import create_case, mutate
 
 
+ARTICLE_77_OUTCOMES = {
+    'NOT_TRIGGERED',
+    'TRIGGERED',
+    'NOT_APPLICABLE',
+    'INSUFFICIENT_EVIDENCE',
+    'NEEDS_HUMAN',
+}
+
+EXPECTED_EVALUATION_MODES = {
+    1: 'mock',
+    2: 'rule',
+    3: 'manual_review',
+    4: 'mock',
+    5: 'mock',
+    6: 'mock',
+    7: 'mock',
+    8: 'manual_review',
+}
+
+
 def _patch_fact(client: TestClient, case_id: str, expected_revision: int, field_path: str, value: str):
     return mutate(
         client,
@@ -42,6 +62,37 @@ def test_review_with_no_facts_reports_missing_service_date(client: TestClient) -
     assert '訴願法第14條' in data['statute_basis']
 
 
+def test_review_exposes_one_explicit_assessment_contract_for_each_article_77_clause(
+    client: TestClient,
+) -> None:
+    """八款都要說明系統用了什麼規則；mock 不能冒充法律結論。"""
+    case_id = create_case(client)
+
+    response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
+
+    assert response.status_code == 200
+    assessments = response.json()['data']['clause_assessments']
+    assert [item['clause_no'] for item in assessments] == list(range(1, 9))
+    assert [item['rule_id'] for item in assessments] == [
+        f'art77_para{clause_no}' for clause_no in range(1, 9)
+    ]
+    assert len({item['rule_id'] for item in assessments}) == 8
+
+    for assessment in assessments:
+        clause_no = assessment['clause_no']
+        assert {'rule_id', 'input', 'status', 'reason'} <= assessment.keys()
+        assert isinstance(assessment['input'], dict)
+        assert assessment['status'] in ARTICLE_77_OUTCOMES
+        assert isinstance(assessment['reason'], str)
+        assert assessment['reason'].strip()
+        assert assessment['evaluation_mode'] == EXPECTED_EVALUATION_MODES[clause_no]
+
+        if assessment['evaluation_mode'] == 'mock':
+            assert assessment['status'] == 'INSUFFICIENT_EVIDENCE'
+        elif assessment['evaluation_mode'] == 'manual_review':
+            assert assessment['status'] == 'NEEDS_HUMAN'
+
+
 def test_review_with_only_service_date_gives_a_deadline_without_a_verdict(
     client: TestClient,
 ) -> None:
@@ -68,6 +119,32 @@ def test_review_with_both_dates_computes_overdue(client: TestClient) -> None:
     assert data['status'] == 'overdue'
     assert data['days_from_deadline'] == 15
     assert data['missing_fields'] == []
+
+
+def test_article_77_clause_2_reuses_the_existing_deadline_calculation(
+    client: TestClient,
+) -> None:
+    """新增八款陣列不能另寫一套時效邏輯，必須沿用既有第14條試算。"""
+    case_id = create_case(client)
+    _patch_fact(client, case_id, 1, 'service.date', '2025-07-01')
+    _patch_fact(client, case_id, 2, 'appeal.filed_date', '2025-08-15')
+
+    response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
+
+    assert response.status_code == 200
+    data = response.json()['data']
+    clause_2 = next(
+        item for item in data['clause_assessments'] if item['clause_no'] == 2
+    )
+    assert data['status'] == 'overdue'
+    assert data['deadline_date'] == '2025-07-31'
+    assert data['days_from_deadline'] == 15
+    assert clause_2['rule_id'] == 'art77_para2'
+    assert clause_2['evaluation_mode'] == 'rule'
+    assert clause_2['input']['service.date'] == '2025-07-01'
+    assert clause_2['input']['appeal.filed_date'] == '2025-08-15'
+    assert clause_2['status'] == 'TRIGGERED'
+    assert '15' in clause_2['reason']
 
 
 def test_review_never_asserts_a_final_admissibility_decision(client: TestClient) -> None:
