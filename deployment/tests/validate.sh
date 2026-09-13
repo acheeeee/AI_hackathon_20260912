@@ -65,6 +65,9 @@ require_text "${cloudformation}" '- DemoDefaultRoute'
 require_text "${cloudformation}" '- DemoPublicSubnetRouteAssociation'
 require_text "${cloudformation}" 'systemctl is-active --quiet amazon-ssm-agent'
 require_text "${cloudformation}" 'chown -R ec2-user:ec2-user /opt/ai-hackathon'
+if grep -Eq 'dnf install .*([[:space:]]|^)curl([[:space:]]|$)' "${cloudformation}"; then
+  fail 'AL2023 UserData must use the preinstalled curl-minimal binary'
+fi
 
 require_text "${deployment_dir}/scripts/deploy.sh" 'WEB_PORT='
 require_text "${deployment_dir}/scripts/deploy.sh" 'BASE_URL='

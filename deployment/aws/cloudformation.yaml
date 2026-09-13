@@ -272,7 +272,10 @@ Resources:
           trap signal_exit EXIT
 
           dnf update -y
-          dnf install -y aws-cfn-bootstrap awscli-2 curl docker tar
+          # AL2023 ships curl-minimal, which provides the curl binary. Asking DNF
+          # for the full curl package conflicts with curl-minimal and aborts boot.
+          dnf install -y aws-cfn-bootstrap awscli-2 docker tar
+          command -v curl
           systemctl enable --now docker
           systemctl is-active --quiet docker
           systemctl enable --now amazon-ssm-agent
