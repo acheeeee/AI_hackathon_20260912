@@ -77,11 +77,66 @@ def test_intake_extracts_real_fields_from_a_real_appeal_letter(client: TestClien
     assert case['processing_status'] == 'unprocessed'
 
 
+@pytest.mark.skipif(
+    not (REAL_APPEAL_PDF.exists() and REAL_DISPOSITION_PDF.exists()),
+    reason='real sample corpus not present',
+)
+def test_intake_generates_reviewable_case_keywords_and_disposition_summary(
+    client: TestClient,
+) -> None:
+    """AI enrichments are suggestions, not silently promoted case facts.
+
+    The fixed provider is the deterministic mock for this contract.  The UI still
+    needs provenance and the explicit not-legally-reviewed state even in mock mode.
+    """
+    response = _intake(
+        client,
+        appeal_bytes=REAL_APPEAL_PDF.read_bytes(),
+        disposition_bytes=REAL_DISPOSITION_PDF.read_bytes(),
+        key='intake-with-generated-analysis',
+    )
+
+    assert response.status_code == 201
+    data = response.json()['data']
+    facts = client.get(f'/api/v1/cases/{data["case_id"]}/facts').json()['data']['fields']
+    assert {
+        'analysis.keywords',
+        'disposition.summary',
+        'analysis.statute_query',
+    } <= facts.keys()
+
+    for path in ('analysis.keywords', 'disposition.summary', 'analysis.statute_query'):
+        assert facts[path]['origin'] == 'llm'
+        assert facts[path]['human_asserted'] is False
+        assert facts[path]['legal_review_status'] == 'not_reviewed'
+
+    keywords = facts['analysis.keywords']['value']
+    assert isinstance(keywords, str) and keywords.strip()
+    assert len(keywords) <= 120
+    assert '洗錢防制' in keywords
+    assert '訴願人於' not in keywords
+
+    summary = facts['disposition.summary']['value']
+    assert isinstance(summary, str) and summary.strip()
+    assert '不予登記' in summary or '未予登記' in summary
+    assert not any(
+        unsupported in summary
+        for unsupported in ('本訴願駁回', '訴願不受理', '原處分應予撤銷')
+    )
+
+    statute_query = facts['analysis.statute_query']['value']
+    assert isinstance(statute_query, str) and statute_query.strip()
+    assert len(statute_query) <= 80
+    assert '洗錢防制' in statute_query
+    assert '訴願人於' not in statute_query
+
+
 def test_intake_without_disposition_pdf_still_creates_the_case(client: TestClient) -> None:
     response = _intake(client, appeal_bytes=_minimal_pdf_bytes(), title='測試案件')
 
     assert response.status_code == 201
-    case_id = response.json()['data']['case_id']
+    data = response.json()['data']
+    case_id = data['case_id']
     assert client.get(f'/api/v1/cases/{case_id}').json()['data']['title'] == '測試案件'
 
 

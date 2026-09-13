@@ -7,9 +7,13 @@
 """
 
 from pathlib import Path
+from urllib.parse import parse_qs, urlparse
 
 import pytest
 from fastapi.testclient import TestClient
+
+from caseapi.evidence.repository import SearchHit
+from caseapi.main import create_app
 
 from conftest import create_case, mutate
 
@@ -20,6 +24,43 @@ REAL_APPEAL_PDF = (
     / '訴願書予行政處分函-1'
     / '案01_金管會不予洗錢防制登記_1155000434__訴願書.pdf'
 )
+
+
+class RecordingStatuteRepository:
+    """One partial BM25 hit plus a complete, separately opened article section."""
+
+    release_id = 'r3'
+
+    def __init__(self) -> None:
+        self.queries: list[str] = []
+        self.opened_sections: list[str] = []
+
+    def search(self, query: str, **_: object) -> list[SearchHit]:
+        self.queries.append(query)
+        return [
+            SearchHit(
+                release_id='r3',
+                chunk_id='chk_aml_6_partial',
+                document_id='doc_aml',
+                section_id='sec_aml_6',
+                document_type='statute',
+                case_family_id=None,
+                excerpt='第 6 條\n提供虛擬資產服務之事業未完成登記者，不得提供服務。',
+                source_spans=(),
+                metadata={'statute_name': '洗錢防制法', 'article_key': '6'},
+                score=9.25,
+                index_eligible=True,
+            )
+        ]
+
+    def open_section_text(self, section_id: str) -> str:
+        self.opened_sections.append(section_id)
+        return (
+            '第 6 條\n'
+            '一、提供虛擬資產服務之事業未完成洗錢防制登記者，不得提供服務。\n'
+            '二、申請條件、程序、撤銷或廢止登記及其他應遵行事項，由主管機關定之。\n'
+            '三、違反規定者，依本條所定法律效果處理。'
+        )
 
 
 def _intake_real_case(client: TestClient) -> str:
@@ -33,7 +74,7 @@ def _intake_real_case(client: TestClient) -> str:
 
 
 @pytest.mark.skipif(not REAL_APPEAL_PDF.exists(), reason='real sample corpus not present')
-def test_search_with_no_query_uses_the_appeal_narrative_as_the_default(
+def test_search_with_no_query_returns_the_generated_compact_case_query(
     client: TestClient,
 ) -> None:
     case_id = _intake_real_case(client)
@@ -44,6 +85,8 @@ def test_search_with_no_query_uses_the_appeal_narrative_as_the_default(
     data = response.json()['data']
     assert data['query_used']
     assert '洗錢防制' in data['query_used']
+    assert len(data['query_used']) <= 80
+    assert '訴願人於' not in data['query_used']
     assert isinstance(data['hits'], list)
 
 
@@ -60,6 +103,68 @@ def test_search_with_an_explicit_query_overrides_the_default(client: TestClient)
     for hit in data['hits']:
         assert hit['chunk_id']
         assert hit['statute_name']
+
+
+def test_search_hit_contains_expandable_full_article_reason_and_official_link(
+    settings,
+) -> None:
+    repository = RecordingStatuteRepository()
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = create_case(client)
+
+        response = client.get(
+            f'/api/v1/cases/{case_id}/statute-search',
+            params={'q': '洗錢防制 登記'},
+        )
+
+    assert response.status_code == 200
+    hit = response.json()['data']['hits'][0]
+    assert hit['excerpt'].endswith('不得提供服務。')
+    assert hit['full_text'].startswith('第 6 條')
+    assert '申請條件、程序、撤銷或廢止登記' in hit['full_text']
+    assert hit['full_text'] != hit['excerpt']
+    assert repository.opened_sections == ['sec_aml_6']
+
+    assert hit['why_relevant']
+    assert '洗錢防制' in hit['why_relevant']
+    assert '登記' in hit['why_relevant']
+    assert hit['why_relevant'] != hit['excerpt']
+    assert hit['why_relevant_origin'] in {'ai', 'rule'}
+    if hit['why_relevant_origin'] == 'ai':
+        assert hit['why_relevant_provider']
+    assert hit['legal_review_status'] == 'not_reviewed'
+
+    official = urlparse(hit['official_url'])
+    assert official.scheme == 'https'
+    assert official.netloc == 'law.moj.gov.tw'
+    assert official.path == '/LawClass/LawSingle.aspx'
+    assert parse_qs(official.query) == {'pcode': ['G0380131'], 'flno': ['6']}
+
+
+@pytest.mark.skipif(not REAL_APPEAL_PDF.exists(), reason='real sample corpus not present')
+def test_default_search_shows_compact_keywords_but_uses_narrative_in_background(
+    settings,
+) -> None:
+    repository = RecordingStatuteRepository()
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = _intake_real_case(client)
+        facts = client.get(f'/api/v1/cases/{case_id}/facts').json()['data']['fields']
+
+        response = client.get(f'/api/v1/cases/{case_id}/statute-search')
+
+    assert response.status_code == 200
+    data = response.json()['data']
+    assert data['query_used'] == facts['analysis.statute_query']['value']
+    assert len(data['query_used']) <= 80
+    assert '洗錢防制' in data['query_used']
+    assert '訴願人於' not in data['query_used']
+    assert 'background_query' not in data
+
+    assert len(repository.queries) == 1
+    background_query = repository.queries[0]
+    assert '訴願人於' in background_query
+    assert '洗錢防制法第6條' in background_query
+    assert len(background_query) > len(data['query_used'])
 
 
 def test_search_without_an_appeal_document_and_no_query_returns_empty(

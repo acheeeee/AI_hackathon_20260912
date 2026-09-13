@@ -226,3 +226,22 @@ def test_r3_bm25_opens_article_level_source() -> None:
     opened = repository.open_source(hits[0].chunk_id)
     assert opened.source_exists is True
     assert opened.quote_matches is True
+
+
+def test_r3_can_open_a_complete_statute_section_spanning_multiple_chunks() -> None:
+    """Search excerpts are chunks; the expandable article must be the whole section.
+
+    r3's 洗錢防制法第 5 條 is immutable and deliberately spans two chunks.  Its
+    second chunk contains paragraphs 4-8, which catches an implementation that
+    merely relabels the first search excerpt as `full_text`.
+    """
+    release = Path(__file__).resolve().parents[2] / 'data' / 'processed' / 'releases' / 'r3'
+    repository = EvidenceRepository(release, expected_release_id='r3')
+
+    full_text = repository.open_section_text('sec_c7cd819aeb0d8a0c')
+    first_chunk = repository.open_source('chk_9b6aa10f17728526')
+
+    assert full_text.startswith('第 5 條')
+    assert '前六項之中央目的事業主管機關認定有疑義者' in full_text
+    assert '由行政院會同司法院指定之' in full_text
+    assert len(full_text) > len(first_chunk.quote_text)

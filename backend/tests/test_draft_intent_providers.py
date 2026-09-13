@@ -70,11 +70,66 @@ def test_fixed_draft_opens_every_selected_statute_and_returns_blocks() -> None:
     assert [call[0] for call in tools.calls] == ['open_source']
     assert tools.calls[0][1] == {'release_id': 'r3', 'chunk_id': 'chk_law_14'}
     assert result.evidence_ids == ('evid_1',)
+    # docs/Reference/訴願書生成指南.md §1 is the controlling format contract:
+    # database index header, body heading, parties and preamble precede 主文;
+    # without a human-approved substantive path there is no independent 事實 section.
+    # Undecided main/conclusion/remedy/date fields stay explicit human placeholders.
+    assert [block.block_id for block in result.draft_blocks] == [
+        'index-header-1',
+        'body-heading-1',
+        'parties-1',
+        'preamble-1',
+        'main-1',
+        'reason-1',
+        'conclusion-1',
+        'signature-1',
+        'remedy-1',
+        'date-1',
+    ]
+    blocks = {block.block_id: block.text for block in result.draft_blocks}
+    assert '訴願決定書' in blocks['index-header-1']
+    for label in ('案號', '要旨', '發文日期', '發文字號', '相關法條', '全文'):
+        assert label in blocks['index-header-1']
+    assert '訴願決定書' in blocks['body-heading-1']
+    assert '案號' in blocks['body-heading-1']
+    assert '訴願人' in blocks['parties-1']
+    assert '原處分機關' in blocks['parties-1']
+    assert '上列訴願人' in blocks['preamble-1']
+    assert blocks['main-1'].lstrip().startswith('主文')
+    assert blocks['reason-1'].lstrip().startswith('理由')
+    assert '訴願審議委員會主任委員' in blocks['signature-1']
+    assert '救濟教示' in blocks['remedy-1']
+    assert '中華民國' in blocks['date-1']
+    for undecided_block in ('main-1', 'conclusion-1', 'remedy-1', 'date-1'):
+        assert '待承辦人' in blocks[undecided_block]
+    assert '綜上論結' not in blocks['conclusion-1']
+    assert not any(
+        outcome in blocks['main-1'] + blocks['conclusion-1']
+        for outcome in ('訴願不受理', '訴願駁回', '原處分撤銷')
+    )
+    reason = next(block for block in result.draft_blocks if block.block_id == 'reason-1')
+    assert reason.citations == ('evid_1',)
     text = ''.join(block.text for block in result.draft_blocks)
     assert '絕○○○股份有限公司' in text
     assert '訴願法' in text
     assert '訴願之提起' in text
     assert any('evid_1' in block.citations for block in result.draft_blocks)
+
+
+def test_substantive_path_adds_facts_between_main_and_reasons() -> None:
+    """The guide's second skeleton adds 事實 only after a human-selected path."""
+    context = {
+        **CONTEXT,
+        'decision_path': {'value': 'substantive', 'origin': 'human'},
+    }
+
+    result = FixedModelProvider().execute(_draft_request(context), _opened_tools())
+
+    block_ids = [block.block_id for block in result.draft_blocks]
+    assert block_ids.index('main-1') < block_ids.index('fact-1') < block_ids.index('reason-1')
+    fact = next(block for block in result.draft_blocks if block.block_id == 'fact-1')
+    assert fact.text.lstrip().startswith('事實')
+    assert '\n緣' in fact.text
 
 
 def test_fixed_draft_without_selected_statutes_returns_no_blocks() -> None:
