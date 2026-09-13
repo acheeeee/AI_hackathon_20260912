@@ -79,8 +79,9 @@ def render_draft_pdf(blocks: list[dict[str, Any]]) -> bytes:
     if sum(len(text) for _, text in normalized) > MAX_EXPORT_CHARS:
         raise invalid_field('草稿正文過長，無法匯出 PDF')
 
-    document = fitz.open()
     font = fitz.Font(fontbuffer=_FONT_BYTES)
+    _validate_font_coverage(normalized, font)
+    document = fitz.open()
     writer = _DraftPdfWriter(document=document, font=font)
     try:
         for block_index, (block_id, text) in enumerate(normalized):
@@ -100,6 +101,25 @@ def render_draft_pdf(blocks: list[dict[str, Any]]) -> bytes:
         return document.tobytes(garbage=4, deflate=True)
     finally:
         document.close()
+
+
+def _validate_font_coverage(
+    blocks: list[tuple[str, str]],
+    font: fitz.Font,
+) -> None:
+    """Fail explicitly when the portable embedded font cannot preserve text.
+
+    PyMuPDF otherwise writes an unsupported character as a NUL glyph while
+    still returning a valid PDF.  A visible 422 is safer than silently changing
+    a party name or legal text in the exported document.
+    """
+    for _, text in blocks:
+        for character in text:
+            if character != '\n' and not font.has_glyph(ord(character)):
+                codepoint = f'U+{ord(character):04X}'
+                raise invalid_field(
+                    f'草稿含目前 PDF 字型無法輸出的字元 {codepoint}，請更換字元後重試'
+                )
 
 
 def _presentation_blocks(blocks: list[dict[str, Any]]) -> list[tuple[str, str]]:

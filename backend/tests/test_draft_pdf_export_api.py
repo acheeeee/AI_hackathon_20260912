@@ -180,3 +180,26 @@ def test_export_filename_cannot_inject_headers_or_paths(client: TestClient) -> N
     assert '..' not in disposition
     assert '/' not in disposition and '\\' not in disposition
     assert disposition.endswith('.pdf"')
+
+
+def test_export_rejects_an_unrenderable_character_instead_of_silently_corrupting_it(
+    client: TestClient,
+) -> None:
+    case_id = create_case(client)
+    draft = create_draft(
+        client,
+        case_id,
+        blocks=[
+            {
+                'block_id': 'parties-1',
+                'text': '訴願人　𠀀○德',
+                'citations': [],
+            }
+        ],
+    )
+
+    response = client.get(f'/api/v1/cases/{case_id}/drafts/{draft["draft_id"]}/pdf')
+
+    assert response.status_code == 422
+    assert response.json()['error']['code'] == 'INVALID_FIELD'
+    assert 'U+20000' in response.json()['error']['message']
