@@ -6,13 +6,14 @@
 不是整份文件也不是憑空生成。
 """
 
+import hashlib
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
 from fastapi.testclient import TestClient
 
-from caseapi.evidence.repository import SearchHit
+from caseapi.evidence.repository import OpenedSource, SearchHit
 from caseapi.main import create_app
 
 from conftest import create_case, mutate
@@ -61,6 +62,58 @@ class RecordingStatuteRepository:
             '二、申請條件、程序、撤銷或廢止登記及其他應遵行事項，由主管機關定之。\n'
             '三、違反規定者，依本條所定法律效果處理。'
         )
+
+
+class CanonicalStatuteRepository:
+    """One verified r3 source whose labels cannot be supplied by the client."""
+
+    release_id = 'r3'
+
+    def __init__(self, sources: tuple[OpenedSource, ...] | None = None) -> None:
+        sources = sources or (
+            _opened_statute(
+                chunk_id='chk_law_14',
+                document_id='doc_law',
+                section_id='sec_law_14',
+                statute_name='訴願法',
+                article_key='14',
+                quote='訴願之提起，應自行政處分達到之次日起三十日內為之。',
+            ),
+        )
+        self._sources = {source.chunk_id: source for source in sources}
+        self.opened = sources[0]
+
+    def open_source(self, chunk_id: str) -> OpenedSource:
+        try:
+            return self._sources[chunk_id]
+        except KeyError:
+            raise KeyError(f'unknown chunk_id: {chunk_id}') from None
+
+
+def _opened_statute(
+    *,
+    chunk_id: str,
+    document_id: str,
+    section_id: str,
+    statute_name: str,
+    article_key: str,
+    quote: str,
+) -> OpenedSource:
+    return OpenedSource(
+        release_id='r3',
+        chunk_id=chunk_id,
+        document_id=document_id,
+        section_id=section_id,
+        quote_text=quote,
+        source_spans=(),
+        source_file=f'data/raw/相關法規/{statute_name}.pdf',
+        source_sha256=f'{chunk_id}-sha',
+        content_hash=hashlib.sha256(quote.encode('utf-8')).hexdigest(),
+        source_exists=True,
+        quote_matches=True,
+        temporal_status='snapshot_only',
+        metadata={'statute_name': statute_name, 'article_key': article_key},
+    )
 
 
 def _intake_real_case(client: TestClient) -> str:
@@ -188,37 +241,118 @@ def test_selection_starts_empty(client: TestClient) -> None:
     assert response.json()['data']['selected'] == []
 
 
-def test_saving_a_selection_persists_it_and_bumps_case_revision(client: TestClient) -> None:
-    case_id = create_case(client)
+def test_saving_a_selection_persists_it_and_bumps_case_revision(settings) -> None:
+    repository = CanonicalStatuteRepository()
     selected = [
         {
-            'chunk_id': 'chk_law_14',
-            'document_id': 'doc_law',
-            'section_id': 'sec_law_14',
-            'statute_name': '訴願法',
-            'article_key': '14',
-            'excerpt': '訴願之提起，應自行政處分達到或公告期滿之次日起三十日內為之。',
+            'chunk_id': repository.opened.chunk_id,
+            'document_id': repository.opened.document_id,
+            'section_id': repository.opened.section_id,
+            'statute_name': repository.opened.metadata['statute_name'],
+            'article_key': repository.opened.metadata['article_key'],
+            'excerpt': repository.opened.quote_text,
         }
     ]
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = create_case(client)
 
-    response = mutate(
-        client,
-        'PUT',
-        f'/api/v1/cases/{case_id}/statute-selection',
-        {'expected_case_revision': 1, 'reason': '人工挑選相關法規', 'selected': selected},
-    )
+        response = mutate(
+            client,
+            'PUT',
+            f'/api/v1/cases/{case_id}/statute-selection',
+            {
+                'expected_case_revision': 1,
+                'reason': '人工挑選相關法規',
+                'selected': selected,
+            },
+        )
 
-    assert response.status_code == 200
-    data = response.json()['data']
-    assert data['case_revision'] == 2
-    assert data['selected'] == selected
+        assert response.status_code == 200
+        data = response.json()['data']
+        assert data['case_revision'] == 2
+        assert data['selected'] == selected
 
-    read_back = client.get(f'/api/v1/cases/{case_id}/statute-selection')
-    assert read_back.json()['data']['selected'] == selected
+        read_back = client.get(f'/api/v1/cases/{case_id}/statute-selection')
+        assert read_back.json()['data']['selected'] == selected
 
 
-def test_saving_a_second_selection_replaces_the_first(client: TestClient) -> None:
-    case_id = create_case(client)
+def test_saving_a_real_chunk_cannot_persist_client_supplied_false_citation(
+    settings,
+) -> None:
+    repository = CanonicalStatuteRepository()
+    forged = {
+        'chunk_id': repository.opened.chunk_id,
+        'document_id': repository.opened.document_id,
+        'section_id': repository.opened.section_id,
+        'statute_name': '洗錢防制法',
+        'article_key': '6',
+        'excerpt': '這段文字也是呼叫端自行偽造。',
+    }
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = create_case(client)
+
+        response = mutate(
+            client,
+            'PUT',
+            f'/api/v1/cases/{case_id}/statute-selection',
+            {
+                'expected_case_revision': 1,
+                'reason': '嘗試替真實 chunk 換上錯誤法規標籤',
+                'selected': [forged],
+            },
+        )
+
+        assert response.status_code == 200
+        selected = response.json()['data']['selected'][0]
+        assert selected == {
+            'chunk_id': repository.opened.chunk_id,
+            'document_id': repository.opened.document_id,
+            'section_id': repository.opened.section_id,
+            'statute_name': '訴願法',
+            'article_key': '14',
+            'excerpt': repository.opened.quote_text,
+        }
+        persisted = client.get(
+            f'/api/v1/cases/{case_id}/statute-selection'
+        ).json()['data']['selected'][0]
+        assert persisted == selected
+
+
+def test_saving_an_unknown_chunk_is_rejected_without_advancing_case(settings) -> None:
+    repository = CanonicalStatuteRepository()
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = create_case(client)
+
+        response = mutate(
+            client,
+            'PUT',
+            f'/api/v1/cases/{case_id}/statute-selection',
+            {
+                'expected_case_revision': 1,
+                'reason': '選到不存在的來源',
+                'selected': [
+                    {
+                        'chunk_id': 'unknown_chunk',
+                        'document_id': 'forged_document',
+                        'section_id': 'forged_section',
+                        'statute_name': '洗錢防制法',
+                        'article_key': '6',
+                        'excerpt': '偽造文字',
+                    }
+                ],
+            },
+        )
+
+        assert response.status_code == 422
+        assert response.json()['error']['code'] == 'INVALID_CITATION'
+        case = client.get(f'/api/v1/cases/{case_id}').json()['data']
+        assert case['case_revision'] == 1
+        assert client.get(
+            f'/api/v1/cases/{case_id}/statute-selection'
+        ).json()['data']['selected'] == []
+
+
+def test_saving_a_second_selection_replaces_the_first(settings) -> None:
     first = [
         {
             'chunk_id': 'chk_a',
@@ -239,21 +373,43 @@ def test_saving_a_second_selection_replaces_the_first(client: TestClient) -> Non
             'excerpt': 'y',
         }
     ]
-    mutate(
-        client,
-        'PUT',
-        f'/api/v1/cases/{case_id}/statute-selection',
-        {'expected_case_revision': 1, 'reason': '第一次挑選', 'selected': first},
+    repository = CanonicalStatuteRepository(
+        (
+            _opened_statute(
+                chunk_id='chk_a',
+                document_id='doc_a',
+                section_id='sec_a',
+                statute_name='訴願法',
+                article_key='14',
+                quote='x',
+            ),
+            _opened_statute(
+                chunk_id='chk_b',
+                document_id='doc_b',
+                section_id='sec_b',
+                statute_name='行政程序法',
+                article_key='48',
+                quote='y',
+            ),
+        )
     )
+    with TestClient(create_app(settings, evidence_repository=repository)) as client:
+        case_id = create_case(client)
+        mutate(
+            client,
+            'PUT',
+            f'/api/v1/cases/{case_id}/statute-selection',
+            {'expected_case_revision': 1, 'reason': '第一次挑選', 'selected': first},
+        )
 
-    response = mutate(
-        client,
-        'PUT',
-        f'/api/v1/cases/{case_id}/statute-selection',
-        {'expected_case_revision': 2, 'reason': '換一批', 'selected': second},
-    )
+        response = mutate(
+            client,
+            'PUT',
+            f'/api/v1/cases/{case_id}/statute-selection',
+            {'expected_case_revision': 2, 'reason': '換一批', 'selected': second},
+        )
 
-    assert response.json()['data']['selected'] == second
+        assert response.json()['data']['selected'] == second
 
 
 def test_saving_a_selection_with_a_stale_case_revision_is_a_conflict(

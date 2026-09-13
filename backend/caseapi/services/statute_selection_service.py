@@ -17,6 +17,8 @@ from urllib.parse import urlencode
 
 from caseapi.audit import append_entry
 from caseapi.domain.appeal_extraction import extract_case_narrative
+from caseapi.errors import invalid_citation
+from caseapi.evidence.repository import OpenedSource
 from caseapi.ids import new_id
 from caseapi.schemas.statute_selection import StatuteSelectionSaveRequest
 from caseapi.services import case_repository as repo
@@ -59,6 +61,8 @@ class StatuteRepositoryLike(Protocol):
     ) -> list[SearchHitLike]: ...
 
     def open_section_text(self, section_id: str) -> str: ...
+
+    def open_source(self, chunk_id: str) -> OpenedSource: ...
 
 
 def _default_query(conn: sqlite3.Connection, *, case_id: str) -> str | None:
@@ -245,13 +249,19 @@ def save_selection(
     case_id: str,
     actor_id: str,
     request: StatuteSelectionSaveRequest,
+    repository: StatuteRepositoryLike,
 ) -> dict[str, Any]:
     case_row = repo.require_case(conn, case_id=case_id, actor_id=actor_id)
     repo.assert_case_revision(case_row, request.expected_case_revision)
     heads = repo.load_heads(case_row)
     parent_head = heads.get(STATUTE_SELECTION_RESOURCE_ID)
 
-    content = {'selected': [item.model_dump() for item in request.selected]}
+    content = {
+        'selected': [
+            _canonical_selected_statute(repository, item.chunk_id)
+            for item in request.selected
+        ]
+    }
     version = resource_service.save_version(
         conn,
         case_id=case_id,
@@ -291,3 +301,44 @@ def save_selection(
         reason=request.reason,
     )
     return {'case_revision': case_revision, **content}
+
+
+def _canonical_selected_statute(
+    repository: StatuteRepositoryLike,
+    chunk_id: str,
+) -> dict[str, str]:
+    """Bind saved citation metadata to the immutable source, not request labels.
+
+    Search results are client-visible and therefore all fields can be modified
+    before they are sent back.  ``open_source`` is the integrity boundary: it
+    verifies the r3 span and supplies the canonical document, section, labels,
+    and quote that downstream draft composition is allowed to render.
+    """
+    try:
+        opened = repository.open_source(chunk_id)
+    except KeyError as exc:
+        raise invalid_citation(
+            '選取的法規來源不存在或已失效',
+            {'chunk_id': chunk_id},
+        ) from exc
+
+    statute_name = opened.metadata.get('statute_name')
+    article_key = opened.metadata.get('article_key')
+    if not isinstance(statute_name, str) or not statute_name.strip():
+        raise invalid_citation(
+            '選取的法規來源缺少可驗證的法規名稱',
+            {'chunk_id': chunk_id},
+        )
+    if not isinstance(article_key, str) or not article_key.strip():
+        raise invalid_citation(
+            '選取的法規來源缺少可驗證的條號',
+            {'chunk_id': chunk_id},
+        )
+    return {
+        'chunk_id': opened.chunk_id,
+        'document_id': opened.document_id,
+        'section_id': opened.section_id,
+        'statute_name': statute_name,
+        'article_key': article_key,
+        'excerpt': opened.quote_text,
+    }

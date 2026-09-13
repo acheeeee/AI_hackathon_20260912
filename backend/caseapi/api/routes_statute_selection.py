@@ -62,6 +62,7 @@ def save_statute_selection(
     conn: sqlite3.Connection = Depends(get_db),
     actor_id: str = Depends(get_actor_id),
     idempotency_key: str = Depends(get_idempotency_key),
+    repository: StatuteRepositoryLike = Depends(get_evidence_repository),
 ) -> JSONResponse:
     return execute_mutation(
         request,
@@ -73,6 +74,10 @@ def save_statute_selection(
         request_body=body.model_dump(mode='json'),
         status_code=200,
         operation=lambda db: statute_selection_service.save_selection(
-            db, case_id=case_id, actor_id=actor_id, request=body
+            db,
+            case_id=case_id,
+            actor_id=actor_id,
+            request=body,
+            repository=repository,
         ),
     )
