@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import {
   getCase,
   getFacts,
+  patchFacts,
   listDocuments,
   getStatuteSelection,
   documentContentUrl,
@@ -41,6 +43,40 @@ const activeDocumentId = ref<string | null>(null)
 const loading = ref(true)
 const loadError = ref('')
 const sidebar = ref<InstanceType<typeof ChatSidebar> | null>(null)
+
+const ANALYSIS_FIELD_PATHS = [
+  'analysis.keywords',
+  'disposition.summary',
+  'analysis.statute_query',
+] as const
+type AnalysisFieldPath = (typeof ANALYSIS_FIELD_PATHS)[number]
+
+const analysisEditing = ref(false)
+const analysisSaving = ref(false)
+const analysisDraft = reactive<Record<AnalysisFieldPath, string>>({
+  'analysis.keywords': '',
+  'disposition.summary': '',
+  'analysis.statute_query': '',
+})
+
+const extractedFacts = computed(() =>
+  Object.fromEntries(
+    Object.entries(facts.value).filter(
+      ([path]) => !ANALYSIS_FIELD_PATHS.includes(path as AnalysisFieldPath),
+    ),
+  ),
+)
+
+const analysisValues = computed<Record<AnalysisFieldPath, string>>(() => ({
+  'analysis.keywords': facts.value['analysis.keywords']?.value ?? '',
+  'disposition.summary': facts.value['disposition.summary']?.value ?? '',
+  'analysis.statute_query': facts.value['analysis.statute_query']?.value ?? '',
+}))
+
+const analysisKeywords = computed(() => splitKeywords(analysisValues.value['analysis.keywords']))
+const statuteQueryTerms = computed(() =>
+  splitKeywords(analysisValues.value['analysis.statute_query']),
+)
 
 const STEPS: WizardStep[] = [
   { key: 'upload', label: '進件上傳' },
@@ -107,6 +143,89 @@ function goToStep(index: number) {
   if (index <= unlockedUpTo.value) currentStepIndex.value = index
 }
 
+function splitKeywords(value: string): string[] {
+  return value
+    .split(/[、,，;；\n]+/)
+    .map((keyword) => keyword.trim())
+    .filter(Boolean)
+}
+
+function beginAnalysisEdit() {
+  for (const path of ANALYSIS_FIELD_PATHS) {
+    analysisDraft[path] = analysisValues.value[path]
+  }
+  analysisEditing.value = true
+}
+
+function cancelAnalysisEdit() {
+  analysisEditing.value = false
+}
+
+async function saveAnalysis() {
+  const changes = ANALYSIS_FIELD_PATHS.filter(
+    (path) => analysisDraft[path].trim() !== analysisValues.value[path],
+  )
+  if (!changes.length) {
+    analysisEditing.value = false
+    return
+  }
+
+  analysisSaving.value = true
+  let expectedRevision = detail.value?.case_revision
+  try {
+    for (const path of changes) {
+      if (expectedRevision === undefined) throw new Error('案件版本不存在')
+      const value = analysisDraft[path].trim()
+      const reason = `人工修改：${factFieldLabel(path)}`
+      const result = await patchFacts({
+        caseId: caseId.value,
+        expectedCaseRevision: expectedRevision,
+        reason,
+        fieldPath: path,
+        value,
+      })
+      expectedRevision = result.case_revision
+      const returnedField = result.fields[path]
+      const previousField = facts.value[path]
+      facts.value = {
+        ...facts.value,
+        ...result.fields,
+        [path]: {
+          value,
+          origin: returnedField?.origin ?? previousField?.origin ?? 'human',
+          human_asserted: true,
+          reason,
+          source: returnedField?.source ?? previousField?.source ?? null,
+          updated_by: returnedField?.updated_by ?? previousField?.updated_by ?? 'human',
+          updated_at: returnedField?.updated_at ?? new Date().toISOString(),
+        },
+      }
+      if (detail.value) {
+        const activeHeads = result.resource_revision
+          ? {
+              ...detail.value.active_heads,
+              facts: {
+                ...(detail.value.active_heads.facts ?? { kind: 'facts', freshness: 'current' }),
+                revision_id: result.resource_revision,
+              },
+            }
+          : detail.value.active_heads
+        detail.value = {
+          ...detail.value,
+          case_revision: expectedRevision,
+          active_heads: activeHeads,
+        }
+      }
+    }
+    analysisEditing.value = false
+    ElMessage.success('已儲存擷取與解析內容')
+  } catch (err) {
+    ElMessage.error(err instanceof CaseApiError ? err.message : '儲存擷取與解析內容失敗')
+  } finally {
+    analysisSaving.value = false
+  }
+}
+
 function askAboutField(path: string) {
   const revisionId = factsRevisionId.value
   if (!revisionId) return
@@ -171,6 +290,7 @@ function refresh() {
 onMounted(() => load())
 watch(caseId, () => {
   initializedStep.value = false
+  analysisEditing.value = false
   void load()
 })
 
@@ -234,9 +354,9 @@ function backToList() {
       <div class="step-panel" v-show="currentStepIndex === 1">
         <div class="panel facts-panel">
           <h2>抽取事實（可再修改）</h2>
-          <table v-if="Object.keys(facts).length" class="facts-table">
+          <table v-if="Object.keys(extractedFacts).length" class="facts-table">
             <tbody>
-              <tr v-for="(field, path) in facts" :key="path">
+              <tr v-for="(field, path) in extractedFacts" :key="path">
                 <th>{{ factFieldLabel(path) }}</th>
                 <td>
                   <span>{{ field.value ?? '（未填）' }}</span>
@@ -249,6 +369,96 @@ function backToList() {
             </tbody>
           </table>
           <p v-else class="empty-hint">尚未抽取到任何事實欄位，請人工補上。</p>
+        </div>
+
+        <div class="panel analysis-panel">
+          <div class="analysis-head">
+            <div>
+              <h2>案件擷取與解析</h2>
+              <p>由 LLM 產生的衍生內容；人工修改會明確標記，不會冒充原始文件擷取。</p>
+            </div>
+            <button
+              v-if="!analysisEditing"
+              type="button"
+              class="analysis-edit"
+              @click="beginAnalysisEdit"
+            >
+              修改
+            </button>
+          </div>
+
+          <div v-if="analysisEditing" class="analysis-form">
+            <label>
+              <span>案件相關關鍵字</span>
+              <el-input
+                v-model="analysisDraft['analysis.keywords']"
+                aria-label="案件相關關鍵字"
+                placeholder="以頓號分隔，例如：洗錢防制、登記申請"
+              />
+            </label>
+            <label>
+              <span>行政處分函摘要</span>
+              <el-input
+                v-model="analysisDraft['disposition.summary']"
+                aria-label="行政處分函摘要"
+                type="textarea"
+                :rows="4"
+                placeholder="摘要行政處分的機關、理由與結果"
+              />
+            </label>
+            <label>
+              <span>建議法規查詢詞</span>
+              <el-input
+                v-model="analysisDraft['analysis.statute_query']"
+                aria-label="建議法規查詢詞"
+                placeholder="以簡短關鍵字描述法規爭點"
+              />
+            </label>
+            <div class="analysis-actions">
+              <button type="button" class="analysis-cancel" @click="cancelAnalysisEdit">
+                取消
+              </button>
+              <button
+                type="button"
+                class="analysis-save"
+                :disabled="analysisSaving"
+                @click="saveAnalysis"
+              >
+                {{ analysisSaving ? '儲存中…' : '儲存' }}
+              </button>
+            </div>
+          </div>
+
+          <div v-else class="analysis-content">
+            <section>
+              <h3>案件相關關鍵字</h3>
+              <div v-if="analysisKeywords.length" class="analysis-chips">
+                <span v-for="keyword in analysisKeywords" :key="keyword" class="analysis-chip">
+                  {{ keyword }}
+                </span>
+              </div>
+              <p v-else class="empty-hint">尚未產生案件關鍵字。</p>
+            </section>
+            <section>
+              <h3>行政處分函摘要</h3>
+              <p class="analysis-summary">
+                {{ analysisValues['disposition.summary'] || '尚未產生行政處分函摘要。' }}
+              </p>
+            </section>
+            <section>
+              <h3>建議法規查詢詞</h3>
+              <div v-if="statuteQueryTerms.length" class="analysis-chips query-chips">
+                <span
+                  v-for="term in statuteQueryTerms"
+                  :key="term"
+                  class="analysis-chip query-chip"
+                >
+                  {{ term }}
+                </span>
+              </div>
+              <p v-else class="empty-hint">尚未產生法規查詢建議。</p>
+            </section>
+          </div>
         </div>
       </div>
 
@@ -292,7 +502,12 @@ function backToList() {
       </div>
 
       <div class="wizard-nav">
-        <button type="button" class="wizard-prev" :disabled="currentStepIndex === 0" @click="goPrev">
+        <button
+          type="button"
+          class="wizard-prev"
+          :disabled="currentStepIndex === 0"
+          @click="goPrev"
+        >
           上一步
         </button>
         <button
@@ -407,6 +622,121 @@ function backToList() {
   cursor: pointer;
 }
 
+.analysis-panel {
+  margin-top: 16px;
+}
+
+.analysis-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.analysis-head h2 {
+  margin-bottom: 4px;
+}
+
+.analysis-head p {
+  margin: 0;
+  color: #7a8699;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.analysis-edit,
+.analysis-cancel,
+.analysis-save {
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.analysis-edit,
+.analysis-cancel {
+  border: 1px solid #c7d3e8;
+  background: #ffffff;
+  color: #0b3d91;
+}
+
+.analysis-save {
+  border: 1px solid #0b3d91;
+  background: #0b3d91;
+  color: #ffffff;
+}
+
+.analysis-save:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.analysis-content {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.8fr) minmax(280px, 1.5fr) minmax(220px, 1fr);
+  gap: 14px;
+}
+
+.analysis-content section {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #e3e8f0;
+  border-radius: 8px;
+  background: #f7f9fc;
+}
+
+.analysis-content h3,
+.analysis-form label > span {
+  display: block;
+  margin: 0 0 8px;
+  color: #16233f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.analysis-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.analysis-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #e8eef9;
+  color: #0b3d91;
+  font-size: 12px;
+}
+
+.query-chip {
+  background: #fff5d6;
+  color: #7a5c00;
+}
+
+.analysis-summary {
+  margin: 0;
+  color: #4a5568;
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.analysis-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.analysis-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .empty-hint {
   color: #9aa6ba;
   font-size: 13px;
@@ -477,5 +807,11 @@ function backToList() {
 .wizard-nav button:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+@media (max-width: 900px) {
+  .analysis-content {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

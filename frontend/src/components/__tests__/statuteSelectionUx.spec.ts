@@ -23,8 +23,7 @@ const SUGGESTED_QUERY = '洗錢防制、虛擬資產服務業、登記申請要�
 const FULL_TEXT =
   '第六條　提供虛擬資產服務之事業或人員未依規定完成洗錢防制登記者，不得提供虛擬資產服務。'
 const WHY_RELEVANT = '本案爭點正是虛擬資產服務業者是否具備登記申請要件。'
-const OFFICIAL_URL =
-  'https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0380131&flno=6'
+const OFFICIAL_URL = 'https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=G0380131&flno=6'
 
 function searchResult() {
   return {
@@ -83,9 +82,7 @@ describe('StatuteSelectionPanel: human-readable legal search', () => {
   it('submits the concise human-facing keywords instead of the background narrative', async () => {
     const wrapper = await mountPanel()
 
-    const searchButton = wrapper
-      .findAll('button')
-      .find((button) => button.text().trim() === '搜尋')
+    const searchButton = wrapper.findAll('button').find((button) => button.text().trim() === '搜尋')
     expect(searchButton).toBeDefined()
     await searchButton!.trigger('click')
     await flushPromises()
@@ -97,7 +94,10 @@ describe('StatuteSelectionPanel: human-readable legal search', () => {
   it('opens the complete article in-page and exposes a link to the official source', async () => {
     const wrapper = await mountPanel()
 
-    const officialLink = wrapper.get(`a[href="${OFFICIAL_URL}"]`)
+    // jsdom's selector engine does not match a quoted attribute selector when
+    // the value contains an unescaped `&`; inspect the rendered href directly.
+    const officialLink = wrapper.get('a.hit-link')
+    expect(officialLink.attributes('href')).toBe(OFFICIAL_URL)
     expect(officialLink.text()).toContain('洗錢防制法第6條')
     expect(officialLink.attributes('target')).toBe('_blank')
     expect(officialLink.attributes('rel')).toContain('noopener')

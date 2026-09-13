@@ -10,6 +10,9 @@ export const FACT_FIELD_LABELS: Record<string, string> = {
   'service.method': '送達方式',
   'appeal.filed_date': '訴願提起日',
   'appeal.received_date': '訴願收文日',
+  'analysis.keywords': '案件相關關鍵字',
+  'disposition.summary': '行政處分函摘要',
+  'analysis.statute_query': '建議法規查詢詞',
 }
 
 export function factFieldLabel(path: string): string {
@@ -20,6 +23,7 @@ const FACT_ORIGIN_LABELS: Record<string, string> = {
   program: '規則式抽取',
   human: '人工填寫',
   ai: 'AI 生成',
+  llm: 'LLM 生成',
   merged: '合併結果',
 }
 

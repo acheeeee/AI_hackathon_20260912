@@ -5,6 +5,9 @@ import {
   getProceduralReview,
   patchFacts,
   CaseApiError,
+  type Article77ClauseAssessment,
+  type Article77EvaluationMode,
+  type Article77Outcome,
   type ProceduralReview,
 } from '@/api/caseapi'
 import {
@@ -22,6 +25,41 @@ const loading = ref(true)
 const loadError = ref('')
 const draftValues = ref<Record<string, string>>({})
 const saving = ref<string | null>(null)
+
+const assessmentsByClause = computed<Record<number, Article77ClauseAssessment>>(() =>
+  Object.fromEntries(
+    (review.value?.clause_assessments ?? []).map((assessment) => [
+      assessment.clause_no,
+      assessment,
+    ]),
+  ),
+)
+
+function assessmentFor(clauseNo: number): Article77ClauseAssessment {
+  return assessmentsByClause.value[clauseNo]!
+}
+
+const OUTCOME_LABELS: Record<Article77Outcome, string> = {
+  NOT_TRIGGERED: '未觸發',
+  TRIGGERED: '可能成立',
+  NOT_APPLICABLE: '本案不適用',
+  INSUFFICIENT_EVIDENCE: '證據不足',
+  NEEDS_HUMAN: '需人工覆核',
+}
+
+const OUTCOME_TAG_TYPES: Record<Article77Outcome, 'info' | 'warning' | 'success' | 'danger'> = {
+  NOT_TRIGGERED: 'success',
+  TRIGGERED: 'danger',
+  NOT_APPLICABLE: 'info',
+  INSUFFICIENT_EVIDENCE: 'warning',
+  NEEDS_HUMAN: 'warning',
+}
+
+const EVALUATION_MODE_LABELS: Record<Article77EvaluationMode, string> = {
+  rule: '規則試算',
+  mock: 'Mock 規則',
+  manual_review: '人工判斷',
+}
 
 async function load() {
   loading.value = true
@@ -82,7 +120,8 @@ const riskNote = computed(() => {
     </div>
     <p class="review-intro">
       條文寫的是「有左列各款情形之一者，應為不受理之決定」——任一款成立就成立，不是八款要一款一款過。
-      目前只有第 2 款有自動試算，其餘七款都是實質判斷，一律待人工確認。
+      八款都會顯示判定規則、目前狀態與理由；Mock
+      規則只是初步訊號，人工判斷款也不會被包裝成自動法律結論。
     </p>
 
     <el-alert v-if="loadError" type="error" show-icon :closable="false">
@@ -102,7 +141,58 @@ const riskNote = computed(() => {
           <div class="clause-body">
             <p class="clause-title">{{ clause.title }}</p>
 
-            <template v-if="clause.hasRule">
+            <template v-if="assessmentsByClause[clause.no]">
+              <div class="status-row">
+                <el-tag :type="OUTCOME_TAG_TYPES[assessmentFor(clause.no).status]">
+                  {{ OUTCOME_LABELS[assessmentFor(clause.no).status] }}
+                </el-tag>
+                <el-tag size="small" type="info" effect="plain">
+                  {{ EVALUATION_MODE_LABELS[assessmentFor(clause.no).evaluation_mode] }}
+                </el-tag>
+                <span v-if="clause.no === 2 && review.deadline_date" class="deadline">
+                  期限：{{ review.deadline_date }}
+                </span>
+                <span v-if="clause.no === 2 && review.days_from_deadline !== null" class="days">
+                  {{ daysLabel(review.days_from_deadline) }}
+                </span>
+              </div>
+
+              <p class="rule-description">
+                <strong>判定規則：</strong>{{ assessmentFor(clause.no).rule_description }}
+              </p>
+              <p class="assessment-reason">
+                <strong>判定理由：</strong>{{ assessmentFor(clause.no).reason }}
+              </p>
+
+              <div v-if="clause.no === 2 && review.missing_fields.length" class="missing">
+                <p class="missing-hint">缺少以下欄位才能繼續試算：</p>
+                <div v-for="path in review.missing_fields" :key="path" class="missing-row">
+                  <span class="missing-label">{{ factFieldLabel(path) }}</span>
+                  <el-date-picker
+                    v-model="draftValues[path]"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    size="small"
+                    placeholder="選擇日期"
+                  />
+                  <el-button
+                    size="small"
+                    type="primary"
+                    :loading="saving === path"
+                    :disabled="!draftValues[path]"
+                    @click="saveMissingField(path)"
+                  >
+                    儲存
+                  </el-button>
+                </div>
+              </div>
+
+              <ul v-if="clause.no === 2" class="caveats">
+                <li v-for="caveat in review.caveats" :key="caveat">⚠️ {{ caveat }}</li>
+              </ul>
+            </template>
+
+            <template v-else-if="clause.hasRule">
               <div class="status-row">
                 <el-tag :type="PROCEDURAL_REVIEW_STATUS_TAG_TYPE[review.status]">
                   {{ PROCEDURAL_REVIEW_STATUS_LABELS[review.status] }}
@@ -216,6 +306,22 @@ const riskNote = computed(() => {
   color: #7a8699;
   line-height: 1.6;
   margin: 0 0 12px;
+}
+
+.rule-description,
+.assessment-reason {
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 0 0 6px;
+}
+
+.rule-description {
+  color: #4a5568;
+}
+
+.assessment-reason {
+  color: #16233f;
+  margin-bottom: 10px;
 }
 
 .missing {

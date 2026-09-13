@@ -114,6 +114,7 @@ export async function getFacts(caseId: string): Promise<Record<string, FactField
 
 export interface PatchFactsResult {
   case_revision: number
+  resource_revision?: string
   fields: Record<string, FactFieldValue>
 }
 
@@ -159,6 +160,26 @@ export interface ProceduralReview {
   statute_basis: string
   caveats: string[]
   legal_review_status: string
+  clause_assessments?: Article77ClauseAssessment[]
+}
+
+export type Article77Outcome =
+  | 'NOT_TRIGGERED'
+  | 'TRIGGERED'
+  | 'NOT_APPLICABLE'
+  | 'INSUFFICIENT_EVIDENCE'
+  | 'NEEDS_HUMAN'
+
+export type Article77EvaluationMode = 'rule' | 'mock' | 'manual_review'
+
+export interface Article77ClauseAssessment {
+  clause_no: number
+  rule_id: string
+  input: Record<string, unknown>
+  status: Article77Outcome
+  rule_description: string
+  reason: string
+  evaluation_mode: Article77EvaluationMode
 }
 
 export async function getProceduralReview(caseId: string): Promise<ProceduralReview> {
@@ -356,10 +377,14 @@ export interface StatuteHit {
   article_key: string | null
   excerpt: string
   score: number
+  why_relevant?: string | null
+  full_text?: string | null
+  official_url?: string | null
 }
 
 export interface StatuteSearchResult {
   query_used: string | null
+  suggested_query?: string | null
   hits: StatuteHit[]
 }
 
