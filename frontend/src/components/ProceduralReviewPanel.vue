@@ -57,7 +57,7 @@ const OUTCOME_TAG_TYPES: Record<Article77Outcome, 'info' | 'warning' | 'success'
 
 const EVALUATION_MODE_LABELS: Record<Article77EvaluationMode, string> = {
   rule: '規則試算',
-  mock: 'Mock 規則',
+  mock: '初步檢核',
   manual_review: '人工判斷',
 }
 
@@ -103,6 +103,10 @@ function daysLabel(days: number): string {
   return `距期限還有 ${-days} 天`
 }
 
+function productAssessmentText(text: string): string {
+  return text.replace(/Mock\s+規則/gi, '初步檢核').replace(/\bmock\b/gi, '初步檢核')
+}
+
 const riskNote = computed(() => {
   if (review.value?.status !== 'overdue') return ''
   return (
@@ -120,8 +124,8 @@ const riskNote = computed(() => {
     </div>
     <p class="review-intro">
       條文寫的是「有左列各款情形之一者，應為不受理之決定」——任一款成立就成立，不是八款要一款一款過。
-      八款都會顯示判定規則、目前狀態與理由；Mock
-      規則只是初步訊號，人工判斷款也不會被包裝成自動法律結論。
+      八款都會顯示判定規則、目前狀態與理由；初步檢核只提供程序風險訊號，
+      需人工判斷的款次不會被包裝成已確認的法律結論。
     </p>
 
     <el-alert v-if="loadError" type="error" show-icon :closable="false">
@@ -158,10 +162,12 @@ const riskNote = computed(() => {
               </div>
 
               <p class="rule-description">
-                <strong>判定規則：</strong>{{ assessmentFor(clause.no).rule_description }}
+                <strong>判定規則：</strong>{{
+                  productAssessmentText(assessmentFor(clause.no).rule_description)
+                }}
               </p>
               <p class="assessment-reason">
-                <strong>判定理由：</strong>{{ assessmentFor(clause.no).reason }}
+                <strong>判定理由：</strong>{{ productAssessmentText(assessmentFor(clause.no).reason) }}
               </p>
 
               <div v-if="clause.no === 2 && review.missing_fields.length" class="missing">

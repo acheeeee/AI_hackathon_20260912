@@ -77,14 +77,17 @@ describe('ProceduralReviewPanel: full article 77 disclosure', () => {
 
     for (const [index, clause] of ARTICLE_77_CLAUSES.entries()) {
       const assessment = clauseAssessments[index]!
+      const productText = (text: string) =>
+        text.replace(/Mock 規則/gi, '初步檢核').replace(/mock/gi, '初步檢核')
       expect(wrapper.text()).toContain(clause.title)
-      expect(wrapper.text()).toContain(assessment.rule_description)
-      expect(wrapper.text()).toContain(assessment.reason)
+      expect(wrapper.text()).toContain(productText(assessment.rule_description))
+      expect(wrapper.text()).toContain(productText(assessment.reason))
     }
     expect(wrapper.findAll('.clause-row')).toHaveLength(8)
     expect(wrapper.text()).toContain('可能成立')
     expect(wrapper.text()).toContain('需人工覆核')
-    expect(wrapper.text()).toContain('Mock 規則')
+    expect(wrapper.text()).toContain('初步檢核')
+    expect(wrapper.text()).not.toContain('Mock')
     expect(wrapper.text()).not.toContain('尚無自動判定規則')
   })
 

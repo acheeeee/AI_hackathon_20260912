@@ -83,7 +83,7 @@ function backToUpload() {
         </div>
         <div class="src-note">
           <div class="src-label">原文對照</div>
-          <p>欄位的來源標籤標示擷取自何處。目前示範環境以單一文本解析，未提供逐行頁碼定位。</p>
+          <p>欄位的來源標籤會標示擷取自何處；請對照原始文件確認內容。</p>
         </div>
       </div>
     </aside>
@@ -119,7 +119,7 @@ function backToUpload() {
       </div>
 
       <div class="tbl-note">
-        擷取值來自後端 intake 對進件文本的規則＋（可選）LLM 解析。查無的欄位一律留空，不由模型補寫，符合零幻覺原則。
+        擷取值來自進件文本的規則解析與可選的自動分析。查無的欄位一律留空，不自行補寫，內容仍須人工覆核。
       </div>
     </section>
 

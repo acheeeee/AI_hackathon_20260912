@@ -194,7 +194,7 @@ def test_fixed_verify_flow_persists_answer_evidence_and_ordered_events(settings)
         assert run['proposal_ids'] == []
         assert [message['role'] for message in messages] == ['user', 'assistant']
         assert messages[1]['content'] == (
-            '已查閱 r3 原文：「訴願應於三十日內提起。」；'
+            '已核對法規原文：「訴願應於三十日內提起。」；'
             '此來源僅證明引文存在且一致，是否支持本案主張仍待判斷。'
         )
         assert [event['event_type'] for event in events] == [
@@ -290,7 +290,7 @@ def test_fixed_verify_no_hit_states_snapshot_gap_without_evidence(settings) -> N
             params={'format': 'json'},
         ).json()['data']['items']
         assert messages[-1]['content'] == (
-            '本地 r3 快照未找到足夠依據；尚未確認最新法規。'
+            '法規資料庫未找到足夠依據；尚未確認最新法規。'
         )
         assert 'source.opened' not in {event['event_type'] for event in events}
         assert client.get(
@@ -332,7 +332,7 @@ def test_fixed_explain_reads_only_bounded_selection_context(settings) -> None:
         ).json()['data']['items']
         assert messages[-1]['content'] == (
             '選取內容：「選取文字」。'
-            '固定模型只確認上下文讀取鏈，未作法律判斷。'
+            '自動分析已讀取指定內容，未作法律判斷。'
         )
         assert [event['event_type'] for event in events] == [
             'run.started',
@@ -586,7 +586,7 @@ def test_default_fixed_model_opens_program_verified_source_from_real_r3(settings
         ).json()['data']
 
         assert run['state'] == 'completed'
-        assert messages[-1]['content'].startswith('已查閱 r3 原文：')
+        assert messages[-1]['content'].startswith('已核對法規原文：')
         assert evidence['source_exists'] is True
         assert evidence['quote_matches'] is True
         assert evidence['source_ref']['kb_release_id'] == 'r3'

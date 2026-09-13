@@ -67,7 +67,7 @@ function backToSelect() {
 }
 
 const modeLabel = computed(() =>
-  draft.value?.mode === 'llm' ? 'LLM 生成（需逐段確認）' : '模板＋槽位（模型不寫字）',
+  draft.value?.mode === 'llm' ? '智慧生成（需逐段確認）' : '標準範本（需逐段確認）',
 )
 
 // 勾選的法條，供右欄「逐段依據」呈現（皆為真實勾選結果）。
@@ -238,8 +238,8 @@ const selectedStatuteList = computed(() => {
         <p class="stat-note">
           草稿理由欄僅引用勾選的依據。{{
             draft?.mode === 'llm'
-              ? 'LLM 模式下語言由模型組織，事實與法條仍以勾選內容為準。'
-              : '模板模式下模型不寫字，全部來自模板與槽位。'
+              ? '文字由系統組織，事實與法條仍以已勾選內容為準。'
+              : '文字來自標準範本與已確認欄位。'
           }}
         </p>
       </div>

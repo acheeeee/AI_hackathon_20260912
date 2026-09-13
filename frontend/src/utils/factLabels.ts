@@ -20,10 +20,10 @@ export function factFieldLabel(path: string): string {
 }
 
 const FACT_ORIGIN_LABELS: Record<string, string> = {
-  program: '規則式抽取',
+  program: '自動擷取',
   human: '人工填寫',
   ai: 'AI 生成',
-  llm: 'LLM 生成',
+  llm: '自動分析',
   merged: '合併結果',
 }
 

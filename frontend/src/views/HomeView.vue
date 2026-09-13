@@ -39,7 +39,7 @@ async function reload() {
   try {
     cases.value = await listCases()
   } catch (err) {
-    loadError.value = err instanceof CaseApiError ? err.message : '無法連線到後端'
+    loadError.value = err instanceof CaseApiError ? err.message : '系統服務目前無法連線'
   } finally {
     loading.value = false
   }
@@ -94,15 +94,15 @@ async function submit() {
     } else if (result.analysis_status === 'online_failed_fallback') {
       analysisNotice.value = {
         type: 'warning',
-        message: result.analysis_error ?? '線上分析未完成，已改用本機分析。',
+        message: '線上分析未完成，已改用基礎分析；案件與原始檔案已保存。',
       }
     } else {
       analysisNotice.value = {
         type: 'info',
-        message: '未啟用外送；本次只使用本機自動分析。',
+        message: '本次只使用基礎自動分析；內容仍須人工覆核。',
       }
     }
-    ElMessage.success('案件已建立，已用規則式抽取訴願書欄位')
+    ElMessage.success('案件已建立，已完成訴願書欄位擷取')
     await reload()
   } catch (err) {
     submitError.value = err instanceof CaseApiError ? err.message : '上傳失敗'
@@ -214,7 +214,7 @@ function formatDate(iso: string): string {
         </div>
 
         <p class="hint">
-          訴願書格式固定，系統會自動用規則式抽取訴願人、原處分機關等欄位；行政處分函格式不固定，只會保存原件供查看，欄位需要人工補上。
+          訴願書格式固定，系統會自動擷取訴願人、原處分機關等欄位；行政處分函格式不固定，原件會保存供查看，未擷取的欄位需要人工補上。
         </p>
 
         <label class="online-consent">
@@ -225,7 +225,7 @@ function formatDate(iso: string): string {
           />
           <span>
             我同意將兩份文件各最多 6,000
-            字傳送至線上分析服務，產生未經法律覆核的案件分析建議。未勾選時只使用本機自動分析。
+            字傳送至線上分析服務，產生未經法律覆核的案件分析建議。未勾選時只使用基礎自動分析。
           </span>
         </label>
 

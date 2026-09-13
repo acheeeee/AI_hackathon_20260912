@@ -93,6 +93,10 @@ def test_review_exposes_one_explicit_assessment_contract_for_each_article_77_cla
         assert assessment['rule_description'].strip()
         assert isinstance(assessment['reason'], str)
         assert assessment['reason'].strip()
+        user_copy = f"{assessment['rule_description']} {assessment['reason']}"
+        assert 'mock' not in user_copy.lower()
+        assert 'demo' not in user_copy.lower()
+        assert '示範' not in user_copy
         assert assessment['evaluation_mode'] == EXPECTED_EVALUATION_MODES[clause_no]
 
         if assessment['evaluation_mode'] == 'mock':

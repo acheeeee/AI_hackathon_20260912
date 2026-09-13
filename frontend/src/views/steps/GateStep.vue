@@ -26,7 +26,6 @@ const CLAUSES: Clause[] = [
 ]
 
 // 承辦人可調整的款別判定。預設：實質判斷款為「待人工」，其餘為「待確認」。
-// 說明：src/gate.py 尚未實作，八款判定目前由承辦人於介面確認，非系統自動裁決。
 const verdicts = ref<Record<number, Verdict>>(
   Object.fromEntries(CLAUSES.map((c) => [c.no, c.human ? 'human' : 'pending'])),
 )
@@ -60,7 +59,7 @@ const tallies = computed(() => {
   return t
 })
 
-// 時效：這是後端唯一真的算出來的程序訊號（行政罰法第5條 從新從輕）。
+// 時效提示來自行政罰法第 5 條從新從輕的年度比對。
 const timeliness = computed(() => caseStore.result?.timeliness ?? null)
 
 function toSelect() {
@@ -76,7 +75,7 @@ function toDraft() {
   <div class="page grid">
     <div class="left">
       <div class="note note-blue impl-note">
-        <strong>程序審查引擎（src/gate.py）尚未實作。</strong>以下八款為介面層的人工確認欄位，供承辦人逐款判定並記錄，系統目前不自動裁決各款是否成立。唯一由後端計算的程序訊號是右側「從新從輕」時效提示。
+        以下八款提供程序風險檢核與人工確認欄位，供承辦人逐款判定並留下記錄。涉及實質法律判斷的款次維持「待人工判斷」；右側提供從新從輕的年度試算，所有結果均須人工覆核。
       </div>
 
       <div class="card">
@@ -140,7 +139,7 @@ function toDraft() {
         <div v-if="timeliness?.changed_statutes?.length" class="tl-changed">
           <span v-for="s in timeliness.changed_statutes" :key="s" class="pill pill-warn">{{ s }}</span>
         </div>
-        <p class="tl-src">判定方式：比對行為時／處分時年度與法規修正年度，屬規則計算，不經語言模型。</p>
+        <p class="tl-src">判定方式：比對行為時／處分時年度與法規修正年度自動試算，結果仍須人工覆核。</p>
       </div>
 
       <div class="card verdict-card">

@@ -99,7 +99,7 @@ function backToGate() {
       <div class="card">
         <div class="hd">
           <span>法條推薦</span>
-          <span class="hd-sub">混合檢索　·　BM25 關鍵字 ＋ 向量語意，分數為兩者加權</span>
+          <span class="hd-sub">關鍵字與語意綜合檢索，依案件相關性排序</span>
         </div>
         <div class="items">
           <div
@@ -174,7 +174,7 @@ function backToGate() {
       <div class="card">
         <div class="hd">
           <span>歷史相似前例</span>
-          <span class="hd-sub">先用案件類型硬過濾，桶內才比語意</span>
+          <span class="hd-sub">依案件類型分組後，比較內容相似度</span>
         </div>
 
         <div class="dist">
@@ -182,7 +182,9 @@ function backToGate() {
             <div class="dist-pct">{{ d.pct }}%</div>
             <div class="dist-label">{{ d.label }}　{{ d.count }} 件</div>
           </div>
-          <div class="dist-total">共 {{ distributionTotal }} 件　·　樣本為均衡抽樣，不代表實際案量分布</div>
+          <div class="dist-total">
+            共 {{ distributionTotal }} 件可供參考；資料採均衡選樣，不代表實際案件分布
+          </div>
         </div>
 
         <div class="items">

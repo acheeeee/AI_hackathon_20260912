@@ -1,9 +1,9 @@
 """訴願法第77條八款的程序審查輸出。
 
 目前只有第2款有經程式實作的日期試算。其餘款別仍列出規則需要的輸入與判斷
-方式，讓 UI 能完整揭露八款；第1、4、5、6、7款明確標成 mock，第3、8款固定
-轉人工覆核。mock 與人工款絕不輸出成立／不成立，避免示範資料被誤認為法律
-結論。
+方式，讓 UI 能完整揭露八款；第1、4、5、6、7款是資料不足的初步檢核，第3、8
+款固定轉人工覆核。初步檢核與人工款絕不輸出成立／不成立，避免把程序訊號誤認
+為法律結論。
 """
 
 from __future__ import annotations
@@ -69,8 +69,8 @@ _PENDING_RULES = {
                 '檢查訴願書法定程式、是否可補正，以及通知補正後是否逾期未完成。'
             ),
             reason=(
-                '目前未擷取訴願書程式、補正通知與補正完成狀態；Mock 規則只揭露'
-                '所需輸入，不作成立與否判定。'
+                '目前未擷取訴願書程式、補正通知與補正完成狀態；僅列出所需輸入，'
+                '不作成立與否判定。'
             ),
         ),
         _PendingRule(
@@ -99,11 +99,11 @@ _PENDING_RULES = {
                 'appeal.correction_completed',
             ),
             rule_description=(
-                '檢查訴願能力、法定代理人及通知補正後的完成狀態；目前以 Mock 規則'
-                '揭露所需輸入。'
+                '檢查訴願能力、法定代理人及通知補正後的完成狀態；目前列出所需輸入'
+                '供補充與覆核。'
             ),
             reason=(
-                '目前未擷取訴願能力、法定代理人及補正狀態；Mock 規則不作成立與否'
+                '目前未擷取訴願能力、法定代理人及補正狀態；資料補齊前不作成立與否'
                 '判定。'
             ),
         ),
@@ -118,11 +118,11 @@ _PENDING_RULES = {
                 'appeal.correction_completed',
             ),
             rule_description=(
-                '檢查團體類型、代表人或管理人及通知補正後的完成狀態；目前以 Mock '
-                '規則揭露所需輸入。'
+                '檢查團體類型、代表人或管理人及通知補正後的完成狀態；目前列出所需'
+                '輸入供補充與覆核。'
             ),
             reason=(
-                '目前未擷取團體類型、代表權及補正狀態；Mock 規則不作成立與否判定。'
+                '目前未擷取團體類型、代表權及補正狀態；資料補齊前不作成立與否判定。'
             ),
         ),
         _PendingRule(
@@ -131,11 +131,11 @@ _PENDING_RULES = {
             status=OUTCOME_INSUFFICIENT,
             input_fields=('disposition.doc_no', 'disposition.current_status'),
             rule_description=(
-                '檢查原行政處分是否已撤銷、廢止或因其他原因不存在；目前以 Mock '
-                '規則揭露所需輸入。'
+                '檢查原行政處分是否已撤銷、廢止或因其他原因不存在；目前列出所需'
+                '輸入供補充與覆核。'
             ),
             reason=(
-                '現有資料沒有原處分目前效力狀態；Mock 規則不作成立與否判定。'
+                '現有資料沒有原處分目前效力狀態；資料補齊前不作成立與否判定。'
             ),
         ),
         _PendingRule(
@@ -147,11 +147,12 @@ _PENDING_RULES = {
                 'case.prior_withdrawal_record',
             ),
             rule_description=(
-                '以案件識別資料比對是否已有決定或撤回紀錄；目前未串接完整前案庫，'
-                '使用 Mock 規則。'
+                '以案件識別資料比對是否已有決定或撤回紀錄；目前列出所需比對項目'
+                '供補充與覆核。'
             ),
             reason=(
-                '目前沒有可比對的前次決定或撤回紀錄；Mock 規則不宣稱已查核案件庫。'
+                '目前沒有可比對的前次決定或撤回紀錄；資料補齊前不宣稱已完成前案'
+                '查核。'
             ),
         ),
         _PendingRule(
@@ -179,7 +180,7 @@ def review_article_77(
     facts: Mapping[str, InputValue],
     deadline_review: DeadlineReview,
 ) -> tuple[Article77Assessment, ...]:
-    """依款次輸出八筆結果；不以 mock 或人工結果推導法律結論。"""
+    """依款次輸出八筆結果；不以初步檢核或人工結果推導法律結論。"""
     assessments: list[Article77Assessment] = []
     for clause_no in range(1, 9):
         if clause_no == 2:

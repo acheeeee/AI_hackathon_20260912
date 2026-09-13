@@ -69,17 +69,19 @@ beforeEach(() => {
   vi.clearAllMocks()
 })
 
-describe('ChatSidebar shows which model actually answered', () => {
-  it('warns that a fixed-provider answer is an offline placeholder, not a real AI answer', async () => {
+describe('ChatSidebar presents analysis provenance in product language', () => {
+  it('labels a deterministic response as automatic and still requires review', async () => {
     mockRun({ provider: 'fixed', model: 'deterministic-v1' })
 
     const wrapper = await askSomething()
 
-    expect(wrapper.text()).toContain('固定模型')
-    expect(wrapper.text()).toContain('離線')
+    expect(wrapper.text()).toContain('基礎規則回覆')
+    expect(wrapper.text()).toContain('內容請人工覆核')
+    expect(wrapper.text()).not.toContain('固定模型')
+    expect(wrapper.text()).not.toContain('離線佔位')
   })
 
-  it('labels an online AgentCore answer as the online model instead', async () => {
+  it('labels an online response without exposing its infrastructure provider', async () => {
     mockRun({
       provider: 'agentcore',
       model: 'arn:aws:bedrock-agentcore:us-west-2:1234:runtime/demo',
@@ -88,8 +90,9 @@ describe('ChatSidebar shows which model actually answered', () => {
 
     const wrapper = await askSomething()
 
-    expect(wrapper.text()).toContain('線上模型')
-    expect(wrapper.text()).not.toContain('離線佔位')
+    expect(wrapper.text()).toContain('線上分析')
+    expect(wrapper.text()).toContain('內容請人工覆核')
+    expect(wrapper.text()).not.toContain('AgentCore')
   })
 
   it('does not crash or invent a label when the run carries no provider config', async () => {
@@ -98,7 +101,7 @@ describe('ChatSidebar shows which model actually answered', () => {
     const wrapper = await askSomething()
 
     expect(wrapper.text()).toContain('選取內容')
-    expect(wrapper.text()).not.toContain('固定模型')
-    expect(wrapper.text()).not.toContain('線上模型')
+    expect(wrapper.text()).not.toContain('基礎規則回覆')
+    expect(wrapper.text()).not.toContain('線上分析')
   })
 })

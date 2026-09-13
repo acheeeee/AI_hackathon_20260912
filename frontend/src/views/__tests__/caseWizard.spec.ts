@@ -151,8 +151,9 @@ describe('case detail wizard shell', () => {
     expect(wrapper.text()).toContain('金管會以申請書件及營運準備未完成為由')
     expect(wrapper.text()).toContain('建議法規查詢詞')
     expect(wrapper.text()).toContain('登記申請要件')
-    expect(wrapper.text()).toContain('固定 Mock 產生')
-    expect(wrapper.text()).not.toContain('由 LLM 產生')
+    expect(wrapper.text()).toContain('自動分析')
+    expect(wrapper.text()).not.toContain('Mock')
+    expect(wrapper.text()).not.toContain('LLM')
   })
 
   it('lets the reviewer edit and save extraction analysis without changing the document source', async () => {

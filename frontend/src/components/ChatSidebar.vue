@@ -38,15 +38,14 @@ interface DisplayMessage {
   provider?: string
 }
 
-// 後端沒載入 .env 時會默默退回 `fixed`，回答就變成佔位字串。標出來，讓
-// 「降級」看得見，不要讓使用者以為 AI 壞了（見協作設計 07 的設計意圖）。
+// 依後端回傳的處理方式顯示來源類別，但不暴露供應商或基礎設施細節。
 const PROVIDER_LABELS: Record<string, string> = {
-  fixed: '固定模型（離線佔位，不是真實 AI 回答）',
-  agentcore: 'AgentCore 線上模型',
+  fixed: '基礎規則回覆（內容請人工覆核）',
+  agentcore: '線上分析（內容請人工覆核）',
 }
 
 function providerLabel(provider?: string): string {
-  return provider ? (PROVIDER_LABELS[provider] ?? `模型：${provider}`) : ''
+  return provider ? (PROVIDER_LABELS[provider] ?? '自動分析（內容請人工覆核）') : ''
 }
 
 const open = ref(false)
@@ -266,14 +265,14 @@ defineExpose({ askAboutField, explainSelection, attachSelectionForRevision, open
     <div class="head">
       <div class="head-text">
         <span>AI 側邊欄</span>
-        <span class="hint">verify／explain，不改正式內容</span>
+        <span class="hint">問答與說明，不改正式內容</span>
       </div>
       <button class="close" aria-label="關閉側邊欄" @click="open = false">✕</button>
     </div>
 
     <div ref="scrollEl" class="thread">
       <p v-if="messages.length === 0" class="empty">
-        問問題，或在左邊點一個欄位的「問 AI」。回答只會用本機真的查到的資料。
+        問問題，或在左邊點一個欄位的「問 AI」。回答只會使用本案件與可回溯的法規資料。
       </p>
       <div v-for="msg in messages" :key="msg.id" class="msg" :class="msg.role">
         <div class="bubble">

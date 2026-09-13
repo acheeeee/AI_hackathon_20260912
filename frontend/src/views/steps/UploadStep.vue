@@ -176,7 +176,7 @@ function start() {
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
               <path d="M7 9l5-5 5 5" /><path d="M12 4v12" />
             </svg>
-            <div class="drop-hint">附加卷證（示範環境暫不送出，僅作流程說明）</div>
+            <div class="drop-hint">附加卷證（目前不納入解析）</div>
           </div>
         </div>
       </div>
@@ -184,7 +184,7 @@ function start() {
       <div class="action-row">
         <label class="llm">
           <input type="checkbox" v-model="useLlm" />
-          <span>使用 LLM 補強爭點擷取與理由欄撰寫（耗用 Gemini 額度；關閉時降級為規則擷取＋模板草稿，流程不中斷）</span>
+          <span>啟用進階分析，補強爭點擷取與理由欄撰寫（關閉時仍會使用基礎分析與標準範本，流程不中斷）</span>
         </label>
         <button class="btn btn-primary" :disabled="!canStart || caseStore.analyzing" @click="start">
           <span v-if="caseStore.analyzing">解析中…</span>
@@ -201,8 +201,8 @@ function start() {
 
     <aside class="side-col">
       <div class="card">
-        <div class="side-title">載入示範案例</div>
-        <p class="side-sub">不想上傳檔案時，直接用語料庫裡的真實決定書跑完整條流程。</p>
+        <div class="side-title">選擇已建檔案件</div>
+        <p class="side-sub">不上傳檔案時，可直接選擇已建檔的案件內容，繼續後續流程。</p>
         <button
           v-for="demo in DEMO_CASES"
           :key="demo.id"

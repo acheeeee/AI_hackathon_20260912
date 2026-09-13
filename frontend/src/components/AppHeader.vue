@@ -23,8 +23,6 @@ defineProps<{
       <span v-if="statusText" class="badge" :class="statusTone === 'ok' ? 'badge-ok' : 'badge-plain'">
         {{ statusText }}
       </span>
-      <!-- 假承辦人姓名只是舊離線示範（/legacy-demo）的展示性元件，不能出現在
-           新流程（案件詳情頁精靈）；見協作設計 06 §7.4 清理清單。 -->
       <span v-if="showLegacyBadge" class="badge badge-plain">承辦人　王○明</span>
     </div>
   </header>

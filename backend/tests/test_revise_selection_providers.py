@@ -50,6 +50,10 @@ def test_fixed_revise_selection_echoes_the_instruction_without_rewriting_the_tex
     assert candidate.block_id == BLOCK_ID
     assert SELECTED_TEXT in candidate.text
     assert '改得更正式一點' in candidate.text
+    assert '固定模型' not in candidate.text
+    assert '示範' not in candidate.text
+    assert 'mock' not in candidate.text.lower()
+    assert 'demo' not in candidate.text.lower()
 
 
 def test_fixed_revise_selection_without_target_does_not_read_the_selection() -> None:

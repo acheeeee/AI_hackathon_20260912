@@ -99,10 +99,9 @@ const analysisSourceLabel = computed(() => {
     providers.add(typeof provider === 'string' ? provider : 'unknown')
   }
   if (origins.size === 1 && origins.has('human')) return '人工'
-  if (origins.has('human')) return '人工與模型混合'
-  if (providers.size === 1 && providers.has('fixed')) return '固定 Mock 產生'
-  if (providers.size === 1 && providers.has('agentcore')) return 'LLM 產生'
-  return '模型產生'
+  if (origins.has('human')) return '人工與自動分析'
+  if (providers.size === 1 && providers.has('agentcore')) return '線上分析'
+  return '自動分析'
 })
 
 const analysisLegalReviewLabel = computed(() =>

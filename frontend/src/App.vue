@@ -21,10 +21,10 @@ async function checkLegacyHealth() {
     const health = await checkHealth()
     apiReachable.value = true
     geminiOn.value = health.gemini
-    statusText.value = health.gemini ? 'Gemini 已連線' : '未設定 API key（BM25 檢索）'
+    statusText.value = health.gemini ? '分析服務已連線' : '基礎檢索模式'
   } catch {
     apiReachable.value = false
-    statusText.value = '無法連線到後端'
+    statusText.value = '系統服務目前無法連線'
   }
 }
 

@@ -32,7 +32,7 @@ describe('new-case upload consent', () => {
       'input[type="checkbox"][aria-label="同意將案件文字送至線上分析服務"]',
     )
     expect((consent.element as HTMLInputElement).checked).toBe(false)
-    expect(wrapper.text()).toContain('未勾選時只使用本機自動分析')
+    expect(wrapper.text()).toContain('未勾選時只使用基礎自動分析')
     expect(wrapper.text()).not.toMatch(/AWS|Bedrock|AgentCore|fixed|mock|demo/i)
   })
 
@@ -43,7 +43,7 @@ describe('new-case upload consent', () => {
       case_revision: 1,
       extracted_fields: {},
       analysis_status: 'online_failed_fallback',
-      analysis_error: '線上分析未完成，已改用本機分析；案件與原始檔案已保存。',
+      analysis_error: 'private infrastructure detail',
     })
     const wrapper = mount(HomeView, { global: { plugins: [ElementPlus] } })
     await flushPromises()
@@ -67,9 +67,7 @@ describe('new-case upload consent', () => {
     expect(api.intakeCase).toHaveBeenCalledWith(
       expect.objectContaining({ consentToOnlineAnalysis: true }),
     )
-    expect(wrapper.text()).toContain(
-      '線上分析未完成，已改用本機分析；案件與原始檔案已保存。',
-    )
+    expect(wrapper.text()).toContain('線上分析未完成，已改用基礎分析；案件與原始檔案已保存。')
     expect(wrapper.text()).not.toContain('private infrastructure detail')
   })
 })

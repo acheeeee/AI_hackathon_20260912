@@ -5,7 +5,7 @@ from caseapi.ai.contracts import ModelRequest, ModelResult, ToolGatewayLike
 from caseapi.ai.selection_text import selection_text_from_context
 
 FIXED_REASONING = (
-    '固定模型只依上列事實與已核對原文的法規排版生成本草稿，未作任何法律判斷，'
+    '本草稿只依上列事實與已核對原文的法規排版生成，未作任何法律判斷，'
     '也未認定本件應否受理或有無理由；請人工覆核並改寫後再採用。'
 )
 
@@ -53,7 +53,7 @@ class FixedModelProvider:
         )
         if not search['hits']:
             return ModelResult(
-                '本地 r3 快照未找到足夠依據；尚未確認最新法規。'
+                '法規資料庫未找到足夠依據；尚未確認最新法規。'
             )
         opened = tools.call(
             'open_source',
@@ -63,7 +63,7 @@ class FixedModelProvider:
             },
         )
         answer = (
-            f'已查閱 {search["release_id"]} 原文：「{opened["quote"]}」；'
+            f'已核對法規原文：「{opened["quote"]}」；'
             '此來源僅證明引文存在且一致，是否支持本案主張仍待判斷。'
         )
         return ModelResult(answer, (opened['evidence_id'],))
@@ -75,11 +75,11 @@ class FixedModelProvider:
             return selection
         selected, block_id = selection
         candidate = revise_selection.guard_candidate_text(
-            f'{selected}（固定模型收到指示「{request.content}」，'
-            '僅示範選取→候選→提案鏈路，未做實際文字修改）'
+            f'{selected}（已收到修改指示「{request.content}」；'
+            '目前僅建立候選提案，未執行實際文字修改）'
         )
         reasoning = (
-            '固定模型只證明選取內容可讀回並轉成候選提案，未作任何用語或法律判斷；'
+            '自動分析已將選取內容轉成候選提案，未作法律判斷；'
             '請人工覆核後再採用。'
         )
         return revise_selection.build_result(reasoning, candidate, block_id)
@@ -97,5 +97,5 @@ class FixedModelProvider:
             return ModelResult('選取的內容目前沒有值，沒有東西可以解釋。')
         return ModelResult(
             f'選取內容：「{selected}」。'
-            '固定模型只確認上下文讀取鏈，未作法律判斷。'
+            '自動分析已讀取指定內容，未作法律判斷。'
         )
