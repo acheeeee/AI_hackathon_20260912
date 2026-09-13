@@ -27,9 +27,11 @@ const appealName = ref('')
 const dispositionFile = ref<File | null>(null)
 const dispositionName = ref('')
 const title = ref('')
+const consentToOnlineAnalysis = ref(false)
 const submitting = ref(false)
 const submitError = ref('')
 const extractedPreview = ref<Record<string, string | null> | null>(null)
+const analysisNotice = ref<{ type: 'success' | 'warning' | 'info'; message: string } | null>(null)
 
 async function reload() {
   loading.value = true
@@ -61,8 +63,10 @@ function resetDialog() {
   dispositionFile.value = null
   dispositionName.value = ''
   title.value = ''
+  consentToOnlineAnalysis.value = false
   submitError.value = ''
   extractedPreview.value = null
+  analysisNotice.value = null
 }
 
 function openDialog() {
@@ -79,8 +83,25 @@ async function submit() {
       appealPdf: appealFile.value,
       dispositionPdf: dispositionFile.value ?? undefined,
       title: title.value || undefined,
+      consentToOnlineAnalysis: consentToOnlineAnalysis.value,
     })
     extractedPreview.value = result.extracted_fields
+    if (result.analysis_status === 'online_completed') {
+      analysisNotice.value = {
+        type: 'success',
+        message: '線上分析已完成；內容仍須人工覆核。',
+      }
+    } else if (result.analysis_status === 'online_failed_fallback') {
+      analysisNotice.value = {
+        type: 'warning',
+        message: result.analysis_error ?? '線上分析未完成，已改用本機分析。',
+      }
+    } else {
+      analysisNotice.value = {
+        type: 'info',
+        message: '未啟用外送；本次只使用本機自動分析。',
+      }
+    }
     ElMessage.success('案件已建立，已用規則式抽取訴願書欄位')
     await reload()
   } catch (err) {
@@ -196,6 +217,18 @@ function formatDate(iso: string): string {
           訴願書格式固定，系統會自動用規則式抽取訴願人、原處分機關等欄位；行政處分函格式不固定，只會保存原件供查看，欄位需要人工補上。
         </p>
 
+        <label class="online-consent">
+          <input
+            v-model="consentToOnlineAnalysis"
+            type="checkbox"
+            aria-label="同意將案件文字送至線上分析服務"
+          />
+          <span>
+            我同意將兩份文件各最多 6,000
+            字傳送至線上分析服務，產生未經法律覆核的案件分析建議。未勾選時只使用本機自動分析。
+          </span>
+        </label>
+
         <el-alert v-if="submitError" type="error" show-icon :closable="false" class="err">
           {{ submitError }}
         </el-alert>
@@ -214,6 +247,15 @@ function formatDate(iso: string): string {
       </div>
 
       <div v-else class="extract-preview">
+        <el-alert
+          v-if="analysisNotice"
+          :type="analysisNotice.type"
+          show-icon
+          :closable="false"
+          class="analysis-notice"
+        >
+          {{ analysisNotice.message }}
+        </el-alert>
         <p class="preview-title">已從訴願書抽出以下欄位：</p>
         <table class="preview-table">
           <tbody>
@@ -402,6 +444,27 @@ function formatDate(iso: string): string {
   color: #7a8699;
   line-height: 1.6;
   margin: 0;
+}
+
+.online-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #d7dfed;
+  border-radius: 8px;
+  background: #f7f9fc;
+  color: #4d5b70;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.online-consent input {
+  margin-top: 3px;
+}
+
+.analysis-notice {
+  margin-bottom: 14px;
 }
 
 .dialog-actions {

@@ -82,22 +82,30 @@ export async function getCase(caseId: string): Promise<CaseDetail> {
 }
 
 export type ExtractedFields = Record<string, string | null>
+export type IntakeAnalysisStatus =
+  | 'offline'
+  | 'online_completed'
+  | 'online_failed_fallback'
 
 export interface IntakeResult {
   case_id: string
   case_revision: number
   extracted_fields: ExtractedFields
+  analysis_status: IntakeAnalysisStatus
+  analysis_error: string | null
 }
 
 export async function intakeCase(params: {
   appealPdf: File
   dispositionPdf?: File
   title?: string
+  consentToOnlineAnalysis?: boolean
 }): Promise<IntakeResult> {
   const form = new FormData()
   form.set('appeal_pdf', params.appealPdf)
   if (params.dispositionPdf) form.set('disposition_pdf', params.dispositionPdf)
   if (params.title) form.set('title', params.title)
+  if (params.consentToOnlineAnalysis) form.set('consent_to_online_analysis', 'true')
   return request<IntakeResult>('/cases/intake', {
     method: 'POST',
     body: form,

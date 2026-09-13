@@ -7,12 +7,14 @@ fact.  Keywords, summary, and statute query retain LLM provenance and an explici
 
 import hashlib
 import sqlite3
+from dataclasses import dataclass
 from typing import Any
 
 import fitz  # PyMuPDF
 
 from caseapi.audit import append_entry
 from caseapi.ai.contracts import ModelProvider
+from caseapi.ai.fixed_provider import FixedModelProvider
 from caseapi.ai.intake_analysis import IntakeAnalysis
 from caseapi.clock import now_iso
 from caseapi.domain.appeal_extraction import extract_appeal_fields
@@ -30,6 +32,25 @@ INTAKE_REASON = '規則式抽取自上傳訴願書'
 LLM_ANALYSIS_REASON = '自動產生的案件分析建議；尚未經法律覆核'
 LLM_FIELD_ORIGIN = 'llm'
 LEGAL_REVIEW_NOT_REVIEWED = 'not_reviewed'
+ANALYSIS_OFFLINE = 'offline'
+ANALYSIS_ONLINE_COMPLETED = 'online_completed'
+ANALYSIS_ONLINE_FAILED_FALLBACK = 'online_failed_fallback'
+ONLINE_ANALYSIS_ERROR = (
+    '線上分析未完成，已改用本機分析；案件與原始檔案已保存。'
+)
+
+
+@dataclass(frozen=True)
+class PreparedIntake:
+    appeal_text: str
+    appeal_pages: int
+    disposition_text: str | None
+    disposition_pages: int | None
+    extracted_fields: dict[str, str | None]
+    analysis: IntakeAnalysis | None
+    analysis_provider: str
+    analysis_status: str
+    analysis_error: str | None
 
 
 def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, int]:
@@ -42,6 +63,82 @@ def extract_pdf_text(pdf_bytes: bytes) -> tuple[str, int]:
         doc.close()
 
 
+def prepare_intake(
+    *,
+    appeal_bytes: bytes,
+    disposition_bytes: bytes | None,
+    configured_provider: ModelProvider,
+    consent_to_online_analysis: bool,
+) -> PreparedIntake:
+    """Extract locally and, only with explicit consent, request online enrichment.
+
+    This function intentionally receives no database connection.  The route calls
+    it after the idempotency replay check and before opening the mutation's write
+    transaction, so a slow or malformed online response cannot hold SQLite's writer.
+    """
+    appeal_text, appeal_pages = extract_pdf_text(appeal_bytes)
+    disposition_text: str | None = None
+    disposition_pages: int | None = None
+    if disposition_bytes is not None:
+        disposition_text, disposition_pages = extract_pdf_text(disposition_bytes)
+
+    extracted_fields = extract_appeal_fields(appeal_text)
+    fixed_provider = FixedModelProvider()
+    online_configured = configured_provider.descriptor().get('provider') == 'agentcore'
+    if not (online_configured and consent_to_online_analysis):
+        analysis = fixed_provider.analyze_intake(
+            appeal_text=appeal_text,
+            disposition_text=disposition_text,
+        )
+        return PreparedIntake(
+            appeal_text=appeal_text,
+            appeal_pages=appeal_pages,
+            disposition_text=disposition_text,
+            disposition_pages=disposition_pages,
+            extracted_fields=extracted_fields,
+            analysis=analysis,
+            analysis_provider='fixed',
+            analysis_status=ANALYSIS_OFFLINE,
+            analysis_error=None,
+        )
+
+    try:
+        analysis = configured_provider.analyze_intake(
+            appeal_text=appeal_text,
+            disposition_text=disposition_text,
+        )
+    except Exception:
+        # Provider exceptions can contain response fragments or infrastructure
+        # details.  Do not return or persist that raw exception text.
+        analysis = fixed_provider.analyze_intake(
+            appeal_text=appeal_text,
+            disposition_text=disposition_text,
+        )
+        return PreparedIntake(
+            appeal_text=appeal_text,
+            appeal_pages=appeal_pages,
+            disposition_text=disposition_text,
+            disposition_pages=disposition_pages,
+            extracted_fields=extracted_fields,
+            analysis=analysis,
+            analysis_provider='fixed',
+            analysis_status=ANALYSIS_ONLINE_FAILED_FALLBACK,
+            analysis_error=ONLINE_ANALYSIS_ERROR,
+        )
+
+    return PreparedIntake(
+        appeal_text=appeal_text,
+        appeal_pages=appeal_pages,
+        disposition_text=disposition_text,
+        disposition_pages=disposition_pages,
+        extracted_fields=extracted_fields,
+        analysis=analysis,
+        analysis_provider='agentcore',
+        analysis_status=ANALYSIS_ONLINE_COMPLETED,
+        analysis_error=None,
+    )
+
+
 def intake_case(
     conn: sqlite3.Connection,
     *,
@@ -51,12 +148,11 @@ def intake_case(
     appeal_bytes: bytes,
     disposition_filename: str | None = None,
     disposition_bytes: bytes | None = None,
-    analysis_provider: ModelProvider,
+    prepared: PreparedIntake,
 ) -> dict[str, Any]:
     case = case_service.create_case(
         conn, actor_id=actor_id, request=CaseCreateRequest(title=title)
     )
-    appeal_text, appeal_pages = extract_pdf_text(appeal_bytes)
     _save_document(
         conn,
         case_id=case.case_id,
@@ -64,12 +160,10 @@ def intake_case(
         role=ROLE_APPEAL,
         filename=appeal_filename,
         content=appeal_bytes,
-        extracted_text=appeal_text,
-        page_count=appeal_pages,
+        extracted_text=prepared.appeal_text,
+        page_count=prepared.appeal_pages,
     )
-    disposition_text: str | None = None
     if disposition_bytes is not None:
-        disposition_text, disposition_pages = extract_pdf_text(disposition_bytes)
         _save_document(
             conn,
             case_id=case.case_id,
@@ -77,26 +171,23 @@ def intake_case(
             role=ROLE_DISPOSITION,
             filename=disposition_filename or 'disposition.pdf',
             content=disposition_bytes,
-            extracted_text=disposition_text,
-            page_count=disposition_pages,
+            extracted_text=prepared.disposition_text or '',
+            page_count=prepared.disposition_pages or 0,
         )
-    extracted_fields = extract_appeal_fields(appeal_text)
-    analysis = analysis_provider.analyze_intake(
-        appeal_text=appeal_text,
-        disposition_text=disposition_text,
-    )
     updated_case = _seed_facts(
         conn,
         case_id=case.case_id,
         actor_id=actor_id,
-        extracted_fields=extracted_fields,
-        analysis=analysis,
-        analysis_provider=analysis_provider.descriptor().get('provider', 'unknown'),
+        extracted_fields=prepared.extracted_fields,
+        analysis=prepared.analysis,
+        analysis_provider=prepared.analysis_provider,
     )
     return {
         'case_id': updated_case.case_id,
         'case_revision': updated_case.case_revision,
-        'extracted_fields': extracted_fields,
+        'extracted_fields': prepared.extracted_fields,
+        'analysis_status': prepared.analysis_status,
+        'analysis_error': prepared.analysis_error,
     }
 
 
