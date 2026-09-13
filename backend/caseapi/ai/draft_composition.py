@@ -23,9 +23,19 @@ NO_STATUTE_ANSWER = (
     '再重新產生草稿。'
 )
 FACT_BLOCK_ID = 'fact-1'
-STATUTE_BLOCK_ID = 'statute-1'
 REASON_BLOCK_ID = 'reason-1'
 MAX_APPEAL_TEXT_CHARS = 2000
+_DRAFT_FACT_PATHS = (
+    'appellant.name',
+    'appellant.address',
+    'disposition.authority',
+    'disposition.doc_no',
+    'disposition.date',
+    'service.date',
+    'service.method',
+    'appeal.filed_date',
+    'appeal.received_date',
+)
 
 # 草稿生成不能沿用呼叫端可自由輸入的 instruction 當模型任務；否則一段
 # 「忽略限制、直接駁回」就會成為遠端模型的主要 prompt。這個固定任務只讓
@@ -89,12 +99,47 @@ def open_selected_statutes(
 def build_blocks(
     request: ModelRequest, opened: list[dict[str, Any]], reasoning: str
 ) -> tuple[GeneratedBlock, ...]:
+    """Build the formal decision-document skeleton.
+
+    ``docs/Reference/訴願書生成指南.md`` §1 controls the order.  The current
+    system does not possess a human-approved outcome, remedy, or issue date, so
+    those fields are explicit placeholders rather than model conclusions.
+    """
     evidence_ids = tuple(item['evidence_id'] for item in opened)
-    return (
-        GeneratedBlock(FACT_BLOCK_ID, _fact_block_text(request)),
-        GeneratedBlock(STATUTE_BLOCK_ID, _statute_block_text(opened), evidence_ids),
-        GeneratedBlock(REASON_BLOCK_ID, reasoning, evidence_ids),
+    blocks = [
+        GeneratedBlock('index-header-1', _index_header_text(opened), evidence_ids),
+        GeneratedBlock('body-heading-1', '訴願決定書\n案號：（待承辦人填寫）'),
+        GeneratedBlock('parties-1', _parties_text(request)),
+        GeneratedBlock('preamble-1', _preamble_text(request)),
+        GeneratedBlock('main-1', '主文\n（待承辦人核定處理結果後填寫）'),
+    ]
+    if _uses_substantive_skeleton(request):
+        blocks.append(GeneratedBlock(FACT_BLOCK_ID, _formal_fact_text(request)))
+    blocks.extend(
+        [
+            GeneratedBlock(
+                REASON_BLOCK_ID,
+                _reason_block_text(opened, reasoning),
+                evidence_ids,
+            ),
+            GeneratedBlock(
+                'conclusion-1',
+                '結論銜接\n'
+                '（待承辦人核定主文後，依適用法規完成論結文字）',
+            ),
+            GeneratedBlock(
+                'signature-1',
+                '訴願審議委員會主任委員　（待簽署）\n'
+                '　　　　　　　　委員　（待簽署）',
+            ),
+            GeneratedBlock(
+                'remedy-1',
+                '救濟教示\n（待承辦人依核定主文、管轄及法定期間填寫）',
+            ),
+            GeneratedBlock('date-1', '中華民國（待承辦人填寫）年（月）（日）'),
+        ]
     )
+    return tuple(blocks)
 
 
 def summary_answer(opened: list[dict[str, Any]]) -> str:
@@ -149,8 +194,8 @@ def _fact_block_text(request: ModelRequest) -> str:
     facts = (request.context or {}).get('facts') or {}
     lines = [
         f'{fact_field_label(path)}：{value}'
-        for path, value in sorted(facts.items())
-        if value is not None
+        for path in _DRAFT_FACT_PATHS
+        if (value := facts.get(path)) is not None
     ]
     if not lines:
         return '事實：目前沒有已確認的事實欄位，待人工補充。'
@@ -169,3 +214,57 @@ def _statute_title(statute: dict[str, Any]) -> str:
 def _appeal_text(request: ModelRequest) -> str:
     text = (request.context or {}).get('appeal_text') or ''
     return text[:MAX_APPEAL_TEXT_CHARS]
+
+
+def _index_header_text(opened: list[dict[str, Any]]) -> str:
+    statutes = '、'.join(_statute_title(item) for item in opened)
+    return (
+        '訴願決定書\n'
+        '案號：（待承辦人填寫）\n'
+        '要旨：（待承辦人核定主文後填寫）\n'
+        '發文日期：（待承辦人填寫）\n'
+        '發文字號：（待承辦人填寫）\n'
+        f'相關法條：{statutes}\n'
+        '全文：\n（以下為未經核定之工作草稿）'
+    )
+
+
+def _parties_text(request: ModelRequest) -> str:
+    facts = (request.context or {}).get('facts') or {}
+    appellant = facts.get('appellant.name') or '（待承辦人填寫）'
+    authority = facts.get('disposition.authority') or '（待承辦人填寫）'
+    return f'訴願人　{appellant}\n原處分機關　{authority}'
+
+
+def _preamble_text(request: ModelRequest) -> str:
+    facts = (request.context or {}).get('facts') or {}
+    authority = facts.get('disposition.authority') or '原處分機關'
+    date = facts.get('disposition.date') or '日期待確認'
+    doc_no = facts.get('disposition.doc_no') or '文號待確認'
+    return (
+        f'上列訴願人因不服{authority} {date} {doc_no}之行政處分而提起訴願，'
+        '本件主文與法律結論尚待承辦人核定。'
+    )
+
+
+def _formal_fact_text(request: ModelRequest) -> str:
+    facts = _fact_block_text(request)
+    if facts.startswith('事實：\n'):
+        facts = facts.removeprefix('事實：\n').replace('\n', '；')
+    elif facts.startswith('事實：'):
+        facts = facts.removeprefix('事實：')
+    return f'事實\n緣{facts}'
+
+
+def _reason_block_text(opened: list[dict[str, Any]], reasoning: str) -> str:
+    statute_text = _statute_block_text(opened)
+    return f'理由\n一、法規依據\n{statute_text}\n二、分析候選\n{reasoning}'
+
+
+def _uses_substantive_skeleton(request: ModelRequest) -> bool:
+    path = (request.context or {}).get('decision_path')
+    return (
+        isinstance(path, dict)
+        and path.get('value') == 'substantive'
+        and path.get('origin') == 'human'
+    )
