@@ -4,6 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import ElementPlus from 'element-plus'
 import { describe, expect, it, vi } from 'vitest'
 import { sha256Hex } from '@/utils/draftSelection'
+import { waitForCondition } from './testUtils'
 
 const api = vi.hoisted(() => ({
   getDraftResource: vi.fn<(caseId: string, draftId: string) => Promise<unknown>>(),
@@ -68,7 +69,7 @@ describe('draft selection AI entry point', () => {
     expect(wrapper.text()).toContain('請 AI 解釋')
 
     await wrapper.get('button.explain-selection').trigger('click')
-    await flushPromises()
+    await waitForCondition(() => Boolean(wrapper.emitted('explain-selection')))
 
     const emitted = wrapper.emitted('explain-selection')
     expect(emitted).toBeTruthy()
