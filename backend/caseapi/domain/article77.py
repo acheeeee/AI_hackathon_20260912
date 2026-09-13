@@ -156,11 +156,11 @@ def review_article_77(
 
 
 def _correction(facts: Mapping[str, InputValue], scope: str, today: date) -> _Result:
-    if facts.get('appeal.correction_scope') not in (scope, 'all'):
-        return _missing('appeal.correction_scope', reason='尚無涵蓋本款欠缺的訴願程序補正紀錄。')
     notified = facts.get('appeal.correction_notified')
     if notified == 'no':
         return _clear('尚未通知限期補正，目前未符合「經通知而逾期未補正」條件。')
+    if facts.get('appeal.correction_scope') not in (scope, 'all'):
+        return _missing('appeal.correction_scope', reason='尚無涵蓋本款欠缺的訴願程序補正紀錄。')
     if notified != 'yes':
         return _missing('appeal.correction_notified')
     deadline = _day(facts, 'appeal.correction_deadline')
