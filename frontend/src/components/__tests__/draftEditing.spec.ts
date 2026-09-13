@@ -179,6 +179,29 @@ describe('draft editing journey', () => {
     expect(wrapper.emitted('proposal-adopted')).toHaveLength(1)
   })
 
+  it('removes the proposal copy after adoption so only the persisted draft remains editable', async () => {
+    const wrapper = mount(DraftGenerationPanel, {
+      props: { caseId: 'case_1', caseRevision: 1 },
+      global: { plugins: [ElementPlus] },
+    })
+    await flushPromises()
+    await wrapper.get('button').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('草稿預覽')
+    expect(wrapper.text()).toContain('草稿內容')
+
+    const adoptButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('採用這份草稿'))
+    await adoptButton!.trigger('click')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('草稿已建立')
+    expect(wrapper.text()).not.toContain('草稿預覽')
+    expect(wrapper.find('.result').exists()).toBe(false)
+  })
+
   it('keeps the current draft untouched when the merge preview reports a conflict', async () => {
     api.createMergePreview.mockResolvedValue({
       preview_id: 'preview_conflict',
@@ -243,10 +266,15 @@ describe('draft editing journey', () => {
     })
     await flushPromises()
 
+    const editButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '編輯')
+    expect(editButton).toBeDefined()
+    await editButton!.trigger('click')
     await wrapper.get('textarea').setValue('人工修改')
     const saveButton = wrapper
       .findAll('button')
-      .find((button) => button.text().includes('儲存此段'))
+      .find((button) => button.text().trim() === '儲存')
     await saveButton!.trigger('click')
     await flushPromises()
 
@@ -258,6 +286,38 @@ describe('draft editing journey', () => {
       block: { block_id: 'reason-1', text: '人工修改', citations: [] },
     })
     expect(wrapper.emitted('draft-updated')).toHaveLength(1)
+  })
+
+  it('shows a single read view per paragraph and restores the saved text when editing is cancelled', async () => {
+    const wrapper = mount(DraftEditorPanel, {
+      props: {
+        caseId: 'case_1',
+        caseRevision: 3,
+        draftId: 'draft_1',
+        draftHead: { revision_id: 'res_2', kind: 'draft', freshness: 'current' },
+      },
+      global: { plugins: [ElementPlus] },
+    })
+    await flushPromises()
+
+    expect(wrapper.findAll('.draft-block')).toHaveLength(1)
+    expect(wrapper.find('.draft-block-text').text()).toBe('原始草稿')
+    expect(wrapper.find('textarea').exists()).toBe(false)
+
+    const editButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '編輯')
+    await editButton!.trigger('click')
+    await wrapper.get('textarea').setValue('尚未儲存的內容')
+
+    const cancelButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '取消')
+    await cancelButton!.trigger('click')
+
+    expect(wrapper.find('textarea').exists()).toBe(false)
+    expect(wrapper.find('.draft-block-text').text()).toBe('原始草稿')
+    expect(api.patchDraftBlock).not.toHaveBeenCalled()
   })
 
   it('labels a program-created placeholder as a system shell instead of a merged version', async () => {

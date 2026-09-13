@@ -31,7 +31,7 @@ function selectSecondOccurrence(textarea: HTMLTextAreaElement) {
 }
 
 describe('draft selection AI entry point', () => {
-  it('mounts a draft editor whose block currently offers no way to ask AI about a selection', async () => {
+  it('asks AI about the exact selected range while a paragraph is being edited', async () => {
     api.getDraftResource.mockResolvedValue({
       resource_id: 'draft_1',
       resource_kind: 'draft',
@@ -62,6 +62,10 @@ describe('draft selection AI entry point', () => {
     })
     await flushPromises()
 
+    const editButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '編輯')
+    await editButton!.trigger('click')
     const textarea = wrapper.get('textarea').element as HTMLTextAreaElement
     selectSecondOccurrence(textarea)
     await flushPromises()

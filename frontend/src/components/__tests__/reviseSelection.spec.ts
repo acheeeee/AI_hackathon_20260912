@@ -131,6 +131,10 @@ describe('DraftEditorPanel revise-selection entry point', () => {
     })
     await flushPromises()
 
+    const editButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '編輯')
+    await editButton!.trigger('click')
     const textarea = wrapper.get('textarea').element as HTMLTextAreaElement
     textarea.focus()
     textarea.setSelectionRange(0, SELECTED.length)
@@ -145,6 +149,87 @@ describe('DraftEditorPanel revise-selection entry point', () => {
     const [, emittedTarget] = emitted![0] as [string, DraftBlockTarget]
     expect(emittedTarget.selected_text).toBe(SELECTED)
     expect(emittedTarget.char_start).toBe(0)
+  })
+
+  it('lets users ask for an explanation of a whole paragraph without selecting text first', async () => {
+    api.getDraftResource.mockResolvedValue({
+      resource_id: 'draft_1',
+      resource_kind: 'draft',
+      resource_revision: 'res_1',
+      parent_revision: null,
+      origin: 'human',
+      content: {
+        draft_kind: 'decision',
+        title: '訴願決定書草稿',
+        blocks: [{ block_id: 'reason-1', text: BLOCK_TEXT, citations: [] }],
+      },
+      content_hash: 'hash',
+      dependencies: {},
+      is_head: true,
+      freshness: 'current',
+      created_by: 'user',
+      created_at: '2026-09-13T00:00:00Z',
+    })
+    const wrapper = mount(DraftEditorPanel, {
+      props: {
+        caseId: 'case_1',
+        caseRevision: 3,
+        draftId: 'draft_1',
+        draftHead: { revision_id: 'res_1', kind: 'draft', freshness: 'current' },
+      },
+      global: { plugins: [ElementPlus] },
+    })
+    await flushPromises()
+
+    await wrapper.get('button.explain-selection').trigger('click')
+    await waitForCondition(() => Boolean(wrapper.emitted('explain-selection')))
+
+    const emitted = wrapper.emitted('explain-selection')
+    expect(emitted).toBeTruthy()
+    const [, emittedTarget] = emitted![0] as [string, DraftBlockTarget]
+    expect(emittedTarget.selected_text).toBe(BLOCK_TEXT)
+    expect(emittedTarget.char_start).toBe(0)
+    expect(emittedTarget.char_end).toBe(Array.from(BLOCK_TEXT).length)
+  })
+
+  it('lets users request a whole-paragraph revision without selecting text first', async () => {
+    api.getDraftResource.mockResolvedValue({
+      resource_id: 'draft_1',
+      resource_kind: 'draft',
+      resource_revision: 'res_1',
+      parent_revision: null,
+      origin: 'human',
+      content: {
+        draft_kind: 'decision',
+        title: '訴願決定書草稿',
+        blocks: [{ block_id: 'reason-1', text: BLOCK_TEXT, citations: [] }],
+      },
+      content_hash: 'hash',
+      dependencies: {},
+      is_head: true,
+      freshness: 'current',
+      created_by: 'user',
+      created_at: '2026-09-13T00:00:00Z',
+    })
+    const wrapper = mount(DraftEditorPanel, {
+      props: {
+        caseId: 'case_1',
+        caseRevision: 3,
+        draftId: 'draft_1',
+        draftHead: { revision_id: 'res_1', kind: 'draft', freshness: 'current' },
+      },
+      global: { plugins: [ElementPlus] },
+    })
+    await flushPromises()
+
+    await wrapper.get('button.revise-selection').trigger('click')
+    await waitForCondition(() => Boolean(wrapper.emitted('revise-selection')))
+
+    const emitted = wrapper.emitted('revise-selection')
+    expect(emitted).toBeTruthy()
+    const [, emittedTarget] = emitted![0] as [string, DraftBlockTarget]
+    expect(emittedTarget.selected_text).toBe(BLOCK_TEXT)
+    expect(emittedTarget.block_id).toBe('reason-1')
   })
 })
 

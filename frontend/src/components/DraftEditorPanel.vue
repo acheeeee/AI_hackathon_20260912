@@ -60,28 +60,31 @@ function selectionLabel(text: string): string {
     : text
 }
 
-async function buildSelectedTarget(block: ProposalBlock): Promise<DraftBlockTarget | null> {
+async function buildTarget(block: ProposalBlock): Promise<DraftBlockTarget> {
   const sel = selection.value
-  if (!sel || sel.blockId !== block.block_id) return null
+  const range =
+    sel && sel.blockId === block.block_id
+      ? { start: sel.start, end: sel.end }
+      : { start: 0, end: block.text.length }
   return buildDraftBlockTarget({
     resourceId: props.draftId,
     resourceRevision: currentResourceRevision.value,
     blockId: block.block_id,
     blockText: block.text,
-    utf16Start: sel.start,
-    utf16End: sel.end,
+    utf16Start: range.start,
+    utf16End: range.end,
   })
 }
 
 async function explainSelected(block: ProposalBlock) {
-  const target = await buildSelectedTarget(block)
-  if (!target) return
+  if (isDirty(block)) return
+  const target = await buildTarget(block)
   emit('explain-selection', selectionLabel(target.selected_text), target)
 }
 
 async function reviseSelected(block: ProposalBlock) {
-  const target = await buildSelectedTarget(block)
-  if (!target) return
+  if (isDirty(block)) return
+  const target = await buildTarget(block)
   emit('revise-selection', selectionLabel(target.selected_text), target)
 }
 
@@ -95,6 +98,7 @@ const freshness = ref(props.draftHead.freshness)
 const currentCaseRevision = ref(props.caseRevision)
 const currentResourceRevision = ref(props.draftHead.revision_id)
 const savingBlockId = ref<string | null>(null)
+const editingBlockId = ref<string | null>(null)
 const downloadingPdf = ref(false)
 
 const originLabel = computed(() => {
@@ -124,6 +128,19 @@ function updateBlockText(blockId: string, text: string) {
   )
 }
 
+function startEditing(blockId: string) {
+  if (editingBlockId.value !== null || savingBlockId.value !== null) return
+  selection.value = null
+  editingBlockId.value = blockId
+}
+
+function cancelEditing(block: ProposalBlock) {
+  const saved = savedBlocks.value.find((item) => item.block_id === block.block_id)
+  if (saved) updateBlockText(block.block_id, saved.text)
+  selection.value = null
+  editingBlockId.value = null
+}
+
 async function load() {
   loading.value = true
   loadError.value = ''
@@ -136,6 +153,8 @@ async function load() {
     freshness.value = resource.freshness ?? props.draftHead.freshness
     currentCaseRevision.value = props.caseRevision
     currentResourceRevision.value = resource.resource_revision
+    editingBlockId.value = null
+    selection.value = null
   } catch (err) {
     loadError.value = err instanceof CaseApiError ? err.message : '無法讀取草稿正文'
   } finally {
@@ -166,6 +185,8 @@ async function saveBlock(block: ProposalBlock) {
     currentCaseRevision.value = result.case_revision
     currentResourceRevision.value = result.resource_revision
     freshness.value = result.freshness
+    editingBlockId.value = null
+    selection.value = null
     ElMessage.success('此段已儲存')
     emit('draft-updated')
   } catch (err) {
@@ -202,7 +223,7 @@ async function downloadPdf() {
   <section class="panel draft-editor-panel">
     <div class="panel-head">
       <div>
-        <h2>草稿正文</h2>
+        <h2>生成的草稿內容</h2>
         <p v-if="title" class="draft-title">{{ title }}</p>
       </div>
       <div class="status-tags">
@@ -235,9 +256,9 @@ async function downloadPdf() {
       <article v-for="(block, index) in blocks" :key="block.block_id" class="draft-block">
         <div class="block-head">
           <span>段落 {{ index + 1 }}</span>
-          <span class="block-id">{{ block.block_id }}</span>
         </div>
         <el-input
+          v-if="editingBlockId === block.block_id"
           :ref="(el: unknown) => setBlockInputRef(block.block_id, el)"
           :model-value="block.text"
           type="textarea"
@@ -247,39 +268,60 @@ async function downloadPdf() {
           @mouseup="onSelect(block.block_id)"
           @keyup="onSelect(block.block_id)"
         />
-        <div
-          v-if="selection && selection.blockId === block.block_id"
-          class="selection-toolbar"
-        >
-          <button
-            type="button"
-            class="explain-selection"
-            @click="explainSelected(block)"
-          >
-            請 AI 解釋
-          </button>
-          <button
-            type="button"
-            class="revise-selection"
-            @click="reviseSelected(block)"
-          >
-            請 AI 修改此段
-          </button>
-        </div>
+        <p v-else class="draft-block-text">{{ block.text }}</p>
         <p v-if="block.citations.length" class="citations">
           引用：{{ block.citations.join('、') }}
         </p>
         <div class="block-actions">
-          <span v-if="isDirty(block)" class="unsaved">尚未儲存</span>
-          <el-button
-            size="small"
-            type="primary"
-            :disabled="!isDirty(block) || savingBlockId !== null"
-            :loading="savingBlockId === block.block_id"
-            @click="saveBlock(block)"
-          >
-            儲存此段
-          </el-button>
+          <div class="selection-toolbar">
+            <button
+              type="button"
+              class="explain-selection"
+              :disabled="isDirty(block)"
+              @click="explainSelected(block)"
+            >
+              請 AI 解釋
+            </button>
+            <button
+              type="button"
+              class="revise-selection"
+              :disabled="isDirty(block)"
+              @click="reviseSelected(block)"
+            >
+              請 AI 修改此段
+            </button>
+          </div>
+          <div class="edit-actions">
+            <span v-if="isDirty(block)" class="unsaved">尚未儲存</span>
+            <template v-if="editingBlockId === block.block_id">
+              <el-button
+                size="small"
+                :disabled="savingBlockId !== null"
+                @click="cancelEditing(block)"
+              >
+                取消
+              </el-button>
+              <el-button
+                size="small"
+                type="primary"
+                :disabled="!isDirty(block) || savingBlockId !== null"
+                :loading="savingBlockId === block.block_id"
+                @click="saveBlock(block)"
+              >
+                儲存
+              </el-button>
+            </template>
+            <el-button
+              v-else
+              size="small"
+              type="primary"
+              plain
+              :disabled="editingBlockId !== null || savingBlockId !== null"
+              @click="startEditing(block.block_id)"
+            >
+              編輯
+            </el-button>
+          </div>
         </div>
       </article>
     </div>
@@ -303,7 +345,8 @@ async function downloadPdf() {
 .panel-head,
 .block-head,
 .block-actions,
-.status-tags {
+.status-tags,
+.edit-actions {
   display: flex;
   align-items: center;
 }
@@ -342,6 +385,10 @@ async function downloadPdf() {
   flex-shrink: 0;
 }
 
+.edit-actions {
+  gap: 8px;
+}
+
 .draft-blocks {
   display: flex;
   flex-direction: column;
@@ -351,7 +398,6 @@ async function downloadPdf() {
 .selection-toolbar {
   display: flex;
   gap: 8px;
-  margin-top: 6px;
 }
 
 .selection-toolbar button {
@@ -362,6 +408,11 @@ async function downloadPdf() {
   padding: 4px 10px;
   font-size: 11px;
   cursor: pointer;
+}
+
+.selection-toolbar button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .draft-block {
@@ -378,11 +429,12 @@ async function downloadPdf() {
   margin-bottom: 8px;
 }
 
-.block-id {
-  color: #9aa6ba;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  font-weight: 400;
+.draft-block-text {
+  color: #16233f;
+  font-size: 14px;
+  line-height: 1.9;
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 .citations {

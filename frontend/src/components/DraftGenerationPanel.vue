@@ -1,8 +1,5 @@
 <script setup lang="ts">
-// 產生草稿：選法規之後的觸發點＋處理中畫面。
-// 節奏（讀取事實／查核法規原文／生成中）是前端假的時間軸，但畫面上列出的
-// 「參考了哪些事實／哪些法規」全部來自後端真資料（getFacts／getStatuteSelection），
-// 活動紀錄則來自真的 run 事件（formatRunEvents）。不編造任何一行。
+// 產生草稿：選法規之後的觸發點、處理狀態與採用流程。
 import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
@@ -221,7 +218,6 @@ async function adopt() {
 
     <div v-if="state === 'running'" class="progress">
       <p class="phase">{{ phase }}</p>
-      <p class="phase-note">進度節奏是畫面效果；下面的紀錄是真的執行事件。</p>
     </div>
 
     <template v-if="state === 'done'">
@@ -230,14 +226,13 @@ async function adopt() {
         <li v-for="line in activity" :key="line">{{ line }}</li>
       </ul>
 
-      <div v-if="proposal" class="result">
+      <div v-if="proposal && !adopted" class="result">
         <p class="column-title">
-          生成的草稿內容（提案 {{ proposal.proposal_id }}，狀態 {{ proposal.state }}）
+          草稿預覽
         </p>
-        <p v-if="!adopted" class="empty-hint">
-          這份內容還沒寫進案件正文。按下採用前，系統會先做三方合併預覽。
+        <p class="empty-hint">
+          請確認內容，採用後即可逐段編輯。
         </p>
-        <p v-else class="adopted-note">已採用到案件草稿正文。</p>
         <div v-for="block in generatedBlocks" :key="block.block_id" class="block">
           <p class="block-text">{{ block.text }}</p>
           <p v-if="block.citations.length" class="block-citations">
@@ -257,12 +252,16 @@ async function adopt() {
           <el-button
             type="primary"
             :loading="adopting"
-            :disabled="adopted || proposal.state !== 'ready'"
+            :disabled="proposal.state !== 'ready'"
             @click="adopt"
           >
-            {{ adopted ? '已採用' : '採用這份草稿' }}
+            採用這份草稿
           </el-button>
         </div>
+      </div>
+      <div v-if="adopted" class="adopted-summary">
+        <p class="adopted-note">草稿已建立</p>
+        <p class="empty-hint">請在下方逐段檢視、編輯，確認後即可下載 PDF。</p>
       </div>
     </template>
   </div>
@@ -361,6 +360,12 @@ async function adopt() {
   color: #26734d;
   font-size: 12px;
   margin: 0;
+}
+
+.adopted-summary {
+  border-top: 1px solid #eef1f6;
+  margin-top: 12px;
+  padding-top: 12px;
 }
 
 .merge-alert {

@@ -80,6 +80,10 @@ describe('draft PDF export journey', () => {
     const wrapper = mountEditor()
     await flushPromises()
 
+    const editButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().trim() === '編輯')
+    await editButton!.trigger('click')
     await wrapper.get('textarea').setValue('尚未儲存的修改')
     const downloadButton = wrapper
       .findAll('button')

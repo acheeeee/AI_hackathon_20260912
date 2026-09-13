@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { afterEach, describe, it, expect, vi } from 'vitest'
 import {
   utf16RangeToCodepointRange,
   sha256Hex,
@@ -46,6 +46,10 @@ describe('utf16RangeToCodepointRange', () => {
 })
 
 describe('sha256Hex', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
   it('matches the well-known sha256 of an empty string', async () => {
     expect(await sha256Hex('')).toBe(
       'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
@@ -54,6 +58,14 @@ describe('sha256Hex', () => {
 
   it('hashes UTF-8 bytes, not UTF-16 code units, for non-ASCII text', async () => {
     // sha256("原處分") computed independently via python: hashlib.sha256('原處分'.encode()).hexdigest()
+    expect(await sha256Hex('原處分')).toBe(
+      '88d5ba58de494a3a1086ccaabd18cb488dbf4611cac36a2efd8bfeddd4441835',
+    )
+  })
+
+  it('still hashes selections when Web Crypto digest is unavailable on an HTTP origin', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: globalThis.crypto.getRandomValues })
+
     expect(await sha256Hex('原處分')).toBe(
       '88d5ba58de494a3a1086ccaabd18cb488dbf4611cac36a2efd8bfeddd4441835',
     )
