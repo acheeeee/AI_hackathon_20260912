@@ -65,6 +65,17 @@ def test_contradictory_statements_remain_unresolved() -> None:
 
 
 @pytest.mark.parametrize('text', [
+    '原處分已撤銷一部分，其餘部分仍然有效。',
+    '原處分已廢止部分內容。',
+    '訴願人表示，代理人具有訴願能力。',
+])
+def test_partial_effect_and_other_subject_do_not_imply_a_complete_finding(text: str) -> None:
+    fields = _extract(text)
+    assert fields.get('disposition.current_status', {}).get('value') not in {'revoked', 'abolished'}
+    assert fields.get('appellant.capacity', {}).get('value') != 'capable'
+
+
+@pytest.mark.parametrize('text', [
     '代理人具有訴願能力。',
     '訴願人不具有訴願能力。',
     '本訴願並非自始以書面提出。',
