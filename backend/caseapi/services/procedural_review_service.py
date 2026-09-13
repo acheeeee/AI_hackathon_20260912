@@ -10,6 +10,11 @@ import sqlite3
 from typing import Any
 
 from caseapi.domain.appeal_deadline import review_appeal_deadline
+from caseapi.domain.article77 import review_article_77
+from caseapi.schemas.procedural_review import (
+    Article77ClauseAssessment,
+    ProceduralReviewResponse,
+)
 from caseapi.services import case_repository as repo
 from caseapi.services.facts_service import read_current_fields
 
@@ -18,25 +23,42 @@ LEGAL_REVIEW_STATUS = 'not_reviewed'
 
 def get_procedural_review(
     conn: sqlite3.Connection, *, case_id: str, actor_id: str
-) -> dict[str, Any]:
+) -> ProceduralReviewResponse:
     case_row = repo.require_case(conn, case_id=case_id, actor_id=actor_id)
     heads = repo.load_heads(case_row)
     fields = read_current_fields(conn, case_id=case_id, heads=heads)
+    fact_values = {path: _field_value(fields, path) for path in fields}
 
     review = review_appeal_deadline(
-        service_date=_field_value(fields, 'service.date'),
-        filed_date=_field_value(fields, 'appeal.filed_date'),
+        service_date=fact_values.get('service.date'),
+        filed_date=fact_values.get('appeal.filed_date'),
     )
-    return {
-        'case_id': case_id,
-        'status': review.status,
-        'deadline_date': review.deadline_date,
-        'days_from_deadline': review.days_from_deadline,
-        'missing_fields': list(review.missing_fields),
-        'statute_basis': review.statute_basis,
-        'caveats': list(review.caveats),
-        'legal_review_status': LEGAL_REVIEW_STATUS,
-    }
+    assessments = review_article_77(
+        facts=fact_values,
+        deadline_review=review,
+    )
+    return ProceduralReviewResponse(
+        case_id=case_id,
+        status=review.status,
+        deadline_date=review.deadline_date,
+        days_from_deadline=review.days_from_deadline,
+        missing_fields=list(review.missing_fields),
+        statute_basis=review.statute_basis,
+        caveats=list(review.caveats),
+        legal_review_status=LEGAL_REVIEW_STATUS,
+        clause_assessments=[
+            Article77ClauseAssessment(
+                clause_no=item.clause_no,
+                rule_id=item.rule_id,
+                input=item.input,
+                status=item.status,
+                rule_description=item.rule_description,
+                reason=item.reason,
+                evaluation_mode=item.evaluation_mode,
+            )
+            for item in assessments
+        ],
+    )
 
 
 def _field_value(fields: dict[str, Any], path: str) -> str | None:

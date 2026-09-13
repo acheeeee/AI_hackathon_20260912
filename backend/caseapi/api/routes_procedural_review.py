@@ -22,4 +22,4 @@ def get_procedural_review(
     data = procedural_review_service.get_procedural_review(
         conn, case_id=case_id, actor_id=actor_id
     )
-    return success_response(request, data)
+    return success_response(request, data.model_dump(mode='json'))

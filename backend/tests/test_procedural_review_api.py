@@ -80,9 +80,17 @@ def test_review_exposes_one_explicit_assessment_contract_for_each_article_77_cla
 
     for assessment in assessments:
         clause_no = assessment['clause_no']
-        assert {'rule_id', 'input', 'status', 'reason'} <= assessment.keys()
+        assert {
+            'rule_id',
+            'input',
+            'status',
+            'rule_description',
+            'reason',
+        } <= assessment.keys()
         assert isinstance(assessment['input'], dict)
         assert assessment['status'] in ARTICLE_77_OUTCOMES
+        assert isinstance(assessment['rule_description'], str)
+        assert assessment['rule_description'].strip()
         assert isinstance(assessment['reason'], str)
         assert assessment['reason'].strip()
         assert assessment['evaluation_mode'] == EXPECTED_EVALUATION_MODES[clause_no]
@@ -106,6 +114,10 @@ def test_review_with_only_service_date_gives_a_deadline_without_a_verdict(
     assert data['deadline_date'] == '2025-07-31'
     assert data['days_from_deadline'] is None
     assert data['missing_fields'] == ['appeal.filed_date']
+    clause_2 = next(
+        item for item in data['clause_assessments'] if item['clause_no'] == 2
+    )
+    assert clause_2['status'] == 'INSUFFICIENT_EVIDENCE'
 
 
 def test_review_with_both_dates_computes_overdue(client: TestClient) -> None:
@@ -145,6 +157,26 @@ def test_article_77_clause_2_reuses_the_existing_deadline_calculation(
     assert clause_2['input']['appeal.filed_date'] == '2025-08-15'
     assert clause_2['status'] == 'TRIGGERED'
     assert '15' in clause_2['reason']
+
+
+def test_article_77_clause_2_maps_a_within_period_result_to_not_triggered(
+    client: TestClient,
+) -> None:
+    case_id = create_case(client)
+    _patch_fact(client, case_id, 1, 'service.date', '2025-07-01')
+    _patch_fact(client, case_id, 2, 'appeal.filed_date', '2025-07-10')
+
+    response = client.get(f'/api/v1/cases/{case_id}/procedural-review')
+
+    assert response.status_code == 200
+    data = response.json()['data']
+    clause_2 = next(
+        item for item in data['clause_assessments'] if item['clause_no'] == 2
+    )
+    assert data['status'] == 'within_period'
+    assert data['days_from_deadline'] == -21
+    assert clause_2['status'] == 'NOT_TRIGGERED'
+    assert '21' in clause_2['reason']
 
 
 def test_review_never_asserts_a_final_admissibility_decision(client: TestClient) -> None:
