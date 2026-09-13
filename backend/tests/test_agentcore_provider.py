@@ -261,6 +261,54 @@ def test_agentcore_intake_analysis_rejects_malformed_model_output() -> None:
         provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')
 
 
+def test_agentcore_intake_analysis_compacts_an_overlong_generated_query() -> None:
+    answer = json.dumps(
+        {
+            'keywords': '洗錢防制登記、虛擬資產服務、不予登記',
+            'disposition_summary': '主管機關以申請書件不完備為由不予登記。',
+            'statute_query': (
+                '提供虛擬資產服務之事業或人員洗錢防制登記辦法第5條 '
+                '洗錢防制法第6條 申請書件不完備 限期補正 交易監控 '
+                '外部資料庫 資訊系統委外 雲端服務 私鑰保管 比例原則 營業自由'
+            ),
+        },
+        ensure_ascii=False,
+    )
+    provider = AgentCoreModelProvider(
+        runtime_arn='arn:aws:...:runtime/demo',
+        region='us-west-2',
+        client=FakeAgentCoreClient(answer=answer),
+    )
+
+    analysis = provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')
+
+    assert len(analysis.statute_query) <= 80
+    assert analysis.statute_query.startswith(
+        '提供虛擬資產服務之事業或人員洗錢防制登記辦法第5條'
+    )
+    assert '交易監控' in analysis.statute_query
+    assert analysis.statute_query.endswith('比例原則')
+
+
+def test_agentcore_query_compaction_does_not_hide_a_narrative_marker() -> None:
+    answer = json.dumps(
+        {
+            'keywords': '洗錢防制登記、虛擬資產服務、不予登記',
+            'disposition_summary': '主管機關以申請書件不完備為由不予登記。',
+            'statute_query': f'{"法規查詢詞" * 20} 訴願人於115年提出申請',
+        },
+        ensure_ascii=False,
+    )
+    provider = AgentCoreModelProvider(
+        runtime_arn='arn:aws:...:runtime/demo',
+        region='us-west-2',
+        client=FakeAgentCoreClient(answer=answer),
+    )
+
+    with pytest.raises(ValueError, match='narrative'):
+        provider.analyze_intake(appeal_text='appeal', disposition_text='disposition')
+
+
 @pytest.mark.parametrize(
     'outcome_paraphrase',
     [

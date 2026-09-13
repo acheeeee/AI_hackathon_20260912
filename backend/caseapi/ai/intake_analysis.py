@@ -107,6 +107,15 @@ def parse_model_analysis(text: str) -> IntakeAnalysis:
         payload = json.loads(raw)
     except (TypeError, json.JSONDecodeError) as exc:
         raise ValueError('invalid intake analysis JSON') from exc
+    if isinstance(payload, dict):
+        query = payload.get('statute_query')
+        if isinstance(query, str):
+            # Check the complete model string before shortening it.  Otherwise a
+            # narrative marker beyond the UI limit could be clipped away and
+            # accidentally pass the same safety rule enforced below.
+            if '訴願人於' in query:
+                raise ValueError('invalid intake analysis: statute_query is a narrative')
+            payload = {**payload, 'statute_query': _compact_generated_query(query)}
     return validate_analysis(payload)
 
 
@@ -165,6 +174,28 @@ def _join_with_limit(values: list[str], separator: str, limit: int) -> str:
             continue
         selected.append(value)
     return separator.join(selected)
+
+
+def _compact_generated_query(value: str) -> str:
+    """Fit a model-generated query to the UI contract without widening it.
+
+    Human edits still go through ``validate_analysis`` unchanged.  Only the
+    model parser uses this token-boundary compaction so a verbose but otherwise
+    valid response does not discard all intake enrichment.
+    """
+    value = value.strip()
+    if len(value) <= MAX_STATUTE_QUERY_CHARS:
+        return value
+    parts = [part for part in re.split(r'[\s、，,；;。]+', value) if part]
+    selected: list[str] = []
+    for part in parts:
+        candidate = ' '.join([*selected, part])
+        if len(candidate) > MAX_STATUTE_QUERY_CHARS:
+            if not selected:
+                return part[:MAX_STATUTE_QUERY_CHARS]
+            break
+        selected.append(part)
+    return ' '.join(selected)
 
 
 def _dedupe(values: Iterable[str]) -> list[str]:
