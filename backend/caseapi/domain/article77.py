@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from caseapi.domain.appeal_deadline import (
-    DeadlineReview, STATUS_OVERDUE, STATUS_WITHIN_PERIOD, review_appeal_deadline,
+    DeadlineReview, STATUS_OVERDUE, STATUS_WITHIN_PERIOD, calendar_period_end,
+    review_appeal_deadline,
 )
 from caseapi.domain.procedural_fields import validate_procedural_field_value
 
@@ -99,7 +101,7 @@ def review_article_77(
     as_of: date | None = None,
 ) -> tuple[Article77Assessment, ...]:
     """Evaluate each independent clause; unknown values never imply negative facts."""
-    today = as_of or date.today()
+    today = as_of or datetime.now(ZoneInfo('Asia/Taipei')).date()
     method = facts.get('appeal.initial_submission_method')
     effective_date = (facts.get('appeal.objection_date') if method == 'objection'
                       else facts.get('appeal.received_date') or facts.get('appeal.filed_date'))
@@ -139,9 +141,10 @@ def review_article_77(
                            'computed.days_from_deadline': period.days_from_deadline})
             objection = _day(facts, 'appeal.objection_date')
             if method == 'objection' and objection:
+                followup_deadline = calendar_period_end(objection)
                 inputs['computed.written_submission_deadline'] = (
-                    objection + timedelta(days=30)
-                ).isoformat()
+                    followup_deadline.isoformat() if followup_deadline else None
+                )
         results.append(Article77Assessment(
             clause_no=clause, rule_id=f'art77_para{clause}', input=inputs,
             status=result.status, rule_description=_DESCRIPTIONS[clause],
@@ -223,7 +226,9 @@ def _supplement(facts: Mapping[str, InputValue], today: date) -> _Result:
     objection = _day(facts, 'appeal.objection_date')
     if objection is None:
         return _missing('appeal.objection_date')
-    deadline = objection + timedelta(days=30)
+    deadline = calendar_period_end(objection)
+    if deadline is None:
+        return _human('不服表示日期超出可計算範圍，請更正或人工核對第57條期間。')
     completed = facts.get('appeal.written_submission_completed')
     submitted = _day(facts, 'appeal.written_submission_date')
     if submitted and (submitted < objection or submitted > today or completed == 'no'):

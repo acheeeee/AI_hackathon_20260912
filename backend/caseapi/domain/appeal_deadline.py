@@ -43,7 +43,12 @@ def review_appeal_deadline(
     if service is None:
         return _insufficient(missing=('service.date',))
 
-    deadline = service + timedelta(days=APPEAL_PERIOD_DAYS)
+    deadline = calendar_period_end(service)
+    if deadline is None:
+        return _insufficient(
+            missing=('service.date',),
+            caveat='日期超出可計算範圍，請更正送達日期或人工核對。',
+        )
     filed = _parse_date(filed_date) if filed_date is not None else None
     if filed is None:
         return DeadlineReview(
@@ -67,14 +72,22 @@ def review_appeal_deadline(
     )
 
 
-def _insufficient(*, missing: tuple[str, ...]) -> DeadlineReview:
+def calendar_period_end(start: date) -> date | None:
+    """Return the calendar-day deadline, or None outside Python's date range."""
+    try:
+        return start + timedelta(days=APPEAL_PERIOD_DAYS)
+    except OverflowError:
+        return None
+
+
+def _insufficient(*, missing: tuple[str, ...], caveat: str | None = None) -> DeadlineReview:
     return DeadlineReview(
         status=STATUS_INSUFFICIENT,
         deadline_date=None,
         days_from_deadline=None,
         missing_fields=missing,
         statute_basis=STATUTE_BASIS,
-        caveats=(_HOLIDAY_CAVEAT,),
+        caveats=(_HOLIDAY_CAVEAT, *((caveat,) if caveat else ())),
     )
 
 

@@ -1,6 +1,6 @@
 """Article 77 branching: facts, absence, timing and cross-clause isolation."""
 
-from datetime import date
+from datetime import date, datetime
 
 import pytest
 
@@ -175,3 +175,21 @@ def test_extreme_objection_date_does_not_overflow_the_computed_field():
                         'appeal.objection_date': '9999-12-31'}, today=date.max)
     assert result.status == 'NEEDS_HUMAN'
     assert result.input.get('computed.written_submission_deadline') is None
+
+
+def test_default_review_day_uses_taipei_timezone(monkeypatch):
+    zones = []
+
+    class Clock:
+        @staticmethod
+        def now(zone):
+            zones.append(zone.key)
+            return datetime(2026, 9, 2, 4, 0, tzinfo=zone)
+
+    monkeypatch.setattr('caseapi.domain.article77.datetime', Clock)
+    facts = {'appeal.form_defect': 'yes', 'appeal.defect_remediable': 'yes',
+             'appeal.correction_scope': 'form', 'appeal.correction_notified': 'yes',
+             'appeal.correction_deadline': '2026-09-01', 'appeal.correction_completed': 'no'}
+    review = review_appeal_deadline(service_date=None, filed_date=None)
+    assert review_article_77(facts=facts, deadline_review=review)[0].status == 'TRIGGERED'
+    assert zones == ['Asia/Taipei']
