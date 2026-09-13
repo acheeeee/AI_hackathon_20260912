@@ -12,6 +12,8 @@ import {
   getRun,
   getRunEvents,
   getProposal,
+  createMergePreview,
+  applyProposal,
   CaseApiError,
   type FactFieldValue,
   type SelectedStatute,
@@ -22,7 +24,11 @@ import { factFieldLabel } from '@/utils/factLabels'
 import { formatRunEvents } from '@/utils/runEvents'
 
 const props = defineProps<{ caseId: string; caseRevision: number }>()
-const emit = defineEmits<{ (e: 'draft-generated'): void }>()
+const emit = defineEmits<{
+  (e: 'draft-generated'): void
+  (e: 'proposal-adopted'): void
+  (e: 'refresh-requested'): void
+}>()
 
 const POLL_MS = 600
 const MAX_ATTEMPTS = 60
@@ -38,6 +44,10 @@ const statutes = ref<SelectedStatute[]>([])
 const proposal = ref<ProposalDetail | null>(null)
 const answer = ref('')
 const errorText = ref('')
+const generatedCaseRevision = ref<number | null>(null)
+const adopting = ref(false)
+const adopted = ref(false)
+const mergeConflictText = ref('')
 
 const knownFacts = computed(() =>
   Object.entries(facts.value)
@@ -105,16 +115,75 @@ async function generate() {
   proposal.value = null
   answer.value = ''
   errorText.value = ''
+  generatedCaseRevision.value = null
+  adopting.value = false
+  adopted.value = false
+  mergeConflictText.value = ''
   try {
     const started = await startDraftGeneration({
       caseId: props.caseId,
       expectedCaseRevision: props.caseRevision,
     })
+    generatedCaseRevision.value = started.case_revision
     await pollRun(started.run_id)
   } catch (err) {
     state.value = 'failed'
     errorText.value = err instanceof CaseApiError ? err.message : '無法開始生成'
     ElMessage.error(errorText.value)
+  }
+}
+
+async function adopt() {
+  if (!proposal.value || adopting.value || adopted.value) return
+
+  const selectedGroupIds = proposal.value.change_groups.map((group) => group.id)
+  if (!selectedGroupIds.length) return
+
+  adopting.value = true
+  mergeConflictText.value = ''
+  try {
+    const expectedCaseRevision = Math.max(
+      props.caseRevision,
+      generatedCaseRevision.value ?? props.caseRevision,
+    )
+    const preview = await createMergePreview({
+      caseId: props.caseId,
+      proposalId: proposal.value.proposal_id,
+      expectedCaseRevision,
+      selectedGroupIds,
+    })
+    if (!preview.can_apply) {
+      const codes = preview.conflicts.map((conflict) => conflict.code)
+      mergeConflictText.value = codes.length
+        ? `目前正文或依賴資料已變動，無法直接覆蓋（${codes.join('、')}）。請保留目前內容並重新產生草稿；這一版不會自動解決衝突。`
+        : '提案仍有未滿足的相依修改，現在不能採用；這一版不會沉默略過。'
+      return
+    }
+
+    const result = await applyProposal({
+      caseId: props.caseId,
+      proposalId: proposal.value.proposal_id,
+      expectedCaseRevision: preview.current_case_revision,
+      previewId: preview.preview_id,
+      previewHash: preview.preview_hash,
+      acceptedGroupIds: selectedGroupIds,
+    })
+    proposal.value = { ...proposal.value, state: result.proposal_state }
+    generatedCaseRevision.value = result.case_revision
+    adopted.value = true
+    ElMessage.success('草稿已採用，可以開始逐段編輯')
+    emit('proposal-adopted')
+  } catch (err) {
+    const message = err instanceof CaseApiError ? err.message : '採用草稿失敗'
+    if (err instanceof CaseApiError && err.code === 'REVISION_CONFLICT') {
+      mergeConflictText.value = '案件已在其他操作中更新。請重新確認目前草稿後再採用。'
+      emit('refresh-requested')
+    } else {
+      errorText.value = message
+      ElMessage.error(message)
+    }
+  } finally {
+    adopting.value = false
   }
 }
 </script>
@@ -165,14 +234,34 @@ async function generate() {
         <p class="column-title">
           生成的草稿內容（提案 {{ proposal.proposal_id }}，狀態 {{ proposal.state }}）
         </p>
-        <p class="empty-hint">
-          這份內容還沒寫進案件正文。採用、逐段編修與衝突處理是下一階段（交接文件 §7.2）。
+        <p v-if="!adopted" class="empty-hint">
+          這份內容還沒寫進案件正文。按下採用前，系統會先做三方合併預覽。
         </p>
+        <p v-else class="adopted-note">已採用到案件草稿正文。</p>
         <div v-for="block in generatedBlocks" :key="block.block_id" class="block">
           <p class="block-text">{{ block.text }}</p>
           <p v-if="block.citations.length" class="block-citations">
             依據：{{ block.citations.join('、') }}
           </p>
+        </div>
+        <el-alert
+          v-if="mergeConflictText"
+          class="merge-alert"
+          type="warning"
+          show-icon
+          :closable="false"
+        >
+          {{ mergeConflictText }}
+        </el-alert>
+        <div class="actions">
+          <el-button
+            type="primary"
+            :loading="adopting"
+            :disabled="adopted || proposal.state !== 'ready'"
+            @click="adopt"
+          >
+            {{ adopted ? '已採用' : '採用這份草稿' }}
+          </el-button>
         </div>
       </div>
     </template>
@@ -266,6 +355,16 @@ async function generate() {
 .result {
   border-top: 1px solid #eef1f6;
   padding-top: 12px;
+}
+
+.adopted-note {
+  color: #26734d;
+  font-size: 12px;
+  margin: 0;
+}
+
+.merge-alert {
+  margin-top: 12px;
 }
 
 .block {

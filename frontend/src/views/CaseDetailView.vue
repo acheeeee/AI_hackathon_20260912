@@ -11,6 +11,7 @@ import {
   type FactFieldValue,
   type CaseDocument,
   type FactFieldTarget,
+  type ResourceHead,
 } from '@/api/caseapi'
 import {
   factFieldLabel,
@@ -22,6 +23,7 @@ import ChatSidebar from '@/components/ChatSidebar.vue'
 import ProceduralReviewPanel from '@/components/ProceduralReviewPanel.vue'
 import StatuteSelectionPanel from '@/components/StatuteSelectionPanel.vue'
 import DraftGenerationPanel from '@/components/DraftGenerationPanel.vue'
+import DraftEditorPanel from '@/components/DraftEditorPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -36,6 +38,13 @@ const loadError = ref('')
 const sidebar = ref<InstanceType<typeof ChatSidebar> | null>(null)
 
 const factsRevisionId = computed(() => detail.value?.active_heads.facts?.revision_id ?? null)
+
+const draftEntry = computed<{ draftId: string; head: ResourceHead } | null>(() => {
+  const entry = Object.entries(detail.value?.active_heads ?? {}).find(
+    ([, head]) => head.kind === 'draft',
+  )
+  return entry ? { draftId: entry[0], head: entry[1] } : null
+})
 
 function askAboutField(path: string) {
   const revisionId = factsRevisionId.value
@@ -172,6 +181,17 @@ function backToList() {
         :case-id="caseId"
         :case-revision="detail.case_revision"
         @draft-generated="refresh"
+        @proposal-adopted="refresh"
+        @refresh-requested="refresh"
+      />
+
+      <DraftEditorPanel
+        v-if="draftEntry"
+        :case-id="caseId"
+        :case-revision="detail.case_revision"
+        :draft-id="draftEntry.draftId"
+        :draft-head="draftEntry.head"
+        @draft-updated="refresh"
       />
 
       <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />

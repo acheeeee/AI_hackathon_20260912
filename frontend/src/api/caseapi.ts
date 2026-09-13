@@ -415,12 +415,143 @@ export interface ProposalDetail {
   run_id: string | null
   mode: string
   state: string
+  base_case_revision: number
+  applied_group_ids: string[]
   change_groups: ProposalChangeGroup[]
 }
 
 export async function getProposal(caseId: string, proposalId: string): Promise<ProposalDetail> {
   return request<ProposalDetail>(
     `/cases/${encodeURIComponent(caseId)}/proposals/${encodeURIComponent(proposalId)}`,
+  )
+}
+
+export interface MergeConflict {
+  code: string
+  resource_id?: string
+  block_id?: string
+  details?: Record<string, unknown>
+}
+
+export interface MergePreview {
+  preview_id: string
+  proposal_id: string
+  current_case_revision: number
+  selected_group_ids: string[]
+  preview_hash: string
+  conflicts: MergeConflict[]
+  missing_group_dependencies: Array<Record<string, unknown>>
+  unverified_evidence_ids: string[]
+  diffs: Array<Record<string, unknown>>
+  can_apply: boolean
+}
+
+export async function createMergePreview(params: {
+  caseId: string
+  proposalId: string
+  expectedCaseRevision: number
+  selectedGroupIds: string[]
+}): Promise<MergePreview> {
+  return request<MergePreview>(
+    `/cases/${encodeURIComponent(params.caseId)}/proposals/${encodeURIComponent(params.proposalId)}/merge-previews`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({
+        expected_case_revision: params.expectedCaseRevision,
+        selected_group_ids: params.selectedGroupIds,
+      }),
+    },
+  )
+}
+
+export interface ProposalApplication {
+  applied_group_ids: string[]
+  case_revision: number
+  resulting_case_revision: number
+  resource_revisions: Record<string, string>
+  invalidated_resources: string[]
+  unverified_evidence_ids: string[]
+  proposal_state: string
+}
+
+export async function applyProposal(params: {
+  caseId: string
+  proposalId: string
+  expectedCaseRevision: number
+  previewId: string
+  previewHash: string
+  acceptedGroupIds: string[]
+}): Promise<ProposalApplication> {
+  return request<ProposalApplication>(
+    `/cases/${encodeURIComponent(params.caseId)}/proposals/${encodeURIComponent(params.proposalId)}/applications`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({
+        expected_case_revision: params.expectedCaseRevision,
+        preview_id: params.previewId,
+        preview_hash: params.previewHash,
+        accepted_group_ids: params.acceptedGroupIds,
+      }),
+    },
+  )
+}
+
+export interface DraftResourceContent {
+  draft_kind: string
+  title: string | null
+  blocks: ProposalBlock[]
+}
+
+export interface DraftResource {
+  resource_id: string
+  resource_kind: 'draft'
+  resource_revision: string
+  parent_revision: string | null
+  origin: string
+  content: DraftResourceContent
+  content_hash: string
+  dependencies: Record<string, unknown>
+  is_head: boolean
+  freshness: string | null
+  created_by: string
+  created_at: string
+}
+
+export async function getDraftResource(caseId: string, draftId: string): Promise<DraftResource> {
+  return request<DraftResource>(
+    `/cases/${encodeURIComponent(caseId)}/resources/${encodeURIComponent(draftId)}`,
+  )
+}
+
+export interface DraftPatchResult {
+  draft_id: string
+  resource_revision: string
+  parent_revision: string
+  case_revision: number
+  freshness: string
+  blocks: ProposalBlock[]
+}
+
+export async function patchDraftBlock(params: {
+  caseId: string
+  draftId: string
+  expectedCaseRevision: number
+  baseResourceRevision: string
+  block: ProposalBlock
+}): Promise<DraftPatchResult> {
+  return request<DraftPatchResult>(
+    `/cases/${encodeURIComponent(params.caseId)}/drafts/${encodeURIComponent(params.draftId)}`,
+    {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
+      body: JSON.stringify({
+        expected_case_revision: params.expectedCaseRevision,
+        base_resource_revision: params.baseResourceRevision,
+        block_changes: [params.block],
+      }),
+    },
   )
 }
 
