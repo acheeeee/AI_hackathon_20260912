@@ -11,6 +11,7 @@ import {
   type FactFieldValue,
   type CaseDocument,
   type FactFieldTarget,
+  type DraftBlockTarget,
   type ResourceHead,
 } from '@/api/caseapi'
 import {
@@ -56,6 +57,10 @@ function askAboutField(path: string) {
     field_path: path,
   }
   sidebar.value?.askAboutField(factFieldLabel(path), target)
+}
+
+function explainDraftSelection(label: string, target: DraftBlockTarget) {
+  sidebar.value?.explainSelection(label, target)
 }
 
 const documentRoleLabel: Record<string, string> = {
@@ -192,6 +197,7 @@ function backToList() {
         :draft-id="draftEntry.draftId"
         :draft-head="draftEntry.head"
         @draft-updated="refresh"
+        @explain-selection="explainDraftSelection"
       />
 
       <ChatSidebar ref="sidebar" :case-id="caseId" :case-revision="detail.case_revision" />

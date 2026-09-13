@@ -9,6 +9,8 @@ import {
   CaseApiError,
   type ChatIntent,
   type FactFieldTarget,
+  type DraftBlockTarget,
+  type TargetRef,
 } from '@/api/caseapi'
 import { formatRunEvents } from '@/utils/runEvents'
 
@@ -85,7 +87,7 @@ async function pollRun(runId: string, assistantMsg: DisplayMessage) {
   assistantMsg.state = 'failed'
 }
 
-async function send(content: string, intent: ChatIntent, target?: FactFieldTarget) {
+async function send(content: string, intent: ChatIntent, target?: TargetRef) {
   const trimmed = content.trim()
   if (!trimmed || sending.value) return
   sending.value = true
@@ -137,11 +139,16 @@ function askAboutField(label: string, target: FactFieldTarget) {
   void send(`這個欄位「${label}」是什麼意思？`, 'explain', target)
 }
 
+function explainSelection(label: string, target: DraftBlockTarget) {
+  open.value = true
+  void send(`這段文字「${label}」是什麼意思？`, 'explain', target)
+}
+
 watch(open, (isOpen) => {
   if (isOpen) void scrollToBottom()
 })
 
-defineExpose({ askAboutField, open })
+defineExpose({ askAboutField, explainSelection, open })
 </script>
 
 <template>

@@ -208,7 +208,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
   intent: string | null
-  target: FactFieldTarget | Record<string, unknown> | null
+  target: TargetRef | Record<string, unknown> | null
   run_id: string | null
   created_at: string
 }
@@ -219,6 +219,19 @@ export interface FactFieldTarget {
   resource_revision: string
   field_path: string
 }
+
+export interface DraftBlockTarget {
+  kind: 'draft_block'
+  resource_id: string
+  resource_revision: string
+  block_id: string
+  char_start: number
+  char_end: number
+  selected_text: string
+  selected_text_sha256: string
+}
+
+export type TargetRef = FactFieldTarget | DraftBlockTarget
 
 export async function createThread(caseId: string, title?: string): Promise<string> {
   const data = await request<{ thread_id: string }>(
@@ -252,7 +265,7 @@ export async function sendMessage(params: {
   expectedCaseRevision: number
   content: string
   intent: ChatIntent
-  target?: FactFieldTarget
+  target?: TargetRef
 }): Promise<SendMessageResult> {
   return request<SendMessageResult>(
     `/cases/${encodeURIComponent(params.caseId)}/chat-threads/${encodeURIComponent(params.threadId)}/messages`,

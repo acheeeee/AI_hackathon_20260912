@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   CaseApiError,
   getDraftResource,
   patchDraftBlock,
+  type DraftBlockTarget,
   type ProposalBlock,
   type ResourceHead,
 } from '@/api/caseapi'
+import { buildDraftBlockTarget } from '@/utils/draftSelection'
 
 const props = defineProps<{
   caseId: string
@@ -15,7 +17,60 @@ const props = defineProps<{
   draftId: string
   draftHead: ResourceHead
 }>()
-const emit = defineEmits<{ (e: 'draft-updated'): void }>()
+const emit = defineEmits<{
+  (e: 'draft-updated'): void
+  (e: 'explain-selection', label: string, target: DraftBlockTarget): void
+}>()
+
+const MAX_SELECTION_LABEL_LENGTH = 24
+
+interface TextareaHost {
+  // Element Plus 的元件 ref（透過 `defineExpose`）在模板存取時已經自動解開
+  // 內部的 ShallowRef，所以這裡直接是原生 <textarea>，不是 ref 包裝物件。
+  textarea?: HTMLTextAreaElement | null
+}
+
+const blockInputs: Record<string, TextareaHost | null> = reactive({})
+const selection = ref<{ blockId: string; start: number; end: number } | null>(null)
+
+function setBlockInputRef(blockId: string, el: unknown) {
+  blockInputs[blockId] = el as TextareaHost | null
+}
+
+function nativeTextarea(blockId: string): HTMLTextAreaElement | null {
+  return blockInputs[blockId]?.textarea ?? null
+}
+
+function onSelect(blockId: string) {
+  const el = nativeTextarea(blockId)
+  const start = el?.selectionStart ?? null
+  const end = el?.selectionEnd ?? null
+  if (start === null || end === null || end <= start) {
+    if (selection.value?.blockId === blockId) selection.value = null
+    return
+  }
+  selection.value = { blockId, start, end }
+}
+
+function selectionLabel(text: string): string {
+  return text.length > MAX_SELECTION_LABEL_LENGTH
+    ? `${text.slice(0, MAX_SELECTION_LABEL_LENGTH)}…`
+    : text
+}
+
+async function explainSelected(block: ProposalBlock) {
+  const sel = selection.value
+  if (!sel || sel.blockId !== block.block_id) return
+  const target = await buildDraftBlockTarget({
+    resourceId: props.draftId,
+    resourceRevision: currentResourceRevision.value,
+    blockId: block.block_id,
+    blockText: block.text,
+    utf16Start: sel.start,
+    utf16End: sel.end,
+  })
+  emit('explain-selection', selectionLabel(target.selected_text), target)
+}
 
 const loading = ref(true)
 const loadError = ref('')
@@ -144,11 +199,27 @@ async function saveBlock(block: ProposalBlock) {
           <span class="block-id">{{ block.block_id }}</span>
         </div>
         <el-input
+          :ref="(el: unknown) => setBlockInputRef(block.block_id, el)"
           :model-value="block.text"
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 14 }"
           @update:model-value="updateBlockText(block.block_id, String($event))"
+          @select="onSelect(block.block_id)"
+          @mouseup="onSelect(block.block_id)"
+          @keyup="onSelect(block.block_id)"
         />
+        <div
+          v-if="selection && selection.blockId === block.block_id"
+          class="selection-toolbar"
+        >
+          <button
+            type="button"
+            class="explain-selection"
+            @click="explainSelected(block)"
+          >
+            請 AI 解釋
+          </button>
+        </div>
         <p v-if="block.citations.length" class="citations">
           引用：{{ block.citations.join('、') }}
         </p>
@@ -228,6 +299,22 @@ async function saveBlock(block: ProposalBlock) {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.selection-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.selection-toolbar button {
+  border: 1px solid #c7d3e8;
+  background: #f7f9fc;
+  color: #0b3d91;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  cursor: pointer;
 }
 
 .draft-block {
