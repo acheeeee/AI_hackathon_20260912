@@ -55,6 +55,7 @@ const statusTone = computed<'ok' | 'plain'>(() =>
     :gemini-on="geminiOn"
     :status-text="isLegacyWizard ? statusText : undefined"
     :status-tone="statusTone"
+    :show-legacy-badge="isLegacyWizard"
   />
   <StepNav v-if="isLegacyWizard" />
   <RouterView />

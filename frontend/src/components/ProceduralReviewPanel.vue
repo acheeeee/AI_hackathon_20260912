@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import {
   getProceduralReview,
@@ -12,6 +12,7 @@ import {
   PROCEDURAL_REVIEW_STATUS_LABELS,
   PROCEDURAL_REVIEW_STATUS_TAG_TYPE,
 } from '@/utils/factLabels'
+import { ARTICLE_77_CLAUSES } from '@/utils/article77'
 
 const props = defineProps<{ caseId: string; caseRevision: number }>()
 const emit = defineEmits<{ (e: 'facts-updated'): void }>()
@@ -63,14 +64,26 @@ function daysLabel(days: number): string {
   if (days === 0) return '剛好在期限當天'
   return `距期限還有 ${-days} 天`
 }
+
+const riskNote = computed(() => {
+  if (review.value?.status !== 'overdue') return ''
+  return (
+    '第 2 款期間試算顯示已逾期，屬程序風險提示；是否影響本案結果由承辦人與訴願審議委員會決定，' +
+    '系統不做最終判斷。'
+  )
+})
 </script>
 
 <template>
   <div class="panel review-panel">
     <div class="review-head">
-      <h2>程序審查</h2>
+      <h2>訴願法第 77 條・程序審查（八款）</h2>
       <el-tag size="small" type="info" effect="plain">未經法律覆核</el-tag>
     </div>
+    <p class="review-intro">
+      條文寫的是「有左列各款情形之一者，應為不受理之決定」——任一款成立就成立，不是八款要一款一款過。
+      目前只有第 2 款有自動試算，其餘七款都是實質判斷，一律待人工確認。
+    </p>
 
     <el-alert v-if="loadError" type="error" show-icon :closable="false">
       {{ loadError }}
@@ -78,46 +91,80 @@ function daysLabel(days: number): string {
     <div v-else-if="loading" class="loading">試算中…</div>
 
     <template v-else-if="review">
-      <div class="status-row">
-        <el-tag :type="PROCEDURAL_REVIEW_STATUS_TAG_TYPE[review.status]">
-          {{ PROCEDURAL_REVIEW_STATUS_LABELS[review.status] }}
-        </el-tag>
-        <span v-if="review.deadline_date" class="deadline">
-          期限：{{ review.deadline_date }}
-        </span>
-        <span v-if="review.days_from_deadline !== null" class="days">
-          {{ daysLabel(review.days_from_deadline) }}
-        </span>
+      <div class="clause-list">
+        <article
+          v-for="clause in ARTICLE_77_CLAUSES"
+          :key="clause.no"
+          class="clause-row"
+          :class="{ 'clause-row--rule': clause.hasRule }"
+        >
+          <div class="clause-no">{{ clause.no }}</div>
+          <div class="clause-body">
+            <p class="clause-title">{{ clause.title }}</p>
+
+            <template v-if="clause.hasRule">
+              <div class="status-row">
+                <el-tag :type="PROCEDURAL_REVIEW_STATUS_TAG_TYPE[review.status]">
+                  {{ PROCEDURAL_REVIEW_STATUS_LABELS[review.status] }}
+                </el-tag>
+                <span v-if="review.deadline_date" class="deadline">
+                  期限：{{ review.deadline_date }}
+                </span>
+                <span v-if="review.days_from_deadline !== null" class="days">
+                  {{ daysLabel(review.days_from_deadline) }}
+                </span>
+              </div>
+
+              <p class="basis">{{ review.statute_basis }}</p>
+
+              <div v-if="review.missing_fields.length" class="missing">
+                <p class="missing-hint">缺少以下欄位才能繼續試算：</p>
+                <div v-for="path in review.missing_fields" :key="path" class="missing-row">
+                  <span class="missing-label">{{ factFieldLabel(path) }}</span>
+                  <el-date-picker
+                    v-model="draftValues[path]"
+                    type="date"
+                    value-format="YYYY-MM-DD"
+                    size="small"
+                    placeholder="選擇日期"
+                  />
+                  <el-button
+                    size="small"
+                    type="primary"
+                    :loading="saving === path"
+                    :disabled="!draftValues[path]"
+                    @click="saveMissingField(path)"
+                  >
+                    儲存
+                  </el-button>
+                </div>
+              </div>
+
+              <ul class="caveats">
+                <li v-for="caveat in review.caveats" :key="caveat">⚠️ {{ caveat }}</li>
+              </ul>
+            </template>
+
+            <template v-else>
+              <div class="clause-pending">
+                <el-tag size="small" type="warning" effect="plain">待人工確認</el-tag>
+                <span class="pending-note">尚無自動判定規則</span>
+              </div>
+              <p class="clause-hint">{{ clause.manualCheckHint }}</p>
+            </template>
+          </div>
+        </article>
       </div>
 
-      <p class="basis">{{ review.statute_basis }}</p>
+      <el-alert v-if="riskNote" type="warning" show-icon :closable="false" class="risk-note">
+        {{ riskNote }}
+      </el-alert>
 
-      <div v-if="review.missing_fields.length" class="missing">
-        <p class="missing-hint">缺少以下欄位才能繼續試算：</p>
-        <div v-for="path in review.missing_fields" :key="path" class="missing-row">
-          <span class="missing-label">{{ factFieldLabel(path) }}</span>
-          <el-date-picker
-            v-model="draftValues[path]"
-            type="date"
-            value-format="YYYY-MM-DD"
-            size="small"
-            placeholder="選擇日期"
-          />
-          <el-button
-            size="small"
-            type="primary"
-            :loading="saving === path"
-            :disabled="!draftValues[path]"
-            @click="saveMissingField(path)"
-          >
-            儲存
-          </el-button>
-        </div>
+      <div class="system-disclaimer">
+        <strong>本系統不做決定。</strong>
+        八款判定、期間試算都只是提供給承辦人的材料；案件如何處理由承辦人與訴願審議委員會決定，
+        每一次採用或推翻都會寫入稽核紀錄。
       </div>
-
-      <ul class="caveats">
-        <li v-for="caveat in review.caveats" :key="caveat">⚠️ {{ caveat }}</li>
-      </ul>
     </template>
   </div>
 </template>
@@ -214,5 +261,81 @@ function daysLabel(days: number): string {
 .caveats li {
   font-size: 11px;
   color: #9aa6ba;
+}
+
+.review-intro {
+  font-size: 12px;
+  color: #7a8699;
+  line-height: 1.7;
+  margin: 0 0 14px;
+}
+
+.clause-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clause-row {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  background: #f7f9fc;
+  border: 1px solid #eef1f6;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.clause-row--rule {
+  background: #ffffff;
+  border-color: #c7d3e8;
+}
+
+.clause-no {
+  font-size: 13px;
+  font-weight: 800;
+  color: #6b7686;
+  text-align: center;
+}
+
+.clause-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16233f;
+  margin: 0 0 8px;
+}
+
+.clause-pending {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.pending-note {
+  font-size: 12px;
+  color: #7a8699;
+}
+
+.clause-hint {
+  font-size: 12px;
+  color: #6b7686;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.risk-note {
+  margin-top: 12px;
+}
+
+.system-disclaimer {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #fff8e1;
+  border-left: 4px solid #ffd400;
+  border-radius: 6px;
+  font-size: 12px;
+  color: #7a5c00;
+  line-height: 1.8;
 }
 </style>
