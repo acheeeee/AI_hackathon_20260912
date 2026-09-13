@@ -62,6 +62,20 @@ def test_correction_requires_procedural_notice_and_matching_scope():
     assert assess(1, facts).status == 'NOT_TRIGGERED'
 
 
+@pytest.mark.parametrize(('clause', 'facts'), [
+    (1, {'appeal.form_defect': 'yes', 'appeal.defect_remediable': 'yes'}),
+    (4, {'appellant.capacity': 'incapable', 'legal_representative.present': 'no'}),
+    (5, {'appellant.entity_type': 'legal_person', 'representative.authority': 'no'}),
+])
+def test_no_correction_notice_never_requires_inventing_a_scope(clause, facts):
+    result = assess(clause, {**facts, 'appeal.correction_notified': 'no'})
+    assert result.status == 'NOT_TRIGGERED'
+    assert result.missing_fields == ()
+    result = assess(clause, {**facts, 'appeal.correction_notified': 'yes'})
+    assert result.status == 'INSUFFICIENT_EVIDENCE'
+    assert result.missing_fields == ('appeal.correction_scope',)
+
+
 @pytest.mark.parametrize(('completed', 'completion_date', 'today', 'status'), [
     ('no', None, date(2026, 8, 1), 'NOT_TRIGGERED'),
     ('no', None, date(2026, 8, 2), 'TRIGGERED'),
