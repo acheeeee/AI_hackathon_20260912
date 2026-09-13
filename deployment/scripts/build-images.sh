@@ -27,14 +27,13 @@ revision="$(git -C "${repo_root}" rev-parse HEAD)"
 platform="${DOCKER_PLATFORM:-linux/amd64}"
 backend_image="${LOCAL_BACKEND_IMAGE:-ai-hackathon-backend:${version}}"
 frontend_image="${LOCAL_FRONTEND_IMAGE:-ai-hackathon-frontend:${version}}"
-build_options=()
+build_options=(--platform "${platform}")
 if [[ "${DOCKER_NO_CACHE:-0}" == "1" ]]; then
   build_options+=(--no-cache)
 fi
 
 docker build \
   "${build_options[@]}" \
-  --platform "${platform}" \
   --file "${repo_root}/deployment/docker/backend.Dockerfile" \
   --build-arg "APP_VERSION=${version}" \
   --build-arg "VCS_REF=${revision}" \
@@ -43,7 +42,6 @@ docker build \
 
 docker build \
   "${build_options[@]}" \
-  --platform "${platform}" \
   --file "${repo_root}/deployment/docker/frontend.Dockerfile" \
   --build-arg "APP_VERSION=${version}" \
   --build-arg "VCS_REF=${revision}" \

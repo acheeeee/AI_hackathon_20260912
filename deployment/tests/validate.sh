@@ -80,6 +80,7 @@ require_text "${deployment_dir}/scripts/publish-bundle.sh" 'refusing to publish 
 require_text "${deployment_dir}/scripts/publish-images.sh" 'refusing to publish images from a dirty worktree'
 require_text "${deployment_dir}/scripts/deploy.sh" 'immutable demo-vX.Y.Z tag in us-west-2 ECR'
 require_text "${deployment_dir}/scripts/build-images.sh" 'DOCKER_NO_CACHE'
+require_text "${deployment_dir}/scripts/build-images.sh" 'build_options=(--platform'
 
 if grep -Eq '^[[:space:]]*(export[[:space:]]+)?AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|SESSION_TOKEN)=' \
   "${deployment_dir}/config.example"; then
