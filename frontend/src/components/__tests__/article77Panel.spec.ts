@@ -25,7 +25,8 @@ function review(overrides: Partial<ProceduralReview> = {}): ProceduralReview {
     deadline_date: '2025-06-05',
     days_from_deadline: 92,
     missing_fields: [],
-    statute_basis: '訴願法第14條第1項：訴願之提起，應自行政處分達到或公告期滿之次日起三十日內為之。',
+    statute_basis:
+      '訴願法第14條第1項：訴願之提起，應自行政處分達到或公告期滿之次日起三十日內為之。',
     caveats: ['未考慮國定假日順延（行政程序法第48條第4項），僅算日曆天數。'],
     legal_review_status: 'not_reviewed',
     ...overrides,
@@ -61,8 +62,7 @@ describe('ProceduralReviewPanel: full article 77 disclosure', () => {
           clause.no === 2
             ? '收件日晚於試算期限 92 天，規則標記為可能逾期。'
             : `第 ${clause.no} 款目前缺少足以自動排除的資料，需人工覆核。`,
-        evaluation_mode:
-          clause.no === 2 ? 'rule' : needsLegalJudgment ? 'manual_review' : 'mock',
+        evaluation_mode: clause.no === 2 ? 'rule' : needsLegalJudgment ? 'manual_review' : 'mock',
       }
     })
     api.getProceduralReview.mockResolvedValue({
@@ -112,7 +112,9 @@ describe('ProceduralReviewPanel: full article 77 disclosure', () => {
   })
 
   it('does not claim the other clauses are inapplicable or already checked against a case archive', async () => {
-    api.getProceduralReview.mockResolvedValue(review({ status: 'within_period', days_from_deadline: -5 }))
+    api.getProceduralReview.mockResolvedValue(
+      review({ status: 'within_period', days_from_deadline: -5 }),
+    )
 
     const wrapper = mount(ProceduralReviewPanel, {
       props: { caseId: 'case_1', caseRevision: 3 },
@@ -129,50 +131,65 @@ function editableReview(revision = 7, defect: string | null = null) {
   return review({
     status: 'within_period',
     days_from_deadline: -5,
-    ...{
-      case_revision: revision,
-      field_definitions: [
-        {
-          field_path: 'appeal.form_defect', label: '訴願書程式欠缺', input_type: 'select',
-          options: [{ value: 'yes', label: '有欠缺' }, { value: 'no', label: '無欠缺' }],
-        },
-        {
-          field_path: 'appeal.correction_deadline', label: '訴願補正期限',
-          input_type: 'date', options: [],
-        },
-        {
-          field_path: 'appellant.entity_type', label: '訴願人類型', input_type: 'select',
-          options: [{ value: 'legal_person', label: '法人' }, { value: 'individual', label: '自然人' }],
-        },
-      ],
-    },
+    case_revision: revision,
+    field_definitions: [
+      {
+        field_path: 'appeal.form_defect',
+        label: '訴願書程式欠缺',
+        input_type: 'select',
+        options: [
+          { value: 'yes', label: '有欠缺' },
+          { value: 'no', label: '無欠缺' },
+        ],
+      },
+      {
+        field_path: 'appeal.correction_deadline',
+        label: '訴願補正期限',
+        input_type: 'date',
+        options: [],
+      },
+      {
+        field_path: 'appellant.entity_type',
+        label: '訴願人類型',
+        input_type: 'select',
+        options: [
+          { value: 'legal_person', label: '法人' },
+          { value: 'individual', label: '自然人' },
+        ],
+      },
+    ],
     clause_assessments: [
       {
-        clause_no: 1, rule_id: 'art77_para1', evaluation_mode: 'rule',
+        clause_no: 1,
+        rule_id: 'art77_para1',
+        evaluation_mode: 'rule',
         input: { 'appeal.form_defect': defect, 'appeal.correction_deadline': '2026-07-10' },
         status: defect === 'no' ? 'NOT_TRIGGERED' : 'INSUFFICIENT_EVIDENCE',
         rule_description: '核對程式欠缺及補正情形。',
         reason: defect === 'no' ? '目前資料未發現程式欠缺。' : '尚未確認程式欠缺。',
-        ...{
-          missing_fields: defect ? [] : ['appeal.form_defect'],
-          input_sources: {
-            'appeal.correction_deadline': {
-              origin: 'program', reason: '從通知擷取',
-              source: { document_role: 'appeal', excerpt: '請於115年7月10日前補正訴願書。' },
-            },
+        missing_fields: defect ? [] : ['appeal.form_defect'],
+        input_sources: {
+          'appeal.correction_deadline': {
+            origin: 'program',
+            reason: '從通知擷取',
+            source: { document_role: 'appeal', excerpt: '請於115年7月10日前補正訴願書。' },
           },
         },
       },
       {
-        clause_no: 5, rule_id: 'art77_para5', evaluation_mode: 'rule',
+        clause_no: 5,
+        rule_id: 'art77_para5',
+        evaluation_mode: 'rule',
         input: { 'appellant.entity_type': 'legal_person' },
-        status: 'INSUFFICIENT_EVIDENCE', rule_description: '核對代表人。', reason: '請補代表人。',
-        ...{ missing_fields: [], input_sources: {} },
+        status: 'INSUFFICIENT_EVIDENCE',
+        rule_description: '核對代表人。',
+        reason: '請補代表人。',
+        missing_fields: [],
+        input_sources: {},
       },
     ],
   })
 }
-
 async function mountEditable() {
   api.getProceduralReview.mockResolvedValue(editableReview())
   const wrapper = mount(ProceduralReviewPanel, {
@@ -194,7 +211,9 @@ describe('ProceduralReviewPanel: actionable procedural evidence', () => {
     expect(wrapper.text()).toContain('請於115年7月10日前補正訴願書。')
     expect(wrapper.findAll('details.clause-editor')).toHaveLength(2)
     expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe('')
-    expect((wrapper.get('[name="appellant.entity_type"]').element as HTMLSelectElement).value).toBe('legal_person')
+    expect((wrapper.get('[name="appellant.entity_type"]').element as HTMLSelectElement).value).toBe(
+      'legal_person',
+    )
   })
 
   it('saves changed fields atomically with the review revision, supports clearing and refreshes outcomes', async () => {
@@ -208,13 +227,16 @@ describe('ProceduralReviewPanel: actionable procedural evidence', () => {
     await flushPromises()
 
     expect(api.patchFacts).toHaveBeenCalledTimes(1)
-    expect(api.patchFacts).toHaveBeenCalledWith(expect.objectContaining({
-      caseId: 'case_1', expectedCaseRevision: 7,
-      fieldChanges: [
-        { fieldPath: 'appeal.form_defect', value: 'no' },
-        { fieldPath: 'appeal.correction_deadline', value: null },
-      ],
-    }))
+    expect(api.patchFacts).toHaveBeenCalledWith(
+      expect.objectContaining({
+        caseId: 'case_1',
+        expectedCaseRevision: 7,
+        fieldChanges: [
+          { fieldPath: 'appeal.form_defect', value: 'no' },
+          { fieldPath: 'appeal.correction_deadline', value: null },
+        ],
+      }),
+    )
     expect(wrapper.emitted('facts-updated')).toHaveLength(1)
     expect(wrapper.get('[data-clause="1"]').text()).toContain('目前資料未發現程式欠缺。')
     expect(wrapper.get('[data-clause="1"]').text()).toContain('未觸發')
@@ -228,11 +250,15 @@ describe('ProceduralReviewPanel: actionable procedural evidence', () => {
     await flushPromises()
 
     expect(api.getProceduralReview).toHaveBeenCalledTimes(2)
-    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe('no')
+    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe(
+      'no',
+    )
     api.patchFacts.mockResolvedValue({ case_revision: 9, fields: {} })
     await wrapper.get('[data-clause="1"] .save-clause').trigger('click')
     await flushPromises()
-    expect(api.patchFacts).toHaveBeenCalledWith(expect.objectContaining({ expectedCaseRevision: 8 }))
+    expect(api.patchFacts).toHaveBeenCalledWith(
+      expect.objectContaining({ expectedCaseRevision: 8 }),
+    )
   })
 
   it('preserves edits but asks for reconciliation if the same fact changed elsewhere', async () => {
@@ -242,10 +268,53 @@ describe('ProceduralReviewPanel: actionable procedural evidence', () => {
     await wrapper.setProps({ caseRevision: 8 })
     await flushPromises()
 
-    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe('no')
+    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe(
+      'no',
+    )
     expect(wrapper.get('[data-clause="1"]').text()).toContain('判定資料已被更新')
     expect(wrapper.get('[data-clause="1"] .save-clause').attributes('disabled')).toBeDefined()
     await wrapper.get('[data-clause="1"] .reset-clause').trigger('click')
-    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe('yes')
+    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe(
+      'yes',
+    )
+  })
+
+  it('retains unsaved values and displays a save error without reporting success', async () => {
+    const wrapper = await mountEditable()
+    await wrapper.get('[name="appeal.form_defect"]').setValue('no')
+    api.patchFacts.mockRejectedValueOnce(new Error('network unavailable'))
+
+    await wrapper.get('[data-clause="1"] .save-clause').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.get('[data-clause="1"] [role="alert"]').text()).toContain('儲存失敗')
+    expect(wrapper.emitted('facts-updated')).toBeUndefined()
+    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe(
+      'no',
+    )
+    expect(wrapper.get('[data-clause="1"] .save-clause').attributes('disabled')).toBeUndefined()
+  })
+
+  it('never replaces the current case with a late response from the previous case', async () => {
+    let resolvePrevious!: (value: unknown) => void
+    api.getProceduralReview.mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolvePrevious = resolve
+      }),
+    )
+    const wrapper = mount(ProceduralReviewPanel, {
+      props: { caseId: 'case_1', caseRevision: 3 },
+      global: { plugins: [ElementPlus] },
+    })
+    api.getProceduralReview.mockResolvedValue({ ...editableReview(8, 'yes'), case_id: 'case_2' })
+
+    await wrapper.setProps({ caseId: 'case_2' })
+    await flushPromises()
+    resolvePrevious(editableReview(7, 'no'))
+    await flushPromises()
+
+    expect((wrapper.get('[name="appeal.form_defect"]').element as HTMLSelectElement).value).toBe(
+      'yes',
+    )
   })
 })

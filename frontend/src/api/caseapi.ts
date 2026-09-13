@@ -137,41 +137,43 @@ export interface PatchFactsResult {
   fields: Record<string, FactFieldValue>
 }
 
-export async function patchFacts(params: {
+export interface FactChangeInput {
+  fieldPath: string
+  value: string | null
+}
+
+type PatchFactsParams = {
   caseId: string
   expectedCaseRevision: number
   reason: string
-  fieldPath: string
-  value: string
-}): Promise<PatchFactsResult> {
+} & (FactChangeInput | { fieldChanges: FactChangeInput[] })
+
+export async function patchFacts(params: PatchFactsParams): Promise<PatchFactsResult> {
+  const changes = 'fieldChanges' in params ? params.fieldChanges : [params]
   return request<PatchFactsResult>(`/cases/${encodeURIComponent(params.caseId)}/facts`, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json', 'Idempotency-Key': newIdempotencyKey() },
     body: JSON.stringify({
       expected_case_revision: params.expectedCaseRevision,
       reason: params.reason,
-      field_changes: [
-        {
-          field_path: params.fieldPath,
-          value: params.value,
-          human_asserted: true,
-          reason: params.reason,
-        },
-      ],
+      field_changes: changes.map((change) => ({
+        field_path: change.fieldPath,
+        value: change.value,
+        human_asserted: true,
+        reason: params.reason,
+      })),
     }),
   })
 }
 
-// ---------- 程序審查（訴願法第14條期間試算，未經法律覆核） ----------
+// ---------- 程序審查（訴願法第77條八款，未經法律覆核） ----------
 
 export type ProceduralReviewStatus =
-  | 'insufficient_data'
-  | 'deadline_known_filing_unknown'
-  | 'within_period'
-  | 'overdue'
+  'insufficient_data' | 'deadline_known_filing_unknown' | 'within_period' | 'overdue'
 
 export interface ProceduralReview {
   case_id: string
+  case_revision?: number
   status: ProceduralReviewStatus
   deadline_date: string | null
   days_from_deadline: number | null
@@ -180,14 +182,25 @@ export interface ProceduralReview {
   caveats: string[]
   legal_review_status: string
   clause_assessments?: Article77ClauseAssessment[]
+  field_definitions?: ProceduralFieldDefinition[]
+}
+
+export interface ProceduralFieldDefinition {
+  field_path: string
+  label: string
+  input_type: 'select' | 'date' | 'text'
+  options: { value: string; label: string }[]
+  help_text?: string
+}
+
+export interface ProceduralInputSource {
+  origin: string
+  reason: string
+  source: unknown
 }
 
 export type Article77Outcome =
-  | 'NOT_TRIGGERED'
-  | 'TRIGGERED'
-  | 'NOT_APPLICABLE'
-  | 'INSUFFICIENT_EVIDENCE'
-  | 'NEEDS_HUMAN'
+  'NOT_TRIGGERED' | 'TRIGGERED' | 'NOT_APPLICABLE' | 'INSUFFICIENT_EVIDENCE' | 'NEEDS_HUMAN'
 
 export type Article77EvaluationMode = 'rule' | 'mock' | 'manual_review'
 
@@ -195,6 +208,8 @@ export interface Article77ClauseAssessment {
   clause_no: number
   rule_id: string
   input: Record<string, unknown>
+  missing_fields?: string[]
+  input_sources?: Record<string, ProceduralInputSource>
   status: Article77Outcome
   rule_description: string
   reason: string
@@ -202,9 +217,7 @@ export interface Article77ClauseAssessment {
 }
 
 export async function getProceduralReview(caseId: string): Promise<ProceduralReview> {
-  return request<ProceduralReview>(
-    `/cases/${encodeURIComponent(caseId)}/procedural-review`,
-  )
+  return request<ProceduralReview>(`/cases/${encodeURIComponent(caseId)}/procedural-review`)
 }
 
 export interface CaseDocument {
